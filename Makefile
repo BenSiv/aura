@@ -20,9 +20,14 @@ run:
 	@cd $(CNF) && npx expo start --web
 
 # Build the Android development client
-build-android:
-	@echo "Building Aura Android Client..."
+build-dev-android:
+	@echo "Building Aura Android Dev Client..."
 	@cd $(CNF) && npx eas-cli build --profile development --platform android
+
+# Build the Android APK for testing
+build-apk:
+	@echo "Building Aura Android APK (Preview)..."
+	@cd $(CNF) && npx eas-cli build --profile preview --platform android
 
 # Release pipeline
 release:
