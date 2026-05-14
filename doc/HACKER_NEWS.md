@@ -1,4 +1,4 @@
-# Show HN: Aura – A Local-First, Privacy-Centric Dating App with No Central Server
+# Show HN: Aura - A Local-First, Privacy-Centric Dating App with No Central Server
 
 **Title:** Show HN: Aura – A Local-First, Privacy-Centric Dating App (AGPL v3)
 
@@ -13,7 +13,7 @@ Aura takes a different approach by making the protocol the product.
 ### Key Features:
 *   **Local-First Data**: All swiping history, matches, and chats live in an encrypted SQLCipher database on your device. No central server stores your profile or preferences.
 *   **Implicit Preference Learning**: Instead of filters, Aura uses an on-device AI engine to learn what you like based on your interactions, adjusting local tag weights without ever uploading your "type" to a server.
-*   **Decentralized Discovery**: I’m implementing a P2P discovery layer (via Waku/Matrix) to gossip public profiles nearby without a central directory.
+*   **Decentralized Discovery**: I'm implementing a P2P discovery layer (via Waku/Matrix) to gossip public profiles nearby without a central directory.
 *   **Incentive Aligned**: Open source (AGPL v3) and designed to be sustainable through a "pay-for-convenience" model (hosting your own node vs using a community relay).
 
 ### I’m looking for contributors!
