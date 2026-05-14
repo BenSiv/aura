@@ -78,6 +78,7 @@ Once the environment is [OK], use the master Makefile from the project root:
 If you are building on a machine with limited RAM (e.g., 8GB or less), Aura is pre-configured with several optimizations:
 
 *   **Node.js Memory Limit:** The `Makefile` automatically sets `--max-old-space-size=2048` for build commands to prevent Node from consuming excessive memory.
+*   **Temporary Directory Redirection:** Since `/tmp` is often limited on some systems (e.g., `tmpfs`), the `Makefile` redirects the build's temporary files to `~/.aura-build-tmp` to ensure there is enough space for project compression and staging.
 *   **Gradle Constraints:** The `bld/setup_local_build.sh` script configures your global `~/.gradle/gradle.properties` to:
     *   Limit heap size to 2GB.
     *   Disable parallel execution.
