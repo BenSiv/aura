@@ -33,4 +33,4 @@ npm run web # For UI development
 ```
 
 ## ⚖️ License
-Licensed under the **GNU Affero General Public License v3 (AGPL v3)**. See [LICENSE](./LICENSE) for details.
+Licensed under the **GNU Affero General Public License v3 (AGPL v3)**. See [LICENSE.txt](./LICENSE.txt) for details.
