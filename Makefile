@@ -2,6 +2,7 @@
 
 # Settings
 CNF = cnf
+BLD = bld
 BIN = bin
 SRC = src
 DEP = dep
@@ -54,6 +55,7 @@ clean:
 	@echo "Cleaning up..."
 	@rm -rf $(DEP)
 	@rm -rf node_modules
+	@rm -rf $(BIN)
 	@rm -rf $(CNF)/node_modules
 	@rm -rf $(CNF)/.expo
 	@rm -rf .expo

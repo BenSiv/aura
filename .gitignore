@@ -44,3 +44,4 @@ node_modules/
 .expo/
 etc/
 cnf/.expo/
+bin/
