@@ -6,14 +6,14 @@ The Decentralized, Privacy-First, Open Source Dating App.
 Aura is built to be the "perfect" dating app:
 - **100% Open Source & Free**: No hidden algorithms or paywalls.
 - **Privacy-First**: No central server profiles. All your swipes and preferences stay on your device.
-- **Local AI**: Implicit preference learning happens locally via on-device inference.
+- **Local ML**: Implicit preference learning happens locally via on-device inference.
 - **Copyleft**: Licensed under **GNU AGPL v3** to ensure it remains a community utility forever.
 
 ## Tech Stack
 - **Framework**: React Native (Expo)
 - **Database**: SQLite with SQLCipher (256-bit AES Encryption)
 - **Security**: Hardware-backed keys via `expo-secure-store`
-- **AI**: On-device tag-weighting engine
+- **ML Engine**: On-device tag-weighting engine
 
 ## Building Aura
 

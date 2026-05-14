@@ -1,4 +1,4 @@
-#!/bld/bash
+#!/bin/bash
 
 echo "[*] Starting Aura Local Build Setup..."
 

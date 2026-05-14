@@ -1,7 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 
 /**
- * Aura AI Engine - Implicit Preference Learning
+ * Aura ML Engine - Implicit Preference Learning
  * Learns user preferences by adjusting weights of tags based on interactions.
  */
 
