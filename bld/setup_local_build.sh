@@ -33,6 +33,29 @@ else
     echo "[OK] Environment variables already configured."
 fi
 
+# 4. Optimize Gradle for low-RAM machines
+echo "[+] Optimizing Gradle for low-RAM environment..."
+GRADLE_PROPS="$HOME/.gradle/gradle.properties"
+mkdir -p "$HOME/.gradle"
+
+# Only add settings if they don't already exist or are set too high
+update_gradle_prop() {
+    local prop=$1
+    local value=$2
+    if ! grep -q "^$prop=" "$GRADLE_PROPS" 2>/dev/null; then
+        echo "$prop=$value" >> "$GRADLE_PROPS"
+        return 0
+    fi
+    return 1
+}
+
+update_gradle_prop "org.gradle.jvmargs" "-Xmx2048m -XX:MaxMetaspaceSize=512m"
+update_gradle_prop "org.gradle.parallel" "false"
+update_gradle_prop "org.gradle.workers.max" "1"
+update_gradle_prop "org.gradle.daemon" "false"
+
+echo "[OK] Gradle optimizations applied to $GRADLE_PROPS."
+
 echo "------------------------------------------------"
 echo "NEXT STEPS:"
 echo "1. Run: sudo apt install openjdk-17-jdk"

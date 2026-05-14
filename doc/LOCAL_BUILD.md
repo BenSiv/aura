@@ -72,5 +72,19 @@ Once the environment is [OK], use the master Makefile from the project root:
 | `make build-local` | Compiles a standalone Android APK on your machine. |
 | `make build-dev-android` | Builds a development client for real-time debugging. |
 
+---
+
+## 6. Low-RAM Optimizations
+If you are building on a machine with limited RAM (e.g., 8GB or less), Aura is pre-configured with several optimizations:
+
+*   **Node.js Memory Limit:** The `Makefile` automatically sets `--max-old-space-size=2048` for build commands to prevent Node from consuming excessive memory.
+*   **Gradle Constraints:** The `bld/setup_local_build.sh` script configures your global `~/.gradle/gradle.properties` to:
+    *   Limit heap size to 2GB.
+    *   Disable parallel execution.
+    *   Limit worker processes to 1.
+    *   Disable the Gradle daemon to free memory after the build completes.
+
+If you still encounter "Out of Memory" errors, consider closing all other applications (browser, IDE) before running the build.
+
 ### Artifacts
 Local build outputs will be placed in the `bin/` directory (which is ignored by Git).

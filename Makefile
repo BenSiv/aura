@@ -23,17 +23,17 @@ run:
 # Build the Android development client
 build-dev-android:
 	@echo "Building Aura Android Dev Client..."
-	@cd $(CNF) && npx eas-cli build --profile development --platform android
+	@cd $(CNF) && NODE_OPTIONS="--max-old-space-size=2048" npx eas-cli build --profile development --platform android
 
 # Build the Android APK for testing
 build-apk:
 	@echo "Building Aura Android APK (Preview - Cloud)..."
-	@cd $(CNF) && npx eas-cli build --profile preview --platform android
+	@cd $(CNF) && NODE_OPTIONS="--max-old-space-size=2048" npx eas-cli build --profile preview --platform android
 
 # Build the Android APK locally
 build-local:
 	@echo "Building Aura Android APK (Local)..."
-	@cd $(CNF) && npx eas-cli build --local --profile preview --platform android
+	@cd $(CNF) && NODE_OPTIONS="--max-old-space-size=2048" npx eas-cli build --local --profile preview --platform android
 
 # Release pipeline
 release:
