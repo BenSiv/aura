@@ -6,6 +6,12 @@ const projectRoot = path.resolve(__dirname, '..');
 
 const config = getDefaultConfig(projectRoot);
 
+// Ensure we can resolve modules from the cnf/node_modules directory
+// even when files are being resolved from their real paths in ../src
+config.resolver.nodeModulesPaths = [
+  path.resolve(__dirname, 'node_modules'),
+];
+
 // Add support for WASM and TFLite files
 config.resolver.assetExts.push('wasm');
 config.resolver.assetExts.push('tflite');

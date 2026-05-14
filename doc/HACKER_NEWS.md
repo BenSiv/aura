@@ -11,10 +11,10 @@ I’m building **Aura**, a dating app designed as a privacy-first utility rather
 Aura takes a different approach by making the protocol the product.
 
 ### Key Features:
-*   **Local-First Data**: All swiping history, matches, and chats live in an encrypted SQLCipher database on your device. No central server stores your profile or preferences.
-*   **Implicit Preference Learning**: Instead of filters, Aura uses an on-device AI engine to learn what you like based on your interactions, adjusting local tag weights without ever uploading your "type" to a server.
-*   **Decentralized Discovery**: I'm implementing a P2P discovery layer (via Waku/Matrix) to gossip public profiles nearby without a central directory.
-*   **Incentive Aligned**: Open source (AGPL v3) and designed to be sustainable through a "pay-for-convenience" model (hosting your own node vs using a community relay).
+*   **Local-First Data Sovereignty**: All swiping history, matches, and chats live in an encrypted SQLCipher database on your device. Your behavioral patterns never leave your hardware.
+*   **On-Device ML Engine**: Instead of filters, Aura uses an on-device AI engine to learn your preferences, adjusting local tag weights without ever uploading your "type" to a server.
+*   **Mesh Networking & Store-Carry-Forward**: Discovery happens through a P2P layer (via Waku/Matrix). Devices act as nodes, gossiping encrypted packets. The "Store-Carry-Forward" model allows profiles to propagate through physical movement, creating a living network that scales with density.
+*   **Incentive Aligned**: Open source (AGPL v3) and designed to be a utility. We avoid the "Skinner Box" traps of commercial apps by making the protocol the product.
 
 ### I’m looking for contributors!
 I just successfully set up the core encrypted storage and the premium UI foundation. I’m now moving into the most exciting part: **The Decentralized Sync Layer**.

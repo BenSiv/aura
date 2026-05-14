@@ -12,7 +12,7 @@ To achieve privacy-preserving discovery, Aura utilizes the following layers:
 *   **Encrypted SQLite (SQLCipher)**: All discovered peer metadata is stored locally.
 *   **Secure Store**: Private keys for identity signatures are stored in hardware-backed secure enclaves.
 
-## 3. The Discovery Flow (Gossip)
+## 3. The Discovery Flow (Gossip & Mesh)
 
 ### A. The "Public Aura" (Broadcast)
 A user's device periodically broadcasts a **Discovery Packet** to the local mesh. This packet contains:
@@ -20,7 +20,13 @@ A user's device periodically broadcasts a **Discovery Packet** to the local mesh
 *   **Interest Tags**: A bloom filter of the user's interests (allows matching without revealing exact interest strings).
 *   **Geofence Hint**: A low-resolution location hash (e.g., 5km radius) to ensure gossip stays relevant to the user's area.
 
-### B. Peer Filtering
+### B. The Mesh Protocol & Store-Carry-Forward
+Aura implements a **Store-Carry-Forward** model to ensure reachability in sparse environments:
+1.  **Node Participation**: Every instance of the app acts as a node in the mesh.
+2.  **Gossip Propagation**: When a device receives an encrypted packet, it doesn't just process it for local matches; it also "gossips" or rebroadcasts packets it has received from others.
+3.  **Physical Mobility**: Profiles travel across geographic regions (e.g., a 50km radius) through the physical movement of users. Your phone "carries" the network with it, strengthening the living network as density increases.
+
+### C. Peer Filtering
 When a device receives a packet, it compares the **Interest Tags** against the local **AI Preference Engine**:
 1.  If the match score is high, the device stores the peer's ephemeral key.
 2.  The peer is then "swipable" in the local UI.
