@@ -26,8 +26,13 @@ build-dev-android:
 
 # Build the Android APK for testing
 build-apk:
-	@echo "Building Aura Android APK (Preview)..."
+	@echo "Building Aura Android APK (Preview - Cloud)..."
 	@cd $(CNF) && npx eas-cli build --profile preview --platform android
+
+# Build the Android APK locally
+build-local:
+	@echo "Building Aura Android APK (Local)..."
+	@cd $(CNF) && npx eas-cli build --local --profile preview --platform android
 
 # Release pipeline
 release:
