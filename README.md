@@ -32,5 +32,12 @@ npm install
 npm run web # For UI development
 ```
 
+### Release Pipeline
+To generate a versioned publication of the app:
+```bash
+make release
+```
+This will create a git tag and export a static web build into `pub/v<version>/`.
+
 ## ⚖️ License
 Licensed under the **GNU Affero General Public License v3 (AGPL v3)**. See [LICENSE.txt](./LICENSE.txt) for details.
