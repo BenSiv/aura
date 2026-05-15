@@ -52,3 +52,7 @@ clean:
 	@rm -rf $(BIN)
 	@rm -rf $(SRC)/core/target
 	@cargo clean --manifest-path $(SRC)/core/Cargo.toml
+
+# Deploy to all connected devices
+deploy:
+	@./bin/deploy_to_all.sh

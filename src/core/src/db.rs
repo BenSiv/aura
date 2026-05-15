@@ -66,6 +66,13 @@ pub fn initialize_database(app_dir: PathBuf) -> Result<Connection> {
             FOREIGN KEY (profileId) REFERENCES profiles(id)
         );
 
+        CREATE TABLE IF NOT EXISTS local_profile (
+            id TEXT PRIMARY KEY NOT NULL,
+            name TEXT NOT NULL,
+            bio TEXT,
+            tags TEXT
+        );
+
         CREATE TABLE IF NOT EXISTS peer_feedback (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             targetProfileId TEXT NOT NULL,

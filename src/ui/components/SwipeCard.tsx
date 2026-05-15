@@ -1,3 +1,4 @@
+import { useState, useRef, TouchEvent } from 'react';
 import { MapPin } from 'lucide-react';
 
 export interface Profile {
@@ -11,14 +12,76 @@ export interface Profile {
 
 interface Props {
   profile: Profile;
+  onSwipe: (type: 'like' | 'pass') => void;
+  onClick: () => void;
 }
 
-export default function SwipeCard({ profile }: Props) {
+export default function SwipeCard({ profile, onSwipe, onClick }: Props) {
+  const [offsetX, setOffsetX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const startX = useRef(0);
+  const startY = useRef(0);
+  const startTime = useRef(0);
+  const cardRef = useRef<HTMLDivElement>(null);
+
   const images = JSON.parse(profile.images);
   const tags = JSON.parse(profile.tags || '[]');
 
+  const handleTouchStart = (e: TouchEvent) => {
+    startX.current = e.touches[0].clientX;
+    startY.current = e.touches[0].clientY;
+    startTime.current = Date.now();
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
+    if (!isDragging) return;
+    const currentX = e.touches[0].clientX;
+    const diff = currentX - startX.current;
+    setOffsetX(diff);
+  };
+
+  const handleTouchEnd = (e: TouchEvent) => {
+    setIsDragging(false);
+    const duration = Date.now() - startTime.current;
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const distanceX = Math.abs(endX - startX.current);
+    const distanceY = Math.abs(endY - startY.current);
+
+    // If it was a short tap with very little movement, treat it as a click
+    if (duration < 250 && distanceX < 10 && distanceY < 10) {
+      onClick();
+      setOffsetX(0);
+      return;
+    }
+
+    const threshold = 100;
+    if (offsetX > threshold) {
+      onSwipe('like');
+    } else if (offsetX < -threshold) {
+      onSwipe('pass');
+    }
+    setOffsetX(0);
+  };
+
+  const rotation = offsetX / 10;
+  const opacity = Math.max(1 - Math.abs(offsetX) / 500, 0.5);
+
   return (
-    <div className="swipe-card">
+    <div 
+      ref={cardRef}
+      className="swipe-card"
+      style={{
+        transform: `translateX(${offsetX}px) rotate(${rotation}deg)`,
+        opacity: opacity,
+        transition: isDragging ? 'none' : 'transform 0.3s ease-out, opacity 0.3s ease-out',
+        touchAction: 'none'
+      }}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <img src={images[0]} alt={profile.name} className="swipe-card-image" />
       
       <div className="swipe-card-gradient" />
@@ -45,6 +108,12 @@ export default function SwipeCard({ profile }: Props) {
           )}
         </div>
       </div>
+
+      {offsetX !== 0 && (
+        <div className={`swipe-label ${offsetX > 0 ? 'like' : 'pass'}`} style={{ opacity: Math.min(Math.abs(offsetX) / 50, 1) }}>
+          {offsetX > 0 ? 'RESONATE' : 'DAMPEN'}
+        </div>
+      )}
     </div>
   );
 }

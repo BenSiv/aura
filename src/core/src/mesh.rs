@@ -1,40 +1,145 @@
+use futures::StreamExt;
+use libp2p::{
+    gossipsub, kad, mdns, noise, swarm::{NetworkBehaviour, SwarmEvent}, tcp, yamux, SwarmBuilder,
+};
+use serde::{Deserialize, Serialize};
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
 use std::time::Duration;
-use std::thread;
-use tauri::{AppHandle, Manager, Emitter};
-use serde::Serialize;
+use tauri::{AppHandle, Emitter};
+use tokio::sync::mpsc;
+
+#[derive(Clone, Serialize, Deserialize, Debug)]
+pub struct PeerProfile {
+    pub id: String,
+    pub name: String,
+    pub bio: String,
+    pub tags: String,
+    pub images: String,
+}
 
 #[derive(Clone, Serialize)]
 struct ResonanceEvent {
     profile_id: String,
     score: f32,
     timestamp: u64,
+    peer_data: Option<PeerProfile>,
 }
 
-/// Placeholder for BLE / Mesh Network background scanning loop
-pub fn start_background_scan(app: AppHandle) {
+#[derive(NetworkBehaviour)]
+struct AuraBehaviour {
+    gossipsub: gossipsub::Behaviour,
+    mdns: mdns::tokio::Behaviour,
+    kad: kad::Behaviour<kad::store::MemoryStore>,
+}
+
+static TOPIC_NAME: &str = "aura-resonance-v1";
+static mut BROADCAST_TX: Option<mpsc::UnboundedSender<PeerProfile>> = None;
+
+pub fn start_mesh(app: AppHandle) {
+    let (tx, mut rx) = mpsc::unbounded_channel::<PeerProfile>();
+    unsafe {
+        BROADCAST_TX = Some(tx);
+    }
+
     std::thread::spawn(move || {
-        println!("[Mesh] Starting passive background proximity scanner...");
-        
-        loop {
-            // Simulated delay representing continuous BLE scanning
-            thread::sleep(Duration::from_secs(30));
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        rt.block_on(async {
+            let mut swarm = SwarmBuilder::with_new_identity()
+                .with_tokio()
+                .with_tcp(
+                    tcp::Config::default(),
+                    noise::Config::new,
+                    yamux::Config::default,
+                )
+                .expect("Failed to build TCP transport")
+                .with_behaviour(|key| {
+                    // Gossipsub setup
+                    let message_id_fn = |message: &gossipsub::Message| {
+                        let mut s = DefaultHasher::new();
+                        message.data.hash(&mut s);
+                        gossipsub::MessageId::from(s.finish().to_string())
+                    };
+                    let gossipsub_config = gossipsub::ConfigBuilder::default()
+                        .heartbeat_interval(Duration::from_secs(10))
+                        .validation_mode(gossipsub::ValidationMode::Strict)
+                        .message_id_fn(message_id_fn)
+                        .build()
+                        .map_err(|msg| std::io::Error::new(std::io::ErrorKind::Other, msg))?;
 
-            // Simulated mesh event
-            let event = ResonanceEvent {
-                profile_id: "simulated_user_123".to_string(),
-                score: 0.95,
-                timestamp: std::time::SystemTime::now()
-                    .duration_since(std::time::UNIX_EPOCH)
-                    .unwrap()
-                    .as_secs(),
-            };
+                    let gossipsub = gossipsub::Behaviour::new(
+                        gossipsub::MessageAuthenticity::Signed(key.clone()),
+                        gossipsub_config,
+                    ).map_err(|msg| std::io::Error::new(std::io::ErrorKind::Other, msg))?;
 
-            println!("[Mesh] Resonance detected! Emitting event to frontend...");
-            
-            // Emit the event to the React frontend
-            if let Err(e) = app.emit("resonance_detected", event) {
-                eprintln!("[Mesh] Failed to emit resonance event: {}", e);
+                    // mDNS (Local Discovery)
+                    let mdns = mdns::tokio::Behaviour::new(mdns::Config::default(), key.public().to_peer_id())?;
+
+                    // Kademlia (Global Discovery)
+                    let store = kad::store::MemoryStore::new(key.public().to_peer_id());
+                    let kad = kad::Behaviour::new(key.public().to_peer_id(), store);
+
+                    Ok(AuraBehaviour { gossipsub, mdns, kad })
+                })
+                .expect("Failed to create behaviour")
+                .with_swarm_config(|c| c.with_idle_connection_timeout(Duration::from_secs(60)))
+                .build();
+
+            // Subscribe to the global topic
+            let topic = gossipsub::IdentTopic::new(TOPIC_NAME);
+            swarm.behaviour_mut().gossipsub.subscribe(&topic).ok();
+
+            // Listen on all interfaces
+            swarm.listen_on("/ip4/0.0.0.0/tcp/0".parse().unwrap()).ok();
+
+            println!("[P2P] Swarm started. PeerId: {}", swarm.local_peer_id());
+
+            loop {
+                tokio::select! {
+                    profile = rx.recv() => {
+                        if let Some(p) = profile {
+                            if let Ok(encoded) = serde_json::to_vec(&p) {
+                                println!("[P2P] Publishing our Aura to the mesh...");
+                                swarm.behaviour_mut().gossipsub.publish(topic.clone(), encoded).ok();
+                            }
+                        }
+                    }
+                    event = swarm.select_next_some() => match event {
+                        SwarmEvent::Behaviour(AuraBehaviourEvent::Mdns(mdns::Event::Discovered(list))) => {
+                            for (peer_id, multiaddr) in list {
+                                println!("[P2P] mDNS discovered peer: {}", peer_id);
+                                swarm.behaviour_mut().gossipsub.add_explicit_peer(&peer_id);
+                                swarm.behaviour_mut().kad.add_address(&peer_id, multiaddr);
+                            }
+                        }
+                        SwarmEvent::Behaviour(AuraBehaviourEvent::Gossipsub(gossipsub::Event::Message {
+                            propagation_source: peer_id,
+                            message_id: _id,
+                            message,
+                        })) => {
+                            if let Ok(peer) = serde_json::from_slice::<PeerProfile>(&message.data) {
+                                println!("[P2P] Received Aura via Gossipsub from {}", peer_id);
+                                let res_event = ResonanceEvent {
+                                    profile_id: peer.id.clone(),
+                                    score: 1.0,
+                                    timestamp: std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs(),
+                                    peer_data: Some(peer),
+                                };
+                                app.emit("resonance_detected", res_event).ok();
+                            }
+                        }
+                        _ => {}
+                    }
+                }
             }
-        }
+        });
     });
+}
+
+pub fn broadcast_profile(profile: PeerProfile) {
+    unsafe {
+        if let Some(ref tx) = BROADCAST_TX {
+            tx.send(profile).ok();
+        }
+    }
 }
