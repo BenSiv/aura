@@ -75,6 +75,15 @@ export async function initializeDatabase() {
       status TEXT DEFAULT 'pending', -- pending, seen, dismissed
       FOREIGN KEY (profileId) REFERENCES profiles(id)
     );
+
+    CREATE TABLE IF NOT EXISTS history (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      profileId TEXT NOT NULL,
+      score REAL NOT NULL,
+      timestamp INTEGER NOT NULL,
+      interaction TEXT DEFAULT 'none', -- none, liked, passed, matched
+      FOREIGN KEY (profileId) REFERENCES profiles(id)
+    );
   `);
 
   // Initialize default settings if they don't exist

@@ -2,6 +2,7 @@ import * as Notifications from 'expo-notifications';
 import { scoreProfile } from './engine';
 import * as SQLite from 'expo-sqlite';
 import { Profile } from '../data/db';
+import { addToHistory } from '../data/history';
 
 const DATABASE_NAME = 'aura.db';
 
@@ -35,6 +36,9 @@ export async function simulateProximityMatch(mockPeer: Profile) {
       'INSERT OR IGNORE INTO profiles (id, name, bio, images, tags, distance, lastSeen) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [mockPeer.id, mockPeer.name, mockPeer.bio, mockPeer.images, mockPeer.tags, mockPeer.distance, Date.now()]
     );
+
+    // Add to permanent history log
+    await addToHistory(mockPeer.id, score, 'none');
 
     await sendProximityNotification(mockPeer, score);
   }

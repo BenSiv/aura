@@ -9,6 +9,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { getAuraSettings, updateSetting, VisibilityMode } from '@/data/settings';
 import { simulateProximityMatch, requestNotificationPermissions, getPendingDiscoveries, dismissDiscovery } from '@/ml/proximity';
 import { updatePreferences } from '@/ml/engine';
+import { addToHistory } from '@/data/history';
 import * as SQLite from 'expo-sqlite';
 
 const DATABASE_NAME = 'aura.db';
@@ -68,10 +69,13 @@ export default function DiscoverScreen() {
     // 1. Train the ML engine
     await updatePreferences(db, tags, type);
     
-    // 2. Dismiss from cache
+    // 2. Add/Update permanent history with the interaction
+    await addToHistory(discovery.id, discovery.score, type === 'like' ? 'liked' : 'passed');
+    
+    // 3. Dismiss from temporary cache
     await dismissDiscovery(discovery.cacheId);
     
-    // 3. Refresh UI
+    // 4. Refresh UI
     loadInbox();
 
     if (type === 'like') {
