@@ -1,64 +1,52 @@
-# Aura Project Makefile
+# Aura Project Makefile (Tauri Migration)
 
 # Settings
-CNF = cnf
 BLD = bld
 BIN = bin
 SRC = src
-DEP = dep
 PUB = pub
 RES = res
 
-# Get version from config
-VERSION = $(shell grep '"version":' $(CNF)/app.json | cut -d'"' -f4)
+# Get version from package.json
+VERSION = $(shell grep '"version":' package.json | cut -d'"' -f4)
 
 # Default action
 all: run
 
-# Run the web development server
+# Run the web and native development server (Tauri + Vite)
 run:
-	@echo "Starting Aura Web Server..."
-	@cd $(CNF) && npx expo start --web
+	@echo "Starting Aura Tauri Dev Server..."
+	@npm run tauri dev
 
-# Build the Android development client
+# Build the Android development client via Tauri
 build-dev-android:
-	@echo "Building Aura Android Dev Client..."
-	@mkdir -p $(HOME)/.aura-build-tmp
-	@cd $(CNF) && TMPDIR=$(HOME)/.aura-build-tmp NODE_OPTIONS="--max-old-space-size=2048" npx eas-cli build --profile development --platform android
-
-# Build the Android APK for testing
-build-apk:
-	@echo "Building Aura Android APK (Preview - Cloud)..."
-	@mkdir -p $(HOME)/.aura-build-tmp
-	@cd $(CNF) && TMPDIR=$(HOME)/.aura-build-tmp NODE_OPTIONS="--max-old-space-size=2048" npx eas-cli build --profile preview --platform android
+	@echo "Building Aura Android Dev Client (Tauri)..."
+	@npm run tauri android dev
 
 # Build the Android APK locally
 build-local:
-	@echo "Building Aura Android APK (Local)..."
-	@mkdir -p $(HOME)/.aura-build-tmp
-	@cd $(CNF) && TMPDIR=$(HOME)/.aura-build-tmp NODE_OPTIONS="--max-old-space-size=2048" npx eas-cli build --local --profile preview --platform android
+	@echo "Building Aura Android APK (Tauri)..."
+	@npm run tauri android build
 
 # Release pipeline
 release:
 	@echo "Packaging Aura v$(VERSION)..."
 	@mkdir -p $(PUB)/v$(VERSION)
 	@git tag -a v$(VERSION) -m "Release v$(VERSION)" || true
-	@echo "Exporting web bundle..."
-	@cd $(CNF) && npx expo export -p web
-	@mv $(CNF)/dist $(PUB)/v$(VERSION)/web
-	@echo "Version v$(VERSION) published to $(PUB)/v$(VERSION)/"
+	@echo "Building production web and android bundle..."
+	@npm run build
+	@npm run tauri android build
+	@echo "Version v$(VERSION) packaged."
 
 # Install dependencies
 install:
 	@echo "Installing dependencies..."
-	@cd $(CNF) && npm install
+	@npm install
 
 # Clean temporary files
 clean:
 	@echo "Cleaning up..."
-	@rm -rf $(DEP)
 	@rm -rf node_modules
 	@rm -rf $(BIN)
-	@rm -rf $(CNF)/node_modules
-	@rm -rf $(CNF)/.expo
-	@rm -rf .expo
+	@rm -rf src-tauri/target
+	@cargo clean --manifest-path src-tauri/Cargo.toml
