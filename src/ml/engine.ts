@@ -52,3 +52,16 @@ export async function scoreProfile(
   // Normalize score between 0 and 1 (conceptually)
   return totalScore;
 }
+
+export async function getPreferences(db: SQLite.SQLiteDatabase): Promise<{ tag: string; weight: number }[]> {
+  return await db.getAllAsync<{ tag: string; weight: number }>(
+    'SELECT * FROM preferences ORDER BY weight DESC'
+  );
+}
+
+export async function setPreferenceWeight(db: SQLite.SQLiteDatabase, tag: string, weight: number): Promise<void> {
+  await db.runAsync(
+    'INSERT OR REPLACE INTO preferences (tag, weight) VALUES (?, ?)',
+    [tag, weight]
+  );
+}

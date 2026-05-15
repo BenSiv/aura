@@ -17,7 +17,7 @@
 ## ML & Matching
 - [x] Tag-based preference weighting
 - [x] Temporal Swipe Stack (Proximity Inbox)
-- [ ] Onboarding "Seed" interests
+- [x] Onboarding "Seed" interests
 - [ ] Match Handshake (Double-Blind)
 
 ## UI / UX
