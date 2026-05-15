@@ -61,7 +61,17 @@ export async function initializeDatabase() {
       tag TEXT PRIMARY KEY NOT NULL,
       weight REAL NOT NULL DEFAULT 0.0
     );
+
+    CREATE TABLE IF NOT EXISTS settings (
+      key TEXT PRIMARY KEY NOT NULL,
+      value TEXT NOT NULL
+    );
   `);
+
+  // Initialize default settings if they don't exist
+  await db.runAsync('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)', ['visibility_mode', 'resonant']);
+  await db.runAsync('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)', ['projection_timing', 'foreground']);
+  await db.runAsync('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)', ['active_aura', 'true']);
   
   return db;
 }

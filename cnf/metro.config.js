@@ -1,15 +1,14 @@
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
-// Find the project root (one level up from cnf/)
-const projectRoot = path.resolve(__dirname, '..');
+// Find the project root
+const projectRoot = __dirname;
 
 const config = getDefaultConfig(projectRoot);
 
-// Ensure we can resolve modules from the cnf/node_modules directory
-// even when files are being resolved from their real paths in ../src
+// Ensure we can resolve modules from the node_modules directory
 config.resolver.nodeModulesPaths = [
-  path.resolve(__dirname, 'node_modules'),
+  path.resolve(projectRoot, 'node_modules'),
 ];
 
 // Add support for WASM and TFLite files

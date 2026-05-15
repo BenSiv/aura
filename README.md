@@ -33,6 +33,22 @@ Aura is open-source (**AGPL v3**) to ensure transparency and prevent the "Skinne
 | **Licensing** | AGPL v3 |
 | **Target Distribution** | F-Droid |
 
+## The Aura Experience
+
+Aura shifts dating from a content-consumption model (endless scrolling) to a proximity-event model.
+
+### 1. Notification-Based Discovery
+Instead of manual searching, Aura lives in the background as a passive sensor. When a "Resonant Aura" (a high-scoring match) is detected within 50 meters, the app triggers a notification. 
+
+### 2. Visibility & Privacy Modes
+Users control their "Aura Projection" through three distinct modes:
+*   **Cloaked:** Passive listening only. You are invisible to the mesh.
+*   **Resonant:** You only project your signal to nodes that match your high-priority interests.
+*   **Public:** Full projection for maximum discovery in active social zones.
+
+### 3. Simulation Tool
+During development, you can use the **"Simulate Encounter"** button on the main screen to trigger a mock proximity event and verify the ML scoring and notification flow.
+
 ---
 
 ## Building Aura
