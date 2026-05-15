@@ -1,6 +1,6 @@
 use std::time::Duration;
 use std::thread;
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Manager, Emitter};
 use serde::Serialize;
 
 #[derive(Clone, Serialize)]

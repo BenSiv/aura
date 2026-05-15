@@ -22,3 +22,24 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Output/Build Artifacts
+pub/
+bin/
+bld/
+
+# Tauri/Rust
+target/
+src/core/target/
+
+# Android
+**/*.apk
+**/*.aab
+.gradle/
+build/
+local.properties
+capture/
+memory_poller/
+src/core/gen/android/app/build/
+src/core/gen/android/build/
+src/core/gen/android/.gradle/

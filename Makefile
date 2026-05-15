@@ -4,11 +4,12 @@
 BLD = bld
 BIN = bin
 SRC = src
+CNF = cnf
 PUB = pub
 RES = res
 
 # Get version from package.json
-VERSION = $(shell grep '"version":' package.json | cut -d'"' -f4)
+VERSION = $(shell grep '"version":' $(CNF)/package.json | cut -d'"' -f4)
 
 # Default action
 all: run
@@ -26,6 +27,7 @@ build-dev-android:
 # Build the Android APK locally
 build-local:
 	@echo "Building Aura Android APK (Tauri)..."
+	@npm run build
 	@npm run tauri android build
 
 # Release pipeline
@@ -48,5 +50,5 @@ clean:
 	@echo "Cleaning up..."
 	@rm -rf node_modules
 	@rm -rf $(BIN)
-	@rm -rf src-tauri/target
-	@cargo clean --manifest-path src-tauri/Cargo.toml
+	@rm -rf $(SRC)/core/target
+	@cargo clean --manifest-path $(SRC)/core/Cargo.toml

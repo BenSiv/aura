@@ -30,7 +30,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             // Get platform-specific app data dir
-            let app_dir = app.path().app_data_dir().unwrap_or_else(|| std::path::PathBuf::from("."));
+            let app_dir = app.path().app_data_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
             
             // Initialize database
             let conn = db::initialize_database(app_dir).expect("Failed to initialize database");
