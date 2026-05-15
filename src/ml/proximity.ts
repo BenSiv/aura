@@ -1,5 +1,5 @@
 import * as Notifications from 'expo-notifications';
-import { scoreProfile } from './engine';
+import { scoreProfile, inferTagsFromBio } from './engine';
 import * as SQLite from 'expo-sqlite';
 import { Profile } from '../data/db';
 import { addToHistory } from '../data/history';
@@ -18,23 +18,28 @@ Notifications.setNotificationHandler({
 export async function simulateProximityMatch(mockPeer: Profile) {
   const db = await SQLite.openDatabaseAsync(DATABASE_NAME);
   
-  // Score the mock peer using our ML engine
-  const tags = JSON.parse(mockPeer.tags);
-  const score = await scoreProfile(db, tags);
+  // 1. Combine explicit tags with inferred tags from bio
+  const explicitTags = JSON.parse(mockPeer.tags);
+  const inferredTags = inferTagsFromBio(mockPeer.bio);
+  const allTags = Array.from(new Set([...explicitTags, ...inferredTags]));
+  
+  // 2. Score the peer using the expanded tag set
+  const score = await scoreProfile(db, allTags);
   
   // Threshold for notification (simplified for mock)
   const threshold = 0.5; 
   
   if (score >= threshold) {
-    // Cache the discovery
+    // Cache the discovery with the expanded tags
+    const updatedTags = JSON.stringify(allTags);
     await db.runAsync(
       'INSERT OR REPLACE INTO discovery_cache (id, profileId, score, timestamp, status) VALUES (?, ?, ?, ?, ?)',
       [Math.random().toString(36).substr(2, 9), mockPeer.id, score, Date.now(), 'pending']
     );
-    // Ensure the profile itself is in the profiles table (mocking the gossip receipt)
+    // Ensure the profile itself is in the profiles table
     await db.runAsync(
       'INSERT OR IGNORE INTO profiles (id, name, bio, images, tags, distance, lastSeen) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [mockPeer.id, mockPeer.name, mockPeer.bio, mockPeer.images, mockPeer.tags, mockPeer.distance, Date.now()]
+      [mockPeer.id, mockPeer.name, mockPeer.bio, mockPeer.images, updatedTags, mockPeer.distance, Date.now()]
     );
 
     // Add to permanent history log

@@ -2,32 +2,71 @@ import * as SQLite from 'expo-sqlite';
 
 /**
  * Aura ML Engine - Implicit Preference Learning
- * Learns user preferences by adjusting weights of tags based on interactions.
  */
+
+// Mapping of keywords found in bios to implicit attributes
+const ATTRIBUTE_MAP: Record<string, string[]> = {
+  'dog': ['Pets', 'Outdoors'],
+  'cat': ['Pets', 'Introvert'],
+  'mountain': ['Outdoors', 'Fitness', 'Adventure'],
+  'hike': ['Outdoors', 'Fitness'],
+  'read': ['Academic', 'Reading', 'Introvert'],
+  'library': ['Academic', 'Reading'],
+  'code': ['Tech', 'Science'],
+  'engineer': ['Tech', 'Science'],
+  'chef': ['Cooking', 'Art'],
+  'cook': ['Cooking'],
+  'wine': ['Travel', 'Humor'],
+  'party': ['Extrovert', 'Music'],
+  'concert': ['Music', 'Extrovert'],
+  'gym': ['Fitness'],
+  'yoga': ['Fitness', 'Yoga', 'Introvert'],
+  'physics': ['Science', 'Academic'],
+  'art': ['Art', 'Reading'],
+  'museum': ['Art', 'Academic'],
+};
+
+/**
+ * Extracts implicit tags from bio text that aren't explicitly mentioned in tags array.
+ */
+export function inferTagsFromBio(bio: string): string[] {
+  const inferred = new Set<string>();
+  const lowercaseBio = bio.toLowerCase();
+
+  for (const [keyword, attributes] of Object.entries(ATTRIBUTE_MAP)) {
+    if (lowercaseBio.includes(keyword)) {
+      attributes.forEach(attr => inferred.add(attr));
+    }
+  }
+
+  return Array.from(inferred);
+}
 
 export async function updatePreferences(
   db: SQLite.SQLiteDatabase,
   profileTags: string[],
   type: 'like' | 'pass'
 ) {
-  const delta = type === 'like' ? 0.1 : -0.1;
+  // Learning rate: how fast your Aura changes
+  const LEARNING_RATE = type === 'like' ? 0.15 : -0.10; // We value positive signals more
   
   for (const tag of profileTags) {
-    // Check if tag exists
-    const result = await db.getFirstAsync<{ tag: string; weight: number }>(
-      'SELECT * FROM preferences WHERE tag = ?',
+    const result = await db.getFirstAsync<{ weight: number }>(
+      'SELECT weight FROM preferences WHERE tag = ?',
       [tag]
     );
     
     if (result) {
+      // Clamp weights between -1.0 and 1.0
+      const newWeight = Math.min(Math.max(result.weight + LEARNING_RATE, -1.0), 1.0);
       await db.runAsync(
-        'UPDATE preferences SET weight = weight + ? WHERE tag = ?',
-        [delta, tag]
+        'UPDATE preferences SET weight = ? WHERE tag = ?',
+        [newWeight, tag]
       );
     } else {
       await db.runAsync(
         'INSERT INTO preferences (tag, weight) VALUES (?, ?)',
-        [tag, delta]
+        [tag, LEARNING_RATE]
       );
     }
   }
