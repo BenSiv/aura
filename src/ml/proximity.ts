@@ -3,18 +3,9 @@ import { scoreProfile, inferTagsFromBio } from './engine';
 import * as SQLite from 'expo-sqlite';
 import { Profile } from '../data/db';
 import { addToHistory } from '../data/history';
+import { calculateSocialScore } from './social';
 
 const DATABASE_NAME = 'aura.db';
-
-// Configure notification behavior
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-import { scoreProfile, inferTagsFromBio } from './engine';
-import { calculateSocialScore } from './social';
 ...
 export async function simulateProximityMatch(mockPeer: Profile) {
   const db = await SQLite.openDatabaseAsync(DATABASE_NAME);
@@ -26,7 +17,7 @@ export async function simulateProximityMatch(mockPeer: Profile) {
   const personalScore = await scoreProfile(db, allTags);
 
   // 2. Collective Social Aura Score (The new mesh-reputation signal)
-  const socialScore = await calculateSocialScore(mockPeer.id);
+  const { score: socialScore, confidence, attributes } = await calculateSocialScore(mockPeer.id);
 
   // 3. Composite Resonance: Personal Preference * Social Credibility
   const compositeScore = personalScore * socialScore;
@@ -47,9 +38,9 @@ export async function simulateProximityMatch(mockPeer: Profile) {
     );
 
     // Add to permanent history log
-    await addToHistory(mockPeer.id, score, 'none');
+    await addToHistory(mockPeer.id, compositeScore, 'none');
 
-    await sendProximityNotification(mockPeer, score);
+    await sendProximityNotification(mockPeer, compositeScore, confidence);
   }
 }
 
@@ -85,14 +76,15 @@ export async function dismissDiscovery(cacheId: string) {
   await db.runAsync('UPDATE discovery_cache SET status = ? WHERE id = ?', ['dismissed', cacheId]);
 }
 
-async function sendProximityNotification(peer: Profile, score: number) {
+async function sendProximityNotification(peer: Profile, score: number, confidence: number) {
   const scorePercentage = Math.min(Math.round(score * 100), 100);
+  const confidencePercentage = Math.round(confidence * 100);
   
   await Notifications.scheduleNotificationAsync({
     content: {
       title: "Resonant Aura Nearby",
-      body: `A ${scorePercentage}% match is within 50 meters. Tap to view.`,
-      data: { peerId: peer.id },
+      body: `A ${scorePercentage}% match is within 50 meters. (Confidence: ${confidencePercentage}%)`,
+      data: { peerId: peer.id, score, confidence },
     },
     trigger: null, // Send immediately
   });

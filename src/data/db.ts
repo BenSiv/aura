@@ -89,7 +89,8 @@ export async function initializeDatabase() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       targetProfileId TEXT NOT NULL,
       reporterProfileId TEXT NOT NULL,
-      rating REAL NOT NULL, -- -1.0 to 1.0
+      rating REAL NOT NULL, -- -1.0 to 1.0 (Fluid scale)
+      attributes TEXT,      -- JSON array of tags like 'charming', 'too nerdy'
       timestamp INTEGER NOT NULL,
       FOREIGN KEY (targetProfileId) REFERENCES profiles(id)
     );
