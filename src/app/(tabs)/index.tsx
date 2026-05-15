@@ -1,13 +1,17 @@
-import { StyleSheet, SafeAreaView, TouchableOpacity, Switch, Alert } from 'react-native';
+import { StyleSheet, SafeAreaView, TouchableOpacity, Switch, Alert, ScrollView } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import SwipeCard from '@/components/SwipeCard';
 import { MOCK_PROFILES } from '@/data/mock';
-import { Settings, Heart, X, Radio, Radar, Shield, Zap } from 'lucide-react-native';
+import { Settings, Heart, X, Radio, Radar, Shield, Zap, Sparkles } from 'lucide-react-native';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getAuraSettings, updateSetting, VisibilityMode } from '@/data/settings';
-import { simulateProximityMatch, requestNotificationPermissions } from '@/ml/proximity';
+import { simulateProximityMatch, requestNotificationPermissions, getPendingDiscoveries, dismissDiscovery } from '@/ml/proximity';
+import { updatePreferences } from '@/ml/engine';
+import * as SQLite from 'expo-sqlite';
+
+const DATABASE_NAME = 'aura.db';
 
 export default function DiscoverScreen() {
   const colorScheme = useColorScheme();
@@ -15,11 +19,18 @@ export default function DiscoverScreen() {
   
   const [activeAura, setActiveAura] = useState(true);
   const [visibilityMode, setVisibilityMode] = useState<VisibilityMode>('resonant');
+  const [pendingDiscoveries, setPendingDiscoveries] = useState<any[]>([]);
+
+  const loadInbox = useCallback(async () => {
+    const discoveries = await getPendingDiscoveries();
+    setPendingDiscoveries(discoveries);
+  }, []);
 
   useEffect(() => {
     loadSettings();
     requestNotificationPermissions();
-  }, []);
+    loadInbox();
+  }, [loadInbox]);
 
   async function loadSettings() {
     const settings = await getAuraSettings();
@@ -45,9 +56,27 @@ export default function DiscoverScreen() {
       Alert.alert("Aura Disabled", "Turn on your Aura to discover resonant signals.");
       return;
     }
-    // Pick a random mock profile and simulate proximity
     const randomProfile = MOCK_PROFILES[Math.floor(Math.random() * MOCK_PROFILES.length)];
     await simulateProximityMatch(randomProfile);
+    loadInbox(); // Refresh inbox
+  }
+
+  async function handleInteraction(type: 'like' | 'pass', discovery: any) {
+    const db = await SQLite.openDatabaseAsync(DATABASE_NAME);
+    const tags = JSON.parse(discovery.tags);
+    
+    // 1. Train the ML engine
+    await updatePreferences(db, tags, type);
+    
+    // 2. Dismiss from cache
+    await dismissDiscovery(discovery.cacheId);
+    
+    // 3. Refresh UI
+    loadInbox();
+
+    if (type === 'like') {
+      Alert.alert("Interest Sent", `Your resonance was sent to ${discovery.name}. If they feel it too, it's a match!`);
+    }
   }
 
   const getVisibilityIcon = () => {
@@ -83,30 +112,59 @@ export default function DiscoverScreen() {
         </View>
       </View>
 
-      <View style={styles.scanningContainer}>
-        {activeAura ? (
-          <View style={styles.auraVisual}>
-            <Radar size={80} color={theme.text} strokeWidth={1} opacity={0.2} />
-            <Text style={styles.scanningText}>Scanning for nearby resonance...</Text>
-            <TouchableOpacity 
-              style={[styles.simulateButton, { borderColor: theme.text }]} 
-              onPress={runSimulation}
-            >
-              <Text style={styles.simulateButtonText}>Simulate Encounter</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.auraVisual}>
-            <Shield size={80} color={theme.text} strokeWidth={1} opacity={0.2} />
-            <Text style={styles.scanningText}>Your Aura is currently cloaked.</Text>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {pendingDiscoveries.length > 0 && (
+          <View style={styles.inboxContainer}>
+            <View style={styles.inboxHeader}>
+              <Sparkles size={20} color="#6366F1" />
+              <Text style={styles.inboxTitle}>Nearby Resonance</Text>
+            </View>
           </View>
         )}
-      </View>
 
-      {/* The card would appear here after tapping a notification or finding a match */}
-      {/* <View style={styles.cardContainer}>
-        <SwipeCard profile={MOCK_PROFILES[0]} />
-      </View> */}
+        <View style={styles.mainContent}>
+          {pendingDiscoveries.length > 0 ? (
+            <View style={styles.stackWrapper}>
+              <SwipeCard profile={pendingDiscoveries[0]} />
+              <View style={styles.actions}>
+                <TouchableOpacity 
+                  style={[styles.actionButton, styles.passButton]}
+                  onPress={() => handleInteraction('pass', pendingDiscoveries[0])}
+                >
+                  <X size={32} color="#F87171" />
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={[styles.actionButton, styles.likeButton]}
+                  onPress={() => handleInteraction('like', pendingDiscoveries[0])}
+                >
+                  <Heart size={32} color="#FFFFFF" fill="#FFFFFF" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          ) : (
+            <View style={styles.auraVisual}>
+              {activeAura ? (
+                <>
+                  <Radar size={80} color={theme.text} strokeWidth={1} opacity={0.2} />
+                  <Text style={styles.scanningText}>Scanning for nearby resonance...</Text>
+                  <TouchableOpacity 
+                    style={[styles.simulateButton, { borderColor: theme.text }]} 
+                    onPress={runSimulation}
+                  >
+                    <Text style={styles.simulateButtonText}>Simulate Encounter</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  <Shield size={80} color={theme.text} strokeWidth={1} opacity={0.2} />
+                  <Text style={styles.scanningText}>Your Aura is currently cloaked.</Text>
+                </>
+              )}
+            </View>
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -114,6 +172,9 @@ export default function DiscoverScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   header: {
     flexDirection: 'row',
@@ -157,11 +218,30 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(0,0,0,0.05)',
   },
-  scanningContainer: {
+  mainContent: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingBottom: 40,
+  },
+  inboxContainer: {
+    paddingHorizontal: 24,
+    marginBottom: 20,
+  },
+  inboxHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  inboxTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#6366F1',
+  },
+  stackWrapper: {
+    alignItems: 'center',
+    gap: 30,
   },
   auraVisual: {
     alignItems: 'center',
@@ -183,10 +263,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-  cardContainer: {
-    flex: 1,
-    alignItems: 'center',
+  actions: {
+    flexDirection: 'row',
     justifyContent: 'center',
-    paddingBottom: 40,
+    alignItems: 'center',
+    gap: 30,
+  },
+  actionButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  passButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#FEE2E2',
+  },
+  likeButton: {
+    backgroundColor: '#6366F1',
   },
 });

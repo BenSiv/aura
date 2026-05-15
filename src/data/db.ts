@@ -66,6 +66,15 @@ export async function initializeDatabase() {
       key TEXT PRIMARY KEY NOT NULL,
       value TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS discovery_cache (
+      id TEXT PRIMARY KEY NOT NULL,
+      profileId TEXT NOT NULL,
+      score REAL NOT NULL,
+      timestamp INTEGER NOT NULL,
+      status TEXT DEFAULT 'pending', -- pending, seen, dismissed
+      FOREIGN KEY (profileId) REFERENCES profiles(id)
+    );
   `);
 
   // Initialize default settings if they don't exist

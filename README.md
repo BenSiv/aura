@@ -46,7 +46,13 @@ Users control their "Aura Projection" through three distinct modes:
 *   **Resonant:** You only project your signal to nodes that match your high-priority interests.
 *   **Public:** Full projection for maximum discovery in active social zones.
 
-### 3. Simulation Tool
+### 3. Aura Inbox (Temporal Swipe Stack)
+In high-density environments where multiple resonant signals are detected, Aura queues encounters in a local **Inbox**. 
+*   **Ranked Queue:** Encounters are sorted by their ML score, ensuring the most relevant profiles appear first.
+*   **Manual Training:** Every interaction (Like/Pass) in the inbox provides an explicit signal to the local ML Engine, refining your "Resonance" over time.
+*   **Privacy-First:** Encounters are temporary and stored only on your device until a mutual match is confirmed.
+
+### 4. Simulation Tool
 During development, you can use the **"Simulate Encounter"** button on the main screen to trigger a mock proximity event and verify the ML scoring and notification flow.
 
 ---

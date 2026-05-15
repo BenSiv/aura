@@ -25,8 +25,51 @@ export async function simulateProximityMatch(mockPeer: Profile) {
   const threshold = 0.5; 
   
   if (score >= threshold) {
+    // Cache the discovery
+    await db.runAsync(
+      'INSERT OR REPLACE INTO discovery_cache (id, profileId, score, timestamp, status) VALUES (?, ?, ?, ?, ?)',
+      [Math.random().toString(36).substr(2, 9), mockPeer.id, score, Date.now(), 'pending']
+    );
+    // Ensure the profile itself is in the profiles table (mocking the gossip receipt)
+    await db.runAsync(
+      'INSERT OR IGNORE INTO profiles (id, name, bio, images, tags, distance, lastSeen) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [mockPeer.id, mockPeer.name, mockPeer.bio, mockPeer.images, mockPeer.tags, mockPeer.distance, Date.now()]
+    );
+
     await sendProximityNotification(mockPeer, score);
   }
+}
+
+export async function getPendingDiscoveries(): Promise<(Profile & { score: number, cacheId: string })[]> {
+  const db = await SQLite.openDatabaseAsync(DATABASE_NAME);
+  const rows = await db.getAllAsync<{ 
+    id: string; 
+    name: string; 
+    bio: string; 
+    images: string; 
+    tags: string; 
+    distance: number; 
+    lastSeen: number;
+    score: number;
+    cacheId: string;
+  }>(
+    `SELECT p.*, c.score, c.id as cacheId 
+     FROM profiles p 
+     JOIN discovery_cache c ON p.id = c.profileId 
+     WHERE c.status = 'pending' 
+     ORDER BY c.score DESC`
+  );
+  
+  return rows.map(row => ({
+    ...row,
+    score: row.score,
+    cacheId: row.cacheId
+  }));
+}
+
+export async function dismissDiscovery(cacheId: string) {
+  const db = await SQLite.openDatabaseAsync(DATABASE_NAME);
+  await db.runAsync('UPDATE discovery_cache SET status = ? WHERE id = ?', ['dismissed', cacheId]);
 }
 
 async function sendProximityNotification(peer: Profile, score: number) {
