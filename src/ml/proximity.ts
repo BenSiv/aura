@@ -13,28 +13,32 @@ Notifications.setNotificationHandler({
     shouldPlaySound: true,
     shouldSetBadge: false,
   }),
-});
-
+import { scoreProfile, inferTagsFromBio } from './engine';
+import { calculateSocialScore } from './social';
+...
 export async function simulateProximityMatch(mockPeer: Profile) {
   const db = await SQLite.openDatabaseAsync(DATABASE_NAME);
-  
-  // 1. Combine explicit tags with inferred tags from bio
+
+  // 1. Tag-based ML Score
   const explicitTags = JSON.parse(mockPeer.tags);
   const inferredTags = inferTagsFromBio(mockPeer.bio);
   const allTags = Array.from(new Set([...explicitTags, ...inferredTags]));
-  
-  // 2. Score the peer using the expanded tag set
-  const score = await scoreProfile(db, allTags);
-  
-  // Threshold for notification (simplified for mock)
+  const personalScore = await scoreProfile(db, allTags);
+
+  // 2. Collective Social Aura Score (The new mesh-reputation signal)
+  const socialScore = await calculateSocialScore(mockPeer.id);
+
+  // 3. Composite Resonance: Personal Preference * Social Credibility
+  const compositeScore = personalScore * socialScore;
+
   const threshold = 0.5; 
-  
-  if (score >= threshold) {
-    // Cache the discovery with the expanded tags
+
+  if (compositeScore >= threshold) {
+    // Cache the discovery with the composite score
     const updatedTags = JSON.stringify(allTags);
     await db.runAsync(
       'INSERT OR REPLACE INTO discovery_cache (id, profileId, score, timestamp, status) VALUES (?, ?, ?, ?, ?)',
-      [Math.random().toString(36).substr(2, 9), mockPeer.id, score, Date.now(), 'pending']
+      [Math.random().toString(36).substr(2, 9), mockPeer.id, compositeScore, Date.now(), 'pending']
     );
     // Ensure the profile itself is in the profiles table
     await db.runAsync(

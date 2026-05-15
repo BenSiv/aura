@@ -81,8 +81,17 @@ export async function initializeDatabase() {
       profileId TEXT NOT NULL,
       score REAL NOT NULL,
       timestamp INTEGER NOT NULL,
-      interaction TEXT DEFAULT 'none', -- none, liked, passed, matched
+      interaction TEXT DEFAULT 'none',
       FOREIGN KEY (profileId) REFERENCES profiles(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS peer_feedback (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      targetProfileId TEXT NOT NULL,
+      reporterProfileId TEXT NOT NULL,
+      rating REAL NOT NULL, -- -1.0 to 1.0
+      timestamp INTEGER NOT NULL,
+      FOREIGN KEY (targetProfileId) REFERENCES profiles(id)
     );
   `);
 
