@@ -1,16 +1,19 @@
 # Aura TODO
 
 ## Core Infrastructure
-- [x] Initial Project Setup (Expo, TypeScript)
+- [x] Initial Project Setup (Tauri, Rust, React, Vite)
 - [x] Local SQLite + SQLCipher Integration
-- [x] Ephemeral Identity Generation (SecureStore)
+- [x] Ephemeral Identity Generation
 - [x] Mock Data & ML Engine Skeleton
 - [x] Notification System Integration
 - [x] Persistent Settings (Visibility, Projection)
+- [x] Project reorganization (Core Rust + UI React)
 
 ## Discovery & Networking
 - [ ] Waku / libp2p Mesh Integration
 - [ ] Bluetooth Low Energy (BLE) Beacon Implementation
+- [x] Decentralized Reputation Mesh (Relational Valence)
+- [x] Asymmetric Time Decay for Reputation
 - [ ] Store-Carry-Forward Gossip Protocol
 - [ ] Geofencing for "Safe Zones"
 

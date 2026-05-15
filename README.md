@@ -16,7 +16,13 @@ The app replaces the central "matchmaking" server with a P2P discovery layer.
 * **Background Proximity:** The Rust backend continuously scans for nearby BLE "Resonances", even when the WebView UI is suspended by the mobile OS.
 * **Store-Carry-Forward:** This allows profiles to travel across a geographic region through the physical movement of users, effectively creating a "living" network.
 
-### 3. High-Performance Hybrid UI
+### 3. Advanced Reputation & Trust (The "Aura" System)
+Aura uses a decentralized reputation mesh derived from extensive agent-based simulations.
+* **Relational Valence:** Your "Aura Score" is not a global number. It is calculated locally based on the specific gossip your device has received, making reputation a subjective, relational perception.
+* **Asymmetric Time Decay:** To allow for "Redemption Arcs," negative reputation signals decay 4x faster (7-day half-life) than positive signals (30-day half-life).
+* **Confidence Metrics:** All scores are presented with a confidence percentage, indicating the density of unique peer verifications for that signal.
+
+### 4. High-Performance Hybrid UI
 Aura utilizes **Tauri v2** combined with a **Vite + React** frontend.
 * **Premium Aesthetics:** The UI is constructed with standard HTML/Vanilla CSS, leveraging glassmorphism and modern web animations without the overhead of massive React Native bridges.
 * **IPC Bridge:** The React frontend communicates with the secure Rust backend via Tauri's Inter-Process Communication (`invoke`, `listen`).

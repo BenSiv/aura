@@ -12,19 +12,25 @@ Aura takes a different approach by making the protocol the product.
 
 ### Key Features:
 *   **Local-First Data Sovereignty**: All swiping history, matches, and chats live in an encrypted SQLCipher database on your device. Your behavioral patterns never leave your hardware.
-*   **On-Device ML Engine**: Instead of filters, Aura uses an on-device AI engine to learn your preferences, adjusting local tag weights without ever uploading your "type" to a server.
-*   **Mesh Networking & Store-Carry-Forward**: Discovery happens through a P2P layer (via Waku/Matrix). Devices act as nodes, gossiping encrypted packets. The "Store-Carry-Forward" model allows profiles to propagate through physical movement, creating a living network that scales with density.
-*   **Incentive Aligned**: Open source (AGPL v3) and designed to be a utility. We avoid the "Skinner Box" traps of commercial apps by making the protocol the product.
+*   **Decentralized Reputation Mesh**: Instead of a central moderator, Aura uses a peer-to-peer gossip network. Reputation is a "Relational Valence"—your score is calculated locally based on the specific gossip your device has received, making reputation a subjective perception rather than a global metric.
+*   **Asymmetric Time Decay**: To prevent "reputation traps," negative signals decay 4x faster than positive ones. This allows the network to forgive past behavior while rewarding long-term positive contributions.
+*   **On-Device ML Engine (Rust)**: Aura uses a Rust-based AI engine to learn your preferences, adjusting local tag weights without ever uploading your "type" to a server.
+*   **Mesh Networking & Store-Carry-Forward**: Discovery happens through a P2P layer. Devices act as nodes, gossiping encrypted packets. The "Store-Carry-Forward" model allows profiles to propagate through physical movement, creating a living network that scales with density.
+
+### Latest Progress:
+I’ve recently completed a major architectural migration from React Native to **Tauri + Rust**. This allowed me to implement the core mesh logic and encrypted storage in a high-performance native layer while keeping the UI flexible with React and Vite. 
+
+I’ve also integrated lessons from an agent-based simulation (`simaura`) to handle edge cases in decentralized trust, such as "Aura Hacking" and "Redemption Arcs."
 
 ### I’m looking for contributors!
-I just successfully set up the core encrypted storage and the premium UI foundation. I’m now moving into the most exciting part: **The Decentralized Sync Layer**.
+The core storage and UI foundation are solid. I’m now focusing on hardening the **P2P Sync Layer** and refining the **Intent Signaling** UI.
 
 If you’re interested in P2P protocols, local-first architectures, or just want to help build a dating app that isn't a "Skinner Box," I'd love to have you join me.
 
 **GitHub:** [https://github.com/BenSiv/aura](https://github.com/BenSiv/aura)
 
-**Tech Stack:** React Native (Expo), SQLCipher, TypeScript.
+**Tech Stack:** Rust (Tauri v2), React (Vite), SQLCipher, TypeScript.
 
-Check out the `TODO.md` and the `cnf/` directory for the architecture.
+Check out `doc/SIMULATION_LESSONS.md` for the theory behind the reputation mesh.
 
-Looking forward to your feedback and thoughts on the decentralization strategy!
+Looking forward to your feedback and thoughts!
