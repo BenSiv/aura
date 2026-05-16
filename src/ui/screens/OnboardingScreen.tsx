@@ -75,15 +75,6 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSave }) =>
             onChange={e => setSetupBio(e.target.value)}
           />
         </div>
-        <div className="input-group">
-          <label><Tag size={16} /> Resonance Tags (comma separated)</label>
-          <input 
-            type="text" 
-            placeholder="e.g. coding, music, art"
-            value={setupTags}
-            onChange={e => setSetupTags(e.target.value)}
-          />
-        </div>
 
         <div className="gender-selectors">
           <div className="input-group">
@@ -115,6 +106,15 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSave }) =>
               ))}
             </div>
           </div>
+        </div>
+        <div className="input-group">
+          <label><Tag size={16} /> Resonance Tags (comma separated)</label>
+          <input 
+            type="text" 
+            placeholder="e.g. coding, music, art"
+            value={setupTags}
+            onChange={e => setSetupTags(e.target.value)}
+          />
         </div>
       </main>
     </div>

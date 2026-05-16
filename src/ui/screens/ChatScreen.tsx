@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ArrowLeft, Send, MoreVertical } from "lucide-react";
 import { Profile } from "../components/SwipeCard";
+import { DEMO_CHAT_MESSAGES } from "../demo/demoData";
 
 interface ChatScreenProps {
   profile: Profile;
@@ -8,10 +9,7 @@ interface ChatScreenProps {
 }
 
 export const ChatScreen: React.FC<ChatScreenProps> = ({ profile, onBack }) => {
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Hey! I saw your Aura and felt a great connection.", sender: "them", time: "12:05 PM" },
-    { id: 2, text: "Your tags caught my eye, specifically the mesh networking part!", sender: "them", time: "12:06 PM" },
-  ]);
+  const [messages, setMessages] = useState(DEMO_CHAT_MESSAGES);
   const [inputValue, setInputValue] = useState("");
 
   const handleSend = () => {

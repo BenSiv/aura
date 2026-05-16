@@ -19,14 +19,16 @@ function App() {
     isInitialLoading,
     cycleVisibility,
     handleSaveProfile,
-    handleInteraction
+    handleInteraction,
+    matchedProfile,
+    setMatchedProfile
   } = useResonance();
 
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [showChat, setShowChat] = useState(false);
 
   const getVisibilityInfo = () => {
-    if (visibilityMode === "cloaked") return { icon: <Shield size={20} />, label: "Cloaked", desc: "Private mode. You are invisible to others and won't scan for resonance." };
+    if (visibilityMode === "cloaked") return { icon: <Shield size={20} />, label: "Cloaked", desc: "Private mode. You are invisible to others but can still discover nearby resonance." };
     if (visibilityMode === "resonant") return { icon: <Radar size={20} />, label: "Resonant", desc: "Standard mode. Discover and be discovered by people with matching energy." };
     return { icon: <Zap size={20} />, label: "Public", desc: "High visibility. Your resonance is boosted to reach more people in the mesh." };
   };

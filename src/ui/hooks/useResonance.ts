@@ -2,16 +2,20 @@ import { useState, useEffect, useCallback } from "react";
 import { listen } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/core';
 import { Profile } from "../components/SwipeCard";
+import { DEMO_CONFIG } from "../demo/demoConfig";
+import { DEMO_PROFILES } from "../demo/demoData";
 
 export type VisibilityMode = "cloaked" | "resonant" | "public";
 
 export function useResonance() {
   const [activeAura, setActiveAura] = useState(true);
   const [visibilityMode, setVisibilityMode] = useState<VisibilityMode>("resonant");
-  const [pendingDiscoveries, setPendingDiscoveries] = useState<Profile[]>([]);
+  const [pendingDiscoveries, setPendingDiscoveries] = useState<Profile[]>(
+    DEMO_CONFIG.USE_SEED_PROFILES ? DEMO_PROFILES : []
+  );
   const [localProfile, setLocalProfile] = useState<{ id: string, name: string, bio: string, images: string, tags: string, gender: string, interestedIn: string } | null>(null);
   const [matchedProfile, setMatchedProfile] = useState<Profile | null>(null);
-  const [isInitialLoading, setIsInitialLoading] = useState(false); // Skip loading for demo
+  const [isInitialLoading, setIsInitialLoading] = useState(!DEMO_CONFIG.IS_DEMO_MODE);
 
   const startBroadcasting = useCallback((profile: any) => {
     // Shout our presence every 10 seconds
@@ -23,8 +27,21 @@ export function useResonance() {
   }, []);
 
   useEffect(() => {
-    // Persistence disabled for demo branch
-    setIsInitialLoading(false);
+    if (DEMO_CONFIG.FORCE_RESET_ON_LAUNCH) {
+      setLocalProfile(null);
+      setIsInitialLoading(false);
+      return;
+    }
+
+    // Standard Core Logic (Non-demo)
+    invoke<{ id: string, name: string, bio: string, tags: string, images?: string, gender: string, interestedIn: string } | null>("get_local_profile")
+      .then((profile) => {
+        if (profile) {
+          setLocalProfile(profile as any);
+          startBroadcasting(profile);
+        }
+        setIsInitialLoading(false);
+      });
 
     // Listen for background mesh proximity events
     const unlisten = listen<any>('resonance_detected', (event) => {
@@ -103,12 +120,23 @@ export function useResonance() {
       gender,
       interestedIn
     };
-    // No DB save for demo
-    setLocalProfile(newProfile as any);
+
+    if (DEMO_CONFIG.BYPASS_DB_PERSISTENCE) {
+      setLocalProfile(newProfile as any);
+      return;
+    }
+
+    try {
+      await invoke("save_local_profile", { profile: newProfile });
+      setLocalProfile(newProfile as any);
+      startBroadcasting(newProfile);
+    } catch (err) {
+      console.error("Failed to save profile:", err);
+    }
   };
 
   const handleInteraction = (type: 'like' | 'pass') => {
-    if (type === 'like' && pendingDiscoveries.length > 0) {
+    if (type === 'like' && pendingDiscoveries.length > 0 && DEMO_CONFIG.INSTANT_MATCH_ON_LIKE) {
       setMatchedProfile(pendingDiscoveries[0]);
     }
     setPendingDiscoveries(prev => prev.slice(1));
