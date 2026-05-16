@@ -25,8 +25,20 @@ export default function SwipeCard({ profile, onSwipe, onClick }: Props) {
   const startTime = useRef(0);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const images = JSON.parse(profile.images);
-  const tags = JSON.parse(profile.tags || '[]');
+  let images = [];
+  try {
+    images = JSON.parse(profile.images);
+    if (!Array.isArray(images) || images.length === 0) throw new Error();
+  } catch (e) {
+    images = ["https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=800&q=80"];
+  }
+
+  let tags = [];
+  try {
+    tags = JSON.parse(profile.tags || '[]');
+  } catch (e) {
+    tags = [];
+  }
 
   const handleTouchStart = (e: TouchEvent) => {
     startX.current = e.touches[0].clientX;

@@ -11,12 +11,19 @@ use tokio::sync::mpsc;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct PeerProfile {
+    #[serde(default)]
     pub id: String,
+    #[serde(default)]
     pub name: String,
+    #[serde(default)]
     pub bio: String,
+    #[serde(default)]
     pub tags: String,
+    #[serde(default)]
     pub images: String,
+    #[serde(default)]
     pub gender: String,
+    #[serde(default)]
     pub interested_in: String,
 }
 

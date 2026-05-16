@@ -49,14 +49,14 @@ export function useResonance() {
         setPendingDiscoveries(prev => {
           if (prev.some(p => p.id === peer_data.id)) return prev;
           
-          // Construct profile from peer_data
+          // Construct profile from peer_data with aggressive fallbacks
           const newPeer: Profile = {
-            id: peer_data.id,
-            name: peer_data.name,
-            bio: peer_data.bio,
-            images: peer_data.images,
-            tags: peer_data.tags,
-            gender: peer_data.gender,
+            id: peer_data.id || crypto.randomUUID(),
+            name: peer_data.name || "Unknown Resonance",
+            bio: peer_data.bio || "An unidentified energy signature has been detected.",
+            images: peer_data.images || "[]",
+            tags: peer_data.tags || "[]",
+            gender: peer_data.gender || "Other",
             distance: Math.round(score * 10) / 10
           };
 
