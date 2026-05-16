@@ -71,7 +71,9 @@ pub fn initialize_database(app_dir: PathBuf) -> Result<Connection> {
             name TEXT NOT NULL,
             bio TEXT,
             images TEXT,
-            tags TEXT
+            tags TEXT,
+            gender TEXT DEFAULT 'Other',
+            interested_in TEXT DEFAULT 'Both'
         );
 
         CREATE TABLE IF NOT EXISTS peer_feedback (
@@ -92,6 +94,8 @@ pub fn initialize_database(app_dir: PathBuf) -> Result<Connection> {
 
     // Migrations
     conn.execute("ALTER TABLE local_profile ADD COLUMN images TEXT;", []).ok();
+    conn.execute("ALTER TABLE local_profile ADD COLUMN gender TEXT DEFAULT 'Other';", []).ok();
+    conn.execute("ALTER TABLE local_profile ADD COLUMN interested_in TEXT DEFAULT 'Both';", []).ok();
 
     Ok(conn)
 }

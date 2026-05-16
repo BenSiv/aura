@@ -1,6 +1,19 @@
-# Project Aura: A Local-First, Decentralized Dating Utility
+# Project Aura: Reclaiming Connection
 
-**Aura** is a dating application built on the principle that digital connection should be a private utility rather than a centralized, data-mining business. By shifting from a traditional client-server model to a **decentralized, peer-to-peer (P2P)** architecture, Aura aligns the software's success with the user’s goal: finding a partner and maintaining data sovereignty.
+**Aura** is a decentralized, local-first networking utility built to fight the loneliness pandemic by empowering people to connect directly, securely, and privately in the physical world.
+
+---
+
+## Why Aura? (The Social Mission)
+
+Aura is a response to a fundamental crisis of our time:
+
+- **Fighting the Loneliness Pandemic**: We use technology to break the digital barrier and facilitate real-world, face-to-face interactions.
+- **Reclaiming the Hold from Big Tech**: Taking the power of connection back from centralized algorithms and putting it into the hands of the people.
+- **Removing Conflicts of Interest**: Traditional dating apps want you to stay on the app. Aura is a tool to get you *off* your phone and *into* a conversation.
+- **Data Sovereignty**: Built on a secure, local-mesh network where your data remains yours, on your device, always.
+
+For a deeper dive into our philosophy, read the [Aura Manifesto](./MANIFESTO.md).
 
 ---
 
@@ -8,24 +21,23 @@
 
 ### 1. Local-First Data Sovereignty (Rust + SQLCipher)
 Unlike traditional platforms, Aura does not utilize a central database. 
-* **Encrypted Storage:** All personal data lives in an encrypted **SQLCipher** database managed directly by the native Rust backend process (`src-tauri`).
-* **On-Device Processing:** Preference learning and profile ranking are handled locally via a Rust-based ML engine. Your "type" and behavioral patterns never leave your hardware.
+- **Encrypted Storage**: All personal data lives in an encrypted **SQLCipher** database managed directly by the native Rust backend process (`src/core`).
+- **On-Device Processing**: Preference learning and profile ranking are handled locally via a Rust-based engine. Your "type" and behavioral patterns never leave your hardware.
 
 ### 2. Decentralized Discovery & Mesh Networking
 The app replaces the central "matchmaking" server with a P2P discovery layer.
-* **Background Proximity:** The Rust backend continuously scans for nearby BLE "Resonances", even when the WebView UI is suspended by the mobile OS.
-* **Store-Carry-Forward:** This allows profiles to travel across a geographic region through the physical movement of users, effectively creating a "living" network.
+- **Background Proximity**: The Rust backend continuously scans for nearby BLE "Resonances" using **libp2p**, even when the UI is suspended.
+- **Security-Conscious Networking**: Connections are established directly between devices (P2P) using secure, authenticated protocols.
 
 ### 3. Advanced Reputation & Trust (The "Aura" System)
-Aura uses a decentralized reputation mesh derived from extensive agent-based simulations.
-* **Relational Valence:** Your "Aura Score" is not a global number. It is calculated locally based on the specific gossip your device has received, making reputation a subjective, relational perception.
-* **Asymmetric Time Decay:** To allow for "Redemption Arcs," negative reputation signals decay 4x faster (7-day half-life) than positive signals (30-day half-life).
-* **Confidence Metrics:** All scores are presented with a confidence percentage, indicating the density of unique peer verifications for that signal.
+Aura uses a decentralized reputation mesh to ensure safety and authenticity.
+- **Relational Valence**: Your "Aura Score" is not a global number. It is calculated locally based on the specific gossip your device has received, making reputation a subjective, relational perception.
+- **Confidence Metrics**: All scores are presented with a confidence percentage, indicating the density of unique peer verifications.
 
 ### 4. High-Performance Hybrid UI
 Aura utilizes **Tauri v2** combined with a **Vite + React** frontend.
-* **Premium Aesthetics:** The UI is constructed with standard HTML/Vanilla CSS, leveraging glassmorphism and modern web animations without the overhead of massive React Native bridges.
-* **IPC Bridge:** The React frontend communicates with the secure Rust backend via Tauri's Inter-Process Communication (`invoke`, `listen`).
+- **Premium Aesthetics**: The UI is constructed with standard HTML/Vanilla CSS, leveraging glassmorphism and modern web animations.
+- **Atomic IPC**: The React frontend communicates with the secure Rust backend via Tauri's high-speed IPC bridge.
 
 ---
 
@@ -34,9 +46,9 @@ Aura utilizes **Tauri v2** combined with a **Vite + React** frontend.
 | Feature | Implementation |
 | --- | --- |
 | **Frontend UI** | React (Vite), Vanilla CSS, Lucide Icons |
-| **Backend Core** | Rust (Tauri v2) |
+| **Backend Core** | Rust (Tauri v2, libp2p) |
 | **Database** | `rusqlite` + `bundled-sqlcipher` |
-| **Networking** | Rust Mesh / Background Threads |
+| **Networking** | P2P Mesh / Gossipsub / mDNS |
 | **Licensing** | AGPL v3 |
 
 ---
@@ -46,16 +58,11 @@ Aura utilizes **Tauri v2** combined with a **Vite + React** frontend.
 Aura uses a standard Unix-style `Makefile` to simplify cross-platform building.
 
 ### Prerequisites
-* [Rust Toolchain](https://rustup.rs/) (cargo, rustc)
-* [Node.js](https://nodejs.org/) & npm
-* Android NDK & SDK (for mobile builds)
+- [Rust Toolchain](https://rustup.rs/) (cargo, rustc)
+- [Node.js](https://nodejs.org/) & npm
+- Android NDK & SDK (for mobile builds)
 
 ### Development Commands
-
-Start the Web-only UI server for rapid prototyping:
-```bash
-npm run dev
-```
 
 Start the full Desktop native app (Rust + UI):
 ```bash
@@ -67,13 +74,10 @@ Build the local Android APK development client:
 make build-local
 ```
 
-### Release Pipeline
-
-To generate a versioned publication of the app:
+Deploy to all connected Android devices:
 ```bash
-make release
+make deploy
 ```
-This will create a git tag, export a static web build, and compile the final Android APK into `pub/v<version>/`.
 
 ---
 

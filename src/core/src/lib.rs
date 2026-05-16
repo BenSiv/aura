@@ -52,8 +52,8 @@ fn get_local_profile(state: tauri::State<AppState>) -> Result<Option<LocalProfil
             bio: row.get(2).map_err(|e| e.to_string())?,
             images: row.get(3).map_err(|e| e.to_string())?,
             tags: row.get(4).map_err(|e| e.to_string())?,
-            gender: row.get(5).map_err(|e| e.to_string())?,
-            interested_in: row.get(6).map_err(|e| e.to_string())?,
+            gender: row.get::<_, Option<String>>(5).map_err(|e| e.to_string())?.unwrap_or_else(|| "Other".to_string()),
+            interested_in: row.get::<_, Option<String>>(6).map_err(|e| e.to_string())?.unwrap_or_else(|| "Both".to_string()),
         }))
     } else {
         Ok(None)
@@ -92,6 +92,18 @@ pub fn run() {
             // Initialize database
             let conn = db::initialize_database(app_dir).expect("Failed to initialize database");
             
+            /*
+            CREATE TABLE IF NOT EXISTS local_profile (
+                id TEXT PRIMARY KEY NOT NULL,
+                name TEXT NOT NULL,
+                bio TEXT,
+                images TEXT,
+                tags TEXT,
+                gender TEXT DEFAULT 'Other',
+                interested_in TEXT DEFAULT 'Both'
+            );
+            */
+
             // Manage state
             app.manage(AppState {
                 db: Mutex::new(conn),
