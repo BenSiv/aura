@@ -1,43 +1,52 @@
-# Aura Project Makefile (Tauri Migration)
+# Aura Project Makefile (Strict Unix Organization)
 
-# Settings
-BLD = bld
+# Paths
 BIN = bin
-SRC = src
+BLD = bld
 CNF = cnf
+DOC = doc
+OUT = out
 PUB = pub
 RES = res
+SRC = src
+WWW = web
+DEP = dep
 
-# Get version from package.json
+# Version from cnf/package.json
 VERSION = $(shell grep '"version":' $(CNF)/package.json | cut -d'"' -f4)
+
+# Commands (using explicitly pointed config)
+# We run from root but point tools to cnf/
+VITE = npx vite --config $(CNF)/vite.config.ts
+TSC  = npx tsc -p $(CNF)/tsconfig.json
+TAURI = cd $(SRC)/core && npx @tauri-apps/cli
 
 # Default action
 all: run
 
-# Run the web and native development server (Tauri + Vite)
+# Run development server
 run:
 	@echo "Starting Aura Tauri Dev Server..."
-	@npm run tauri dev
+	@$(TAURI) dev
 
-# Build the Android development client via Tauri
+# Build the Android development client
 build-dev-android:
-	@echo "Building Aura Android Dev Client (Tauri)..."
-	@npm run tauri android dev
+	@echo "Building Aura Android Dev Client..."
+	@$(TAURI) android dev
 
-# Build the Android APK locally
-build-local:
-	@echo "Building Aura Android APK (Tauri)..."
-	@npm run build
-	@npm run tauri android build
+# Build production bundle
+build:
+	@echo "Building production web and android bundle..."
+	@$(TSC)
+	@cd $(CNF) && npx vite build
+	@$(TAURI) android build
 
 # Release pipeline
 release:
 	@echo "Packaging Aura v$(VERSION)..."
 	@mkdir -p $(PUB)/v$(VERSION)
 	@git tag -a v$(VERSION) -m "Release v$(VERSION)" || true
-	@echo "Building production web and android bundle..."
-	@npm run build
-	@npm run tauri android build
+	@$(MAKE) build
 	@echo "Version v$(VERSION) packaged."
 
 # Install dependencies
@@ -45,14 +54,13 @@ install:
 	@echo "Installing dependencies..."
 	@npm install
 
-# Clean temporary files
+# Clean output
 clean:
 	@echo "Cleaning up..."
-	@rm -rf node_modules
-	@rm -rf $(BIN)
+	@rm -rf $(OUT)
 	@rm -rf $(SRC)/core/target
 	@cargo clean --manifest-path $(SRC)/core/Cargo.toml
 
 # Deploy to all connected devices
 deploy:
-	@./bin/deploy_to_all.sh
+	@./$(BIN)/deploy_to_all.sh
