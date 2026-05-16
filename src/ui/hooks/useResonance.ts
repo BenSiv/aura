@@ -10,9 +10,7 @@ export type VisibilityMode = "cloaked" | "resonant" | "public";
 export function useResonance() {
   const [activeAura, setActiveAura] = useState(true);
   const [visibilityMode, setVisibilityMode] = useState<VisibilityMode>("resonant");
-  const [pendingDiscoveries, setPendingDiscoveries] = useState<Profile[]>(
-    DEMO_CONFIG.USE_SEED_PROFILES ? DEMO_PROFILES : []
-  );
+  const [pendingDiscoveries, setPendingDiscoveries] = useState<Profile[]>([]);
   const [localProfile, setLocalProfile] = useState<{ id: string, name: string, bio: string, images: string, tags: string, gender: string, interestedIn: string } | null>(null);
   const [matchedProfile, setMatchedProfile] = useState<Profile | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(!DEMO_CONFIG.IS_DEMO_MODE);
@@ -123,6 +121,17 @@ export function useResonance() {
 
     if (DEMO_CONFIG.BYPASS_DB_PERSISTENCE) {
       setLocalProfile(newProfile as any);
+      
+      // Filter seed profiles based on interest for demo
+      if (DEMO_CONFIG.USE_SEED_PROFILES) {
+        const filtered = DEMO_PROFILES.filter(p => {
+          if (interestedIn === "Both") return true;
+          if (interestedIn === "Men") return p.gender === "Man";
+          if (interestedIn === "Women") return p.gender === "Woman";
+          return true;
+        });
+        setPendingDiscoveries(filtered);
+      }
       return;
     }
 

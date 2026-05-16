@@ -40,6 +40,10 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ profile, onBack }) => {
         <button className="btn-icon"><MoreVertical size={20} /></button>
       </header>
 
+      <div className="chat-proximity-warning">
+        <p>You are connected via local mesh. Connection will drop if you move out of range. Exchange secure contact info (like Signal) to stay in touch!</p>
+      </div>
+
       <main className="chat-messages">
         {messages.map(msg => (
           <div key={msg.id} className={`message-bubble ${msg.sender}`}>

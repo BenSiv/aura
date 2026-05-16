@@ -7,7 +7,8 @@ export const DEMO_PROFILES: Profile[] = [
     bio: "Building the future of decentralized networks. Passionate about mesh technology and sustainable energy.",
     images: JSON.stringify(["https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=800&q=80"]),
     tags: JSON.stringify(["coding", "mesh", "solarpunk"]),
-    distance: 1.2
+    distance: 1.2,
+    gender: "Man"
   },
   {
     id: "demo_jamie",
@@ -15,7 +16,8 @@ export const DEMO_PROFILES: Profile[] = [
     bio: "Digital artist and coffee enthusiast. I love exploring the intersection of technology and human connection.",
     images: JSON.stringify(["https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80"]),
     tags: JSON.stringify(["art", "coffee", "ui/ux"]),
-    distance: 0.8
+    distance: 0.8,
+    gender: "Woman"
   },
   {
     id: "demo_sam",
@@ -23,7 +25,8 @@ export const DEMO_PROFILES: Profile[] = [
     bio: "Adventure seeker and photographer. Usually found in the mountains or at a concert.",
     images: JSON.stringify(["https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80"]),
     tags: JSON.stringify(["hiking", "photo", "music"]),
-    distance: 2.5
+    distance: 2.5,
+    gender: "Other"
   }
 ];
 

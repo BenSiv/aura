@@ -8,6 +8,7 @@ export interface Profile {
   images: string; // JSON string array
   tags: string;   // JSON string array
   distance: number;
+  gender?: string;
 }
 
 interface Props {

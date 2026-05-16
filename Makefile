@@ -37,6 +37,8 @@ build-dev-android:
 # Build the local Android APK (debug)
 build-local:
 	@echo "Building local Android debug APK..."
+	@$(TSC)
+	@cd $(CNF) && npx vite build
 	@$(TAURI) android build --debug
 	@mkdir -p $(PUB)
 	@cp $(SRC)/core/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk $(PUB)/aura-debug.apk

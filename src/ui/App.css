@@ -773,3 +773,18 @@ input:checked + .slider:before { transform: translateX(22px); }
 }
 
 .btn-send:disabled { opacity: 0.5; }
+
+.chat-proximity-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+
+.chat-proximity-warning p {
+  font-size: 0.75rem;
+  color: #F59E0B;
+  margin: 0;
+  line-height: 1.4;
+  font-weight: 500;
+}
