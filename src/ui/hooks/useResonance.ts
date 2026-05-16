@@ -43,59 +43,26 @@ export function useResonance() {
 
     // Listen for background mesh proximity events
     const unlisten = listen<any>('resonance_detected', (event) => {
-      const { profile_id, score, peer_data } = event.payload;
+      const { score, peer_data } = event.payload;
       
       if (peer_data) {
         setPendingDiscoveries(prev => {
           if (prev.some(p => p.id === peer_data.id)) return prev;
-          return [...prev, {
+          
+          // Construct profile from peer_data
+          const newPeer: Profile = {
             id: peer_data.id,
             name: peer_data.name,
             bio: peer_data.bio,
             images: peer_data.images,
             tags: peer_data.tags,
+            gender: peer_data.gender,
             distance: Math.round(score * 10) / 10
-          }];
+          };
+
+          return [...prev, newPeer];
         });
-        return;
       }
-
-      const simulatedProfiles: Record<string, Partial<Profile>> = {
-        "simulated_user_alex": {
-          name: "Alex Rivera",
-          bio: "Building the future of decentralized networks. Passionate about mesh technology and sustainable energy.",
-          images: JSON.stringify(["https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=800&q=80"]),
-          tags: JSON.stringify(["coding", "mesh", "solarpunk"]),
-        },
-        "simulated_user_jamie": {
-          name: "Jamie Chen",
-          bio: "Digital artist and coffee enthusiast. I love exploring the intersection of technology and human connection.",
-          images: JSON.stringify(["https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80"]),
-          tags: JSON.stringify(["art", "coffee", "ui/ux"]),
-        },
-        "simulated_user_sam": {
-          name: "Sam Wilson",
-          bio: "Adventure seeker and photographer. Usually found in the mountains or at a concert.",
-          images: JSON.stringify(["https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80"]),
-          tags: JSON.stringify(["hiking", "photo", "music"]),
-        }
-      };
-
-      const baseProfile = simulatedProfiles[profile_id] || {
-        name: "Unknown Resonance",
-        bio: "An unidentified energy signature has been detected.",
-        images: JSON.stringify(["https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=800&q=80"]),
-        tags: "[]",
-      };
-
-      setPendingDiscoveries(prev => [...prev, {
-        id: profile_id,
-        name: baseProfile.name!,
-        bio: baseProfile.bio!,
-        images: baseProfile.images!,
-        tags: baseProfile.tags!,
-        distance: Math.round(score * 10) / 10
-      }]);
     });
 
     return () => {
@@ -116,7 +83,7 @@ export function useResonance() {
       tags,
       images: JSON.stringify([image]),
       gender,
-      interestedIn
+      interested_in: interestedIn // Match Rust naming
     };
 
     if (DEMO_CONFIG.BYPASS_DB_PERSISTENCE) {

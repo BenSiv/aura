@@ -17,14 +17,24 @@ struct LocalProfile {
     bio: String,
     images: String,
     tags: String,
+    gender: String,
+    interested_in: String,
 }
 
 #[tauri::command]
 fn save_local_profile(state: tauri::State<AppState>, profile: LocalProfile) -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.execute(
-        "INSERT OR REPLACE INTO local_profile (id, name, bio, images, tags) VALUES (?1, ?2, ?3, ?4, ?5)",
-        [&profile.id, &profile.name, &profile.bio, &profile.images, &profile.tags],
+        "INSERT OR REPLACE INTO local_profile (id, name, bio, images, tags, gender, interested_in) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        [
+            &profile.id, 
+            &profile.name, 
+            &profile.bio, 
+            &profile.images, 
+            &profile.tags,
+            &profile.gender,
+            &profile.interested_in
+        ],
     ).map_err(|e| e.to_string())?;
     Ok(())
 }
@@ -32,7 +42,7 @@ fn save_local_profile(state: tauri::State<AppState>, profile: LocalProfile) -> R
 #[tauri::command]
 fn get_local_profile(state: tauri::State<AppState>) -> Result<Option<LocalProfile>, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
-    let mut stmt = conn.prepare("SELECT id, name, bio, images, tags FROM local_profile LIMIT 1").map_err(|e| e.to_string())?;
+    let mut stmt = conn.prepare("SELECT id, name, bio, images, tags, gender, interested_in FROM local_profile LIMIT 1").map_err(|e| e.to_string())?;
     let mut rows = stmt.query([]).map_err(|e| e.to_string())?;
 
     if let Some(row) = rows.next().map_err(|e| e.to_string())? {
@@ -42,6 +52,8 @@ fn get_local_profile(state: tauri::State<AppState>) -> Result<Option<LocalProfil
             bio: row.get(2).map_err(|e| e.to_string())?,
             images: row.get(3).map_err(|e| e.to_string())?,
             tags: row.get(4).map_err(|e| e.to_string())?,
+            gender: row.get(5).map_err(|e| e.to_string())?,
+            interested_in: row.get(6).map_err(|e| e.to_string())?,
         }))
     } else {
         Ok(None)

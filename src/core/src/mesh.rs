@@ -16,6 +16,8 @@ pub struct PeerProfile {
     pub bio: String,
     pub tags: String,
     pub images: String,
+    pub gender: String,
+    pub interested_in: String,
 }
 
 #[derive(Clone, Serialize)]
