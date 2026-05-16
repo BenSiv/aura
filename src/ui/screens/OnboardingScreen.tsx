@@ -19,6 +19,9 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSave }) =>
   return (
     <div className="app-container setup-screen">
       <header className="header">
+        <div style={{ background: 'var(--accent-primary)', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', width: 'fit-content', marginBottom: '1rem' }}>
+          DEBUG: SCROLL V5 (APP-CONTAINER-FIX)
+        </div>
         <h1>Welcome to Aura</h1>
         <p>Set up your resonance profile to begin discovering others in the mesh network.</p>
       </header>

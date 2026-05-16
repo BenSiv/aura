@@ -21,29 +21,35 @@
   padding: 0;
 }
 
-body {
-  font-family: var(--font-sans);
+html, body {
   background-color: var(--bg-primary);
-  color: var(--text-primary);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  min-height: 100vh;
-  overflow: hidden; /* App-like feel */
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
-/* Typography */
-h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.05em; }
-h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; margin-bottom: 0.5rem; }
-p { font-size: 1rem; line-height: 1.5; color: var(--text-secondary); }
-
-/* Layout Containers */
 .app-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  width: 100vw;
   max-width: 600px;
   margin: 0 auto;
-  position: relative;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: var(--bg-primary);
+}
+
+.setup-screen .main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: auto;
+  min-height: min-content;
+  padding: 2rem;
+  padding-bottom: 5rem;
 }
 
 .header {
@@ -436,10 +442,22 @@ input:checked + .slider:before { transform: translateX(22px); }
   color: var(--text-primary);
 }
 
-/* Setup Screen */
-.setup-screen {
-  padding: 2rem;
-  justify-content: center;
+.app-container.setup-screen {
+  height: auto;
+  min-height: 100vh;
+  display: block; /* Break flex centering */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.setup-screen .header {
+  flex-shrink: 0;
+}
+
+.setup-screen .main-content {
+  display: block; /* Break flex centering */
+  height: auto;
+  padding-bottom: 4rem;
 }
 
 .setup-form {
@@ -448,6 +466,7 @@ input:checked + .slider:before { transform: translateX(22px); }
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  padding-bottom: 3rem; /* Extra space for the button */
 }
 
 .input-group {

@@ -34,6 +34,14 @@ build-dev-android:
 	@echo "Building Aura Android Dev Client..."
 	@$(TAURI) android dev
 
+# Build the local Android APK (debug)
+build-local:
+	@echo "Building local Android debug APK..."
+	@$(TAURI) android build --debug
+	@mkdir -p $(PUB)
+	@cp $(SRC)/core/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk $(PUB)/aura-debug.apk
+	@echo "Local build complete: $(PUB)/aura-debug.apk"
+
 # Build production bundle
 build:
 	@echo "Building production web and android bundle..."
@@ -52,7 +60,7 @@ release:
 # Install dependencies
 install:
 	@echo "Installing dependencies..."
-	@npm install
+	@cd $(CNF) && npm install
 
 # Clean output
 clean:
