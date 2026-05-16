@@ -70,6 +70,7 @@ pub fn initialize_database(app_dir: PathBuf) -> Result<Connection> {
             id TEXT PRIMARY KEY NOT NULL,
             name TEXT NOT NULL,
             bio TEXT,
+            images TEXT,
             tags TEXT
         );
 
@@ -88,6 +89,9 @@ pub fn initialize_database(app_dir: PathBuf) -> Result<Connection> {
         INSERT OR IGNORE INTO settings (key, value) VALUES ('active_aura', 'true');
         "
     )?;
+
+    // Migrations
+    conn.execute("ALTER TABLE local_profile ADD COLUMN images TEXT;", []).ok();
 
     Ok(conn)
 }

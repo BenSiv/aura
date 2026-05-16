@@ -62,8 +62,9 @@ pub fn start_mesh(app: AppHandle) {
                     };
                     let gossipsub_config = gossipsub::ConfigBuilder::default()
                         .heartbeat_interval(Duration::from_secs(10))
-                        .validation_mode(gossipsub::ValidationMode::Strict)
+                        .validation_mode(gossipsub::ValidationMode::Permissive)
                         .message_id_fn(message_id_fn)
+                        .max_transmit_size(10 * 1024 * 1024) // 10MB limit for images
                         .build()
                         .map_err(|msg| std::io::Error::new(std::io::ErrorKind::Other, msg))?;
 
@@ -105,11 +106,24 @@ pub fn start_mesh(app: AppHandle) {
                         }
                     }
                     event = swarm.select_next_some() => match event {
+                        SwarmEvent::ConnectionEstablished { peer_id, endpoint, .. } => {
+                            println!("[P2P] Connection established with {} at {:?}", peer_id, endpoint);
+                        }
+                        SwarmEvent::ConnectionClosed { peer_id, cause, .. } => {
+                            println!("[P2P] Connection closed with {}: {:?}", peer_id, cause);
+                        }
+                        SwarmEvent::OutgoingConnectionError { peer_id, error, .. } => {
+                            println!("[P2P] Failed to dial {:?}: {:?}", peer_id, error);
+                        }
+                        SwarmEvent::Behaviour(AuraBehaviourEvent::Gossipsub(gossipsub::Event::Subscribed { peer_id, topic })) => {
+                            println!("[P2P] Peer {} subscribed to topic: {}", peer_id, topic);
+                        }
                         SwarmEvent::Behaviour(AuraBehaviourEvent::Mdns(mdns::Event::Discovered(list))) => {
                             for (peer_id, multiaddr) in list {
-                                println!("[P2P] mDNS discovered peer: {}", peer_id);
+                                println!("[P2P] mDNS discovered peer: {} at {}", peer_id, multiaddr);
                                 swarm.behaviour_mut().gossipsub.add_explicit_peer(&peer_id);
-                                swarm.behaviour_mut().kad.add_address(&peer_id, multiaddr);
+                                swarm.behaviour_mut().kad.add_address(&peer_id, multiaddr.clone());
+                                swarm.dial(multiaddr).ok(); 
                             }
                         }
                         SwarmEvent::Behaviour(AuraBehaviourEvent::Gossipsub(gossipsub::Event::Message {

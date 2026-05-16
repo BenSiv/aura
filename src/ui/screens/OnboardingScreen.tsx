@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { User, FileText, Tag } from "lucide-react";
 
 interface OnboardingScreenProps {
-  onSave: (name: string, bio: string, tags: string, image: string) => void;
+  onSave: (name: string, bio: string, tags: string, image: string, gender: string, interestedIn: string) => void;
 }
 
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSave }) => {
@@ -10,17 +10,28 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSave }) =>
   const [setupBio, setSetupBio] = useState("");
   const [setupTags, setSetupTags] = useState("");
   const [setupImage, setSetupImage] = useState("https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=800&q=80");
+  const [setupGender, setSetupGender] = useState("Man");
+  const [setupInterestedIn, setSetupInterestedIn] = useState("Women");
 
   const handleSave = () => {
     if (!setupName) return;
-    onSave(setupName, setupBio, setupTags, setupImage);
+    onSave(setupName, setupBio, setupTags, setupImage, setupGender, setupInterestedIn);
   };
 
   return (
     <div className="app-container setup-screen">
       <header className="header">
-        <h1>Welcome to Aura</h1>
-        <p>Set up your resonance profile to begin discovering others in the mesh network.</p>
+        <div className="header-top">
+          <h1>Welcome</h1>
+          <button 
+            className="btn-primary btn-save-header" 
+            onClick={handleSave}
+            disabled={!setupName}
+          >
+            Save Profile
+          </button>
+        </div>
+        <p>Set up your resonance profile to begin.</p>
       </header>
       <main className="main-content setup-form">
         <div className="setup-avatar-select">
@@ -45,7 +56,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSave }) =>
             alt="Profile" 
             onClick={() => document.getElementById('avatar-upload')?.click()} 
           />
-          <span>Tap image to upload photo</span>
+          <span>Tap to upload photo</span>
         </div>
         <div className="input-group">
           <label><User size={16} /> Public Name</label>
@@ -73,14 +84,38 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSave }) =>
             onChange={e => setSetupTags(e.target.value)}
           />
         </div>
-        <button 
-          className="btn-primary" 
-          style={{ width: '100%', marginTop: '2rem' }}
-          onClick={handleSave}
-          disabled={!setupName}
-        >
-          Project Your Aura
-        </button>
+
+        <div className="gender-selectors">
+          <div className="input-group">
+            <label>Your Gender</label>
+            <div className="selector-group">
+              {["Man", "Woman", "Other"].map(g => (
+                <button 
+                  key={g}
+                  className={`selector-btn ${setupGender === g ? 'active' : ''}`}
+                  onClick={() => setSetupGender(g)}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="input-group">
+            <label>Interested In</label>
+            <div className="selector-group">
+              {["Men", "Women", "Both"].map(i => (
+                <button 
+                  key={i}
+                  className={`selector-btn ${setupInterestedIn === i ? 'active' : ''}`}
+                  onClick={() => setSetupInterestedIn(i)}
+                >
+                  {i}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   );

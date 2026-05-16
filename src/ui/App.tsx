@@ -5,6 +5,8 @@ import { OnboardingScreen } from "./screens/OnboardingScreen";
 import { DiscoveryScreen } from "./screens/DiscoveryScreen";
 import { ProfileDetailOverlay } from "./screens/ProfileDetailOverlay";
 import { Profile } from "./components/SwipeCard";
+import { MatchScreen } from "./screens/MatchScreen";
+import { ChatScreen } from "./screens/ChatScreen";
 import "./App.css";
 
 function App() {
@@ -21,6 +23,7 @@ function App() {
   } = useResonance();
 
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
+  const [showChat, setShowChat] = useState(false);
 
   const getVisibilityInfo = () => {
     if (visibilityMode === "cloaked") return { icon: <Shield size={20} />, label: "Cloaked", desc: "Private mode. You are invisible to others and won't scan for resonance." };
@@ -32,6 +35,10 @@ function App() {
 
   if (!localProfile) {
     return <OnboardingScreen onSave={handleSaveProfile} />;
+  }
+
+  if (showChat && matchedProfile) {
+    return <ChatScreen profile={matchedProfile} onBack={() => setShowChat(false)} />;
   }
 
   return (
@@ -51,6 +58,15 @@ function App() {
           profile={selectedProfile}
           onClose={() => setSelectedProfile(null)}
           onLike={() => handleInteraction('like')}
+        />
+      )}
+
+      {matchedProfile && (
+        <MatchScreen 
+          localProfile={localProfile}
+          matchedProfile={matchedProfile}
+          onSendMessage={() => setShowChat(true)}
+          onContinue={() => setMatchedProfile(null)}
         />
       )}
     </>

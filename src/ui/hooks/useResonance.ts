@@ -9,8 +9,9 @@ export function useResonance() {
   const [activeAura, setActiveAura] = useState(true);
   const [visibilityMode, setVisibilityMode] = useState<VisibilityMode>("resonant");
   const [pendingDiscoveries, setPendingDiscoveries] = useState<Profile[]>([]);
-  const [localProfile, setLocalProfile] = useState<{ id: string, name: string, bio: string, tags: string } | null>(null);
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [localProfile, setLocalProfile] = useState<{ id: string, name: string, bio: string, images: string, tags: string, gender: string, interestedIn: string } | null>(null);
+  const [matchedProfile, setMatchedProfile] = useState<Profile | null>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(false); // Skip loading for demo
 
   const startBroadcasting = useCallback((profile: any) => {
     // Shout our presence every 10 seconds
@@ -22,19 +23,8 @@ export function useResonance() {
   }, []);
 
   useEffect(() => {
-    // Fetch local profile on load
-    invoke<{ id: string, name: string, bio: string, tags: string, images?: string } | null>("get_local_profile")
-      .then((profile) => {
-        if (profile) {
-          setLocalProfile(profile as any);
-          startBroadcasting(profile);
-        }
-        setIsInitialLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch local profile:", err);
-        setIsInitialLoading(false);
-      });
+    // Persistence disabled for demo branch
+    setIsInitialLoading(false);
 
     // Listen for background mesh proximity events
     const unlisten = listen<any>('resonance_detected', (event) => {
@@ -103,25 +93,24 @@ export function useResonance() {
     setVisibilityMode(modes[(modes.indexOf(visibilityMode) + 1) % modes.length]);
   };
 
-  const handleSaveProfile = async (name: string, bio: string, tags: string, image: string) => {
+  const handleSaveProfile = async (name: string, bio: string, tags: string, image: string, gender: string, interestedIn: string) => {
     const newProfile = {
       id: crypto.randomUUID(),
       name,
       bio,
       tags,
-      images: JSON.stringify([image])
+      images: JSON.stringify([image]),
+      gender,
+      interestedIn
     };
-    try {
-      await invoke("save_local_profile", { profile: newProfile });
-      setLocalProfile(newProfile as any);
-      startBroadcasting(newProfile);
-    } catch (err) {
-      console.error("Failed to save profile:", err);
-      throw err;
-    }
+    // No DB save for demo
+    setLocalProfile(newProfile as any);
   };
 
-  const handleInteraction = (_type: 'like' | 'pass') => {
+  const handleInteraction = (type: 'like' | 'pass') => {
+    if (type === 'like' && pendingDiscoveries.length > 0) {
+      setMatchedProfile(pendingDiscoveries[0]);
+    }
     setPendingDiscoveries(prev => prev.slice(1));
   };
 
@@ -135,6 +124,8 @@ export function useResonance() {
     isInitialLoading,
     cycleVisibility,
     handleSaveProfile,
-    handleInteraction
+    handleInteraction,
+    matchedProfile,
+    setMatchedProfile
   };
 }

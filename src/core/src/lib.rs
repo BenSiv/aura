@@ -15,6 +15,7 @@ struct LocalProfile {
     id: String,
     name: String,
     bio: String,
+    images: String,
     tags: String,
 }
 
@@ -22,8 +23,8 @@ struct LocalProfile {
 fn save_local_profile(state: tauri::State<AppState>, profile: LocalProfile) -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.execute(
-        "INSERT OR REPLACE INTO local_profile (id, name, bio, tags) VALUES (?1, ?2, ?3, ?4)",
-        [&profile.id, &profile.name, &profile.bio, &profile.tags],
+        "INSERT OR REPLACE INTO local_profile (id, name, bio, images, tags) VALUES (?1, ?2, ?3, ?4, ?5)",
+        [&profile.id, &profile.name, &profile.bio, &profile.images, &profile.tags],
     ).map_err(|e| e.to_string())?;
     Ok(())
 }
@@ -31,7 +32,7 @@ fn save_local_profile(state: tauri::State<AppState>, profile: LocalProfile) -> R
 #[tauri::command]
 fn get_local_profile(state: tauri::State<AppState>) -> Result<Option<LocalProfile>, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
-    let mut stmt = conn.prepare("SELECT id, name, bio, tags FROM local_profile LIMIT 1").map_err(|e| e.to_string())?;
+    let mut stmt = conn.prepare("SELECT id, name, bio, images, tags FROM local_profile LIMIT 1").map_err(|e| e.to_string())?;
     let mut rows = stmt.query([]).map_err(|e| e.to_string())?;
 
     if let Some(row) = rows.next().map_err(|e| e.to_string())? {
@@ -39,7 +40,8 @@ fn get_local_profile(state: tauri::State<AppState>) -> Result<Option<LocalProfil
             id: row.get(0).map_err(|e| e.to_string())?,
             name: row.get(1).map_err(|e| e.to_string())?,
             bio: row.get(2).map_err(|e| e.to_string())?,
-            tags: row.get(3).map_err(|e| e.to_string())?,
+            images: row.get(3).map_err(|e| e.to_string())?,
+            tags: row.get(4).map_err(|e| e.to_string())?,
         }))
     } else {
         Ok(None)
