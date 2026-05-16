@@ -19,19 +19,33 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSave }) =>
   return (
     <div className="app-container setup-screen">
       <header className="header">
-        <div style={{ background: 'var(--accent-primary)', color: 'white', padding: '4px 8px', borderRadius: '4px', fontSize: '10px', width: 'fit-content', marginBottom: '1rem' }}>
-          DEBUG: SCROLL V5 (APP-CONTAINER-FIX)
-        </div>
         <h1>Welcome to Aura</h1>
         <p>Set up your resonance profile to begin discovering others in the mesh network.</p>
       </header>
       <main className="main-content setup-form">
         <div className="setup-avatar-select">
-          <img src={setupImage} alt="Profile" onClick={() => {
-            const url = prompt("Enter an image URL for your avatar:", setupImage);
-            if (url) setSetupImage(url);
-          }} />
-          <span>Tap image to change URL</span>
+          <input 
+            type="file" 
+            id="avatar-upload" 
+            style={{ display: 'none' }} 
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                  setSetupImage(reader.result as string);
+                };
+                reader.readAsDataURL(file);
+              }
+            }}
+          />
+          <img 
+            src={setupImage} 
+            alt="Profile" 
+            onClick={() => document.getElementById('avatar-upload')?.click()} 
+          />
+          <span>Tap image to upload photo</span>
         </div>
         <div className="input-group">
           <label><User size={16} /> Public Name</label>
