@@ -1,15 +1,16 @@
-use kzen_paillier::{EncryptionKey, DecryptionKey, RawCiphertext, RawPlaintext, Keypair};
-use curv_kzen::BigInt;
+use kzen_paillier::{EncryptionKey, DecryptionKey, RawCiphertext, RawPlaintext, Keypair, Paillier, Encrypt, Decrypt, KeyGeneration};
+use curv::BigInt;
+use curv::arithmetic::{Converter, Modulo};
 use bulletproofs::{BulletproofGens, PedersenGens, RangeProof};
 use merlin::Transcript;
-use curve25519_dalek::scalar::Scalar;
-use curve25519_dalek::ristretto::CompressedRistretto;
+use curve25519_dalek_ng::scalar::Scalar;
+use curve25519_dalek_ng::ristretto::CompressedRistretto;
 use rand::thread_rng;
 use std::str::FromStr;
 
 #[tauri::command]
 pub fn generate_paillier_keypair() -> Result<(String, String), String> {
-    let (ek, dk) = Keypair::keys_size(2048);
+    let (ek, dk) = Paillier::keypair().keys();
     let ek_hex = ek.n.to_str_radix(16);
     let dk_hex = format!("{},{}", dk.p.to_str_radix(16), dk.q.to_str_radix(16));
     Ok((ek_hex, dk_hex))
@@ -29,9 +30,9 @@ pub fn encrypt_location(x: f64, y: f64, pubkey_hex: String) -> Result<(String, S
 
     let to_paillier_plain = |val: i64| {
         if val < 0 {
-            &n + BigInt::from(val)
+            &n - BigInt::from(val.abs() as u64)
         } else {
-            BigInt::from(val)
+            BigInt::from(val as u64)
         }
     };
 
@@ -39,9 +40,9 @@ pub fn encrypt_location(x: f64, y: f64, pubkey_hex: String) -> Result<(String, S
     let py = to_paillier_plain(y_scaled);
     let p_sq = &px * &px + &py * &py;
 
-    let cx = ek.encrypt(&RawPlaintext::from(px));
-    let cy = ek.encrypt(&RawPlaintext::from(py));
-    let c_sq = ek.encrypt(&RawPlaintext::from(p_sq));
+    let cx = Paillier::encrypt(&ek, RawPlaintext::from(px));
+    let cy = Paillier::encrypt(&ek, RawPlaintext::from(py));
+    let c_sq = Paillier::encrypt(&ek, RawPlaintext::from(p_sq));
 
     Ok((
         cx.0.to_str_radix(16),
@@ -73,10 +74,10 @@ pub fn compute_homomorphic_distance(
     let c_sq = BigInt::from_str_radix(&enc_sq, 16).map_err(|e| e.to_string())?;
 
     let homomorphic_mul = |ciphertext: &BigInt, scalar: i64| -> BigInt {
-        let abs_scalar = BigInt::from(scalar.abs());
+        let abs_scalar = BigInt::from(scalar.abs() as u64);
         let c_pow = BigInt::mod_pow(ciphertext, &abs_scalar, &ek.nn);
         if scalar < 0 {
-            BigInt::invert(&c_pow, &ek.nn).unwrap_or_else(|| BigInt::from(1))
+            BigInt::mod_inv(&c_pow, &ek.nn).unwrap_or_else(|| BigInt::from(1))
         } else {
             c_pow
         }
@@ -86,11 +87,11 @@ pub fn compute_homomorphic_distance(
     let term2 = homomorphic_mul(&c_y, -2 * y2);
 
     let const_val = x2 * x2 + y2 * y2;
-    let const_enc = ek.encrypt(&RawPlaintext::from(BigInt::from(const_val)));
+    let const_enc = Paillier::encrypt(&ek, RawPlaintext::from(BigInt::from(const_val as u64)));
 
     let mut enc_d2 = (&c_sq * &term1) % &ek.nn;
     enc_d2 = (&enc_d2 * &term2) % &ek.nn;
-    enc_d2 = (&enc_d2 * &const_enc.0) % &ek.nn;
+    enc_d2 = (&enc_d2 * const_enc.0.as_ref()) % &ek.nn;
 
     // Blinding factor: 32-bit random factor to prevent triangulation
     let r = fastrand::u32(100_000..2_000_000) as u64;
@@ -112,9 +113,9 @@ pub fn decrypt_blinded_distance(blinded_enc_hex: String, privkey_hex: String) ->
     let dk = DecryptionKey { p, q };
 
     let c = BigInt::from_str_radix(&blinded_enc_hex, 16).map_err(|e| e.to_string())?;
-    let plain = dk.decrypt(&RawCiphertext(c));
+    let plain = Paillier::decrypt(&dk, RawCiphertext(std::borrow::Cow::Owned(c)));
 
-    Ok(plain.0.to_str_radix(10))
+    Ok(plain.0.into_owned().to_str_radix(10))
 }
 
 #[tauri::command]
@@ -164,7 +165,13 @@ pub fn verify_range_proof(
     // Wait, Peer B knows the public Bulletproof proof and commitment for 'diff'!
     // Since diff = threshold - v, Peer B verifies the range proof against the commitment.
     let proof = RangeProof::from_bytes(&proof_bytes).map_err(|e| format!("Invalid proof bytes: {:?}", e))?;
-    let comm_compress = CompressedRistretto::from_slice(&commitment_bytes).map_err(|e| format!("Invalid commitment bytes: {:?}", e))?;
+    let mut arr = [0u8; 32];
+    if commitment_bytes.len() == 32 {
+        arr.copy_from_slice(&commitment_bytes);
+    } else {
+        return Err("Invalid commitment length, must be 32 bytes".to_string());
+    }
+    let comm_compress = CompressedRistretto(arr);
 
     let pc_gens = PedersenGens::default();
     let bp_gens = BulletproofGens::new(64, 1);

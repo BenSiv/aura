@@ -27,7 +27,13 @@ libp2p = { version = "0.53", features = ["tcp", "tls", "dns", "noise", "yamux", 
 futures = "0.3"
 tokio = { version = "1", features = ["full"] }
 fastrand = "2.3"
-kzen-paillier = "0.4"
+kzen-paillier = { version = "0.4", default-features = false }
 bulletproofs = "4"
 merlin = "3"
-curve25519-dalek = "4"
+curve25519-dalek-ng = "4"
+curv-kzen = { version = "0.10", default-features = false, features = ["num-bigint"] }
+rand = "0.8"
+
+[patch.crates-io]
+curv-kzen = { path = "../../dep/curv" }
+

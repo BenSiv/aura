@@ -10,7 +10,7 @@ export default defineConfig(async () => ({
   root: ".", 
   publicDir: "../web",
   build: {
-    outDir: "../out",
+    outDir: "../out/web-dist",
     emptyOutDir: true,
   },
 

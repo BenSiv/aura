@@ -5,7 +5,7 @@
   "identifier": "com.aura.app",
   "build": {
     "devUrl": "http://localhost:1420",
-    "frontendDist": "../../out"
+    "frontendDist": "../../out/web-dist"
   },
   "app": {
     "windows": [

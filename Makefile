@@ -1,7 +1,6 @@
 # Aura Project Makefile (Strict Unix Organization)
 
 # Paths
-BIN = bin
 BLD = bld
 CNF = cnf
 DOC = doc
@@ -73,4 +72,4 @@ clean:
 
 # Deploy to all connected devices
 deploy:
-	@./$(BIN)/deploy_to_all.sh
+	@./$(BLD)/deploy_to_all.sh
