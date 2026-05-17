@@ -8,12 +8,12 @@
 
 Aura is a response to a fundamental crisis of our time:
 
-- **Fighting the Loneliness Pandemic**: We use technology to break the digital barrier and facilitate real-world, face-to-face interactions.
-- **Reclaiming the Hold from Big Tech**: Taking the power of connection back from centralized algorithms and putting it into the hands of the people.
-- **Removing Conflicts of Interest**: Traditional dating apps want you to stay on the app. Aura is a tool to get you *off* your phone and *into* a conversation.
+- **Fighting the Loneliness Pandemic**: I use technology to break the digital barrier and facilitate real-world, face-to-face interactions.
+- **Reclaiming the Hold from Big Tech**: Taking the power of connection back from centralized algorithms and putting it into the hands of my users.
+- **Removing Conflicts of Interest**: Traditional dating apps want you to stay on the app. Aura is a tool I built to get you *off* your phone and *into* a conversation.
 - **Data Sovereignty**: Built on a secure, local-mesh network where your data remains yours, on your device, always.
 
-For a deeper dive into our philosophy, read the [Aura Manifesto](./MANIFESTO.md).
+For a deeper dive into my philosophy, read the [Aura Manifesto](./MANIFESTO.md).
 
 ---
 
@@ -22,7 +22,7 @@ For a deeper dive into our philosophy, read the [Aura Manifesto](./MANIFESTO.md)
 ### 1. Local-First Data Sovereignty (Rust + SQLCipher)
 Unlike traditional platforms, Aura does not utilize a central database. 
 - **Encrypted Storage**: All personal data lives in an encrypted **SQLCipher** database managed directly by the native Rust backend process (`src/core`).
-- **On-Device Processing**: Preference learning and profile ranking are handled locally via a Rust-based engine. Your "type" and behavioral patterns never leave your hardware.
+- **On-Device Processing**: Preference learning and profile ranking are handled locally via a **preference optimizer** (a tiny ML model). Your "type" and behavioral patterns never leave your hardware.
 
 ### 2. Decentralized Discovery & Mesh Networking
 The app replaces the central "matchmaking" server with a P2P discovery layer.

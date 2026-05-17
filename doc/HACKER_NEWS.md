@@ -14,7 +14,7 @@ Aura takes a different approach by making the protocol the product.
 *   **Local-First Data Sovereignty**: All swiping history, matches, and chats live in an encrypted SQLCipher database on your device. Your behavioral patterns never leave your hardware.
 *   **Decentralized Reputation Mesh**: Instead of a central moderator, Aura uses a peer-to-peer gossip network. Reputation is a "Relational Valence"—your score is calculated locally based on the specific gossip your device has received, making reputation a subjective perception rather than a global metric.
 *   **Asymmetric Time Decay**: To prevent "reputation traps," negative signals decay 4x faster than positive ones. This allows the network to forgive past behavior while rewarding long-term positive contributions.
-*   **On-Device ML Engine (Rust)**: Aura uses a Rust-based AI engine to learn your preferences, adjusting local tag weights without ever uploading your "type" to a server.
+*   **On-Device Preference Optimizer**: Aura uses a tiny ML model in Rust to learn your preferences and optimize suggestions, adjusting local tag weights without ever uploading your "type" to a server.
 *   **Mesh Networking & Store-Carry-Forward**: Discovery happens through a P2P layer. Devices act as nodes, gossiping encrypted packets. The "Store-Carry-Forward" model allows profiles to propagate through physical movement, creating a living network that scales with density.
 
 ### Latest Progress:

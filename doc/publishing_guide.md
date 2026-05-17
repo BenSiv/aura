@@ -4,7 +4,7 @@ This guide details the step-by-step process for compiling production-ready relea
 
 ---
 
-## 🤖 1. Publishing on Google Play Store
+## 1. Publishing on Google Play Store
 
 To publish on the Google Play Store, you must generate a secure **Keystore**, configure Tauri to sign your release builds, compile a production Android App Bundle (`.aab`), and upload it to the Google Play Console.
 
@@ -49,53 +49,100 @@ This will compile a production release bundle and output the signed `.aab` file 
 
 ---
 
-## 📦 2. Publishing on F-Droid
+## 2. Publishing on F-Droid
 
-F-Droid is a repository for Free and Open Source Software (FOSS) on Android. F-Droid builds apps **directly from their source code** on their own servers to guarantee transparency and safety.
+F-Droid is a repository for Free and Open Source Software (FOSS) on Android. F-Droid compiles and builds applications **directly from their source code** on their own secure build servers, ensuring full transparency, security, and reproducibility.
 
 ### Submission Requirements
-To be accepted into F-Droid, Aura must satisfy:
-1. **Fully Open Source**: Aura cannot contain any proprietary libraries or binary-only dependencies (already satisfied!).
-2. **Built from Source**: The F-Droid build server will clone your git repository and run compilation commands natively.
-3. **No User Tracking**: No proprietary analytics, tracking SDKs, or invasive telemetry.
+To be accepted into the official F-Droid repository, Aura must satisfy:
+1. **Fully Open Source**: No proprietary analytics, tracking SDKs, or invasive telemetry.
+2. **Built from Source**: The build server compiles your Rust and React source natively.
+3. **No Precompiled Binaries**: All dependencies must be built from source or fetched from open-source registries during the allowed `prebuild` phase.
 
 ### Submission Steps
 
-1. **Tag a Release**: Push a semantic version tag to your repository:
+#### Step 2.1: Tag and Push the Release
+F-Droid builds from tag references. Ensure your semantic version tag is pushed:
+```bash
+git tag -a v0.1.0 -m "Release v0.1.0"
+git push origin v0.1.0
+```
+
+#### Step 2.2: Prepare the Metadata Recipe File
+To tell the F-Droid build server how to compile Aura, you must submit a YAML recipe named after the app's App ID (`com.aura.app.yml`). 
+
+The recipe is submitted via a Merge Request (MR) in the official [fdroiddata GitLab repository](https://gitlab.com/fdroid/fdroiddata).
+
+Create the file `metadata/com.aura.app.yml` with the following configuration:
+
+```yaml
+Categories:
+  - Chat
+  - Internet
+License: GPL-3.0-only
+SourceCode: https://github.com/bensiv/aura
+IssueTracker: https://github.com/bensiv/aura/issues
+
+RepoType: git
+Repo: https://github.com/bensiv/aura.git
+
+Builds:
+  - versionName: 0.1.0
+    versionCode: 1
+    commit: v0.1.0
+    subdir: src/core/gen/android
+    sudo:
+      - apt-get update || true
+      - apt-get install -y --no-install-recommends nodejs npm
+    rust:
+      - yes
+    ndk: 27.1.12297006
+    gradle:
+      - universalRelease
+    prebuild:
+      # 1. Install required Rust targets for cross-compiling the core
+      - rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+      # 2. Install node dependencies and compile web assets (TSC & Vite) to `out/`
+      - cd $SRCDIR/cnf && npm install
+      - cd $SRCDIR/cnf && npm run build
+      # 3. Create a local node_modules symlink in src/core so the offline gradle build can find @tauri-apps/cli
+      - ln -s $SRCDIR/cnf/node_modules $SRCDIR/src/core/node_modules
+    output: app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
+```
+
+> [!IMPORTANT]
+> **Why do we need the symlink?**
+> The F-Droid build server turns off network access completely during the `gradle` execution phase. Since Tauri's custom Gradle plugin invokes `npx @tauri-apps/cli` internally during compilation, creating a symlink to `$SRCDIR/cnf/node_modules` inside `src/core` allows `npx` to locate the CLI locally and run completely offline!
+
+#### Step 2.3: Test the Build Locally (Optional but Recommended)
+Before opening the GitLab Merge Request, you can test if F-Droid compiles your app flawlessly using their local build tools:
+
+1. **Install F-Droid Server Tools & Docker**:
    ```bash
-   git tag -a v0.1.0 -m "Release v0.1.0"
-   git push origin v0.1.0
+   sudo apt install docker.io python3-pip
+   pip3 install fdroidserver
    ```
-2. **Create a Metadata Recipe File**:
-   Create a merge request in the official [fdroiddata repository](https://gitlab.com/fdroid/fdroiddata). You will submit a YAML recipe (`com.aura.app.yml`) describing how the build server compiles Aura:
-   
-   ```yaml
-   Categories:
-     - Chat
-     - Internet
-   License: GPL-3.0-only # Ensure this matches your repository license
-   SourceCode: https://github.com/yourusername/aura
-
-   RepoType: git
-   Repo: https://github.com/yourusername/aura.git
-
-   Builds:
-     - versionName: 0.1.0
-       versionCode: 1
-       commit: v0.1.0
-       subdir: src/core
-       gradle:
-         - yes
-       prebuild:
-         - cd ../../cnf && npm install
-         - cd ../../cnf && npx vite build
-       target: android
+2. **Clone the fdroiddata Repository**:
+   ```bash
+   git clone https://gitlab.com/fdroid/fdroiddata.git
+   cd fdroiddata
    ```
-3. F-Droid maintainers will review the recipe, run a test compilation in their isolated build container, and publish Aura to the main catalog!
+3. **Copy your Recipe & Test Build**:
+   Place your `com.aura.app.yml` into the `metadata/` directory and run:
+   ```bash
+   fdroid build --docker -v com.aura.app
+   ```
+   *This command runs a Docker container replicating the exact F-Droid server environment, downloads dependencies, and builds the unsigned APK.*
+
+#### Step 2.4: Submit to F-Droid
+1. Fork [fdroid/fdroiddata](https://gitlab.com/fdroid/fdroiddata) on GitLab.
+2. Commit your new recipe file to a feature branch: `metadata/com.aura.app.yml`.
+3. Open a Merge Request against the `master` branch.
+4. F-Droid's automated CI will run a test build. Once a maintainer reviews and merges the recipe, your app will automatically compile and appear on F-Droid within a few days!
 
 ---
 
-## 🍏 3. Building for Apple iOS (Future Scope)
+## 3. Building for Apple iOS (Future Scope)
 
 Tauri 2.x natively supports compilation for Apple iOS, allowing you to generate an iOS Xcode workspace and compile a native `.ipa` package for iPhones.
 

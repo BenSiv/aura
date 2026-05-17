@@ -3,10 +3,10 @@
 This document outlines the decentralized strategy for finding and matching peers in Aura without a central server.
 
 ## 1. The Core Philosophy
-Aura is **serverless**. Discovery must happen through gossip and decentralized relays, ensuring that no single entity (including the Aura project) knows who is swiping on whom.
+Aura is **serverless**. Discovery must happen through gossip and decentralized relays, ensuring that no single entity (including me, the developer) knows who is swiping on whom.
 
 ## 2. Technology Stack
-To achieve privacy-preserving discovery, Aura utilizes the following layers:
+To achieve privacy-preserving discovery, I utilized the following layers:
 
 *   **Waku (libp2p)**: A privacy-centric gossip protocol. It allows nodes to broadcast messages to a "mesh" without revealing the sender's identity to the mesh at large.
 *   **Encrypted SQLite (SQLCipher)**: All discovered peer metadata is stored locally.
@@ -21,13 +21,13 @@ A user's device periodically broadcasts a **Discovery Packet** to the local mesh
 *   **Geofence Hint**: A low-resolution location hash (e.g., 5km radius) to ensure gossip stays relevant to the user's area.
 
 ### B. The Mesh Protocol & Store-Carry-Forward
-Aura implements a **Store-Carry-Forward** model to ensure reachability in sparse environments:
+I implemented a **Store-Carry-Forward** model to ensure reachability in sparse environments:
 1.  **Node Participation**: Every instance of the app acts as a node in the mesh.
 2.  **Gossip Propagation**: When a device receives an encrypted packet, it doesn't just process it for local matches; it also "gossips" or rebroadcasts packets it has received from others.
-3.  **Physical Mobility**: Profiles travel across geographic regions (e.g., a 50km radius) through the physical movement of users. Your phone "carries" the network with it, strengthening the living network as density increases.
+3.  **Physical Mobility**: Profiles travel across geographic regions through the physical movement of users. The phone "carries" the network with it, strengthening the living network as density increases.
 
 ### C. Peer Filtering
-When a device receives a packet, it compares the **Interest Tags** against the local **AI Preference Engine**:
+When a device receives a packet, it compares the **Interest Tags** against the local **Preference Optimizer** (a tiny ML model):
 1.  If the match score is high, the device stores the peer's ephemeral key.
 2.  The peer is then "swipable" in the local UI.
 

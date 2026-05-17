@@ -8,6 +8,7 @@
 - [x] Notification System Integration
 - [x] Persistent Settings (Visibility, Projection)
 - [x] Project reorganization (Core Rust + UI React)
+- [x] F-Droid metadata recipe and build simulation script
 
 ## Discovery & Networking
 - [ ] Waku / libp2p Mesh Integration
