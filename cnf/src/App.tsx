@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Radar, Shield, Zap } from "lucide-react";
 import { useResonance } from "./hooks/useResonance";
-import { listen } from '@tauri-apps/api/event';
+import { listen } from "./services/tauri";
 import { OnboardingScreen } from "./screens/OnboardingScreen";
 import { DiscoveryScreen } from "./screens/DiscoveryScreen";
 import { ProfileDetailOverlay } from "./screens/ProfileDetailOverlay";
