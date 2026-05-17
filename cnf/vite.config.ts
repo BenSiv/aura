@@ -7,7 +7,7 @@ const host = process.env.TAURI_DEV_HOST;
 // https://vite.dev/config/
 export default defineConfig(async () => ({
   plugins: [react()],
-  root: ".", // Since we'll run from cnf/, the html is here
+  root: ".", 
   publicDir: "../web",
   build: {
     outDir: "../out",

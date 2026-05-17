@@ -76,7 +76,7 @@ fn get_settings(state: tauri::State<AppState>) -> Result<Vec<(String, String)>, 
 }
 
 #[tauri::command]
-fn start_broadcasting(state: tauri::State<AppState>, profile: mesh::PeerProfile) -> Result<(), String> {
+fn start_broadcasting(_state: tauri::State<AppState>, profile: mesh::PeerProfile) -> Result<(), String> {
     mesh::broadcast_profile(profile);
     Ok(())
 }

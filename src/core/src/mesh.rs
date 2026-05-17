@@ -123,17 +123,25 @@ pub fn start_mesh(app: AppHandle) {
                 loop {
                     interval.tick().await;
                     println!("[P2P] SCF: Checking carry_store for unexpired gossip...");
+                    
+                    let mut payloads_to_send = Vec::new();
+                    
                     let state = scf_app_handle.state::<crate::AppState>();
                     if let Ok(conn) = state.db.lock() {
                         let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
-                        let mut stmt = conn.prepare("SELECT payload FROM carry_store WHERE expiresAt > ?").unwrap();
-                        let payloads = stmt.query_map([now], |row| row.get::<_, Vec<u8>>(0)).unwrap();
-                        
-                        for payload in payloads {
-                            if let Ok(data) = payload {
-                                scf_tx.send(data).ok();
+                        if let Ok(mut stmt) = conn.prepare("SELECT payload FROM carry_store WHERE expiresAt > ?") {
+                            if let Ok(rows) = stmt.query_map([now], |row| row.get::<_, Vec<u8>>(0)) {
+                                for row in rows {
+                                    if let Ok(data) = row {
+                                        payloads_to_send.push(data);
+                                    }
+                                }
                             }
                         }
+                    }
+
+                    for data in payloads_to_send {
+                        scf_tx.send(data).ok();
                     }
                 }
             });
