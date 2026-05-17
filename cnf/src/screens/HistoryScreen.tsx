@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, RotateCcw } from "lucide-react";
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from "../services/tauri";
 import { Profile } from "../components/SwipeCard";
 
 interface HistoryScreenProps {

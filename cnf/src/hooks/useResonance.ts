@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { listen } from '@tauri-apps/api/event';
-import { invoke } from '@tauri-apps/api/core';
+import { listen, invoke } from "../services/tauri";
 import { Profile } from "../components/SwipeCard";
 import { DEMO_CONFIG } from "../demo/demoConfig";
 import { DEMO_PROFILES } from "../demo/demoData";
