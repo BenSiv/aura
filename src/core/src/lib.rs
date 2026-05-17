@@ -196,6 +196,55 @@ fn get_chat_history(state: tauri::State<AppState>, peer_id: String) -> Result<Ve
 }
 
 #[tauri::command]
+fn get_chat_partners(state: tauri::State<AppState>) -> Result<Vec<mesh::PeerProfile>, String> {
+    let conn = state.db.lock().map_err(|e| e.to_string())?;
+    
+    // Get unique peer IDs from messages table
+    let mut stmt = conn.prepare("
+        SELECT DISTINCT CASE 
+            WHEN senderId IN (SELECT id FROM local_profile) THEN receiverId 
+            ELSE senderId 
+        END as peer_id 
+        FROM messages
+    ").map_err(|e| e.to_string())?;
+    
+    let peer_ids = stmt.query_map([], |row| {
+        Ok(row.get::<_, String>(0)?)
+    })
+    .map_err(|e| e.to_string())?
+    .collect::<Result<Vec<String>, _>>()
+    .map_err(|e| e.to_string())?;
+
+    if peer_ids.is_empty() {
+        return Ok(Vec::new());
+    }
+
+    // Fetch full profiles for these IDs
+    let placeholders = peer_ids.iter().map(|_| "?").collect::<Vec<_>>().join(",");
+    let query = format!("SELECT id, name, bio, images, tags FROM profiles WHERE id IN ({})", placeholders);
+    
+    let mut stmt = conn.prepare(&query).map_err(|e| e.to_string())?;
+    let params = rusqlite::params_from_iter(peer_ids.iter());
+    
+    let profiles = stmt.query_map(params, |row| {
+        Ok(mesh::PeerProfile {
+            id: row.get(0)?,
+            name: row.get(1)?,
+            bio: row.get(2)?,
+            images: row.get(3)?,
+            tags: row.get(4)?,
+            gender: "Other".to_string(),
+            interested_in: "Both".to_string(),
+        })
+    })
+    .map_err(|e| e.to_string())?
+    .collect::<Result<Vec<_>, _>>()
+    .map_err(|e| e.to_string())?;
+
+    Ok(profiles)
+}
+
+#[tauri::command]
 fn save_peer_profile(state: tauri::State<AppState>, profile: mesh::PeerProfile) -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     let timestamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
@@ -250,18 +299,6 @@ pub fn run() {
             // Initialize database
             let conn = db::initialize_database(app_dir).expect("Failed to initialize database");
             
-            /*
-            CREATE TABLE IF NOT EXISTS local_profile (
-                id TEXT PRIMARY KEY NOT NULL,
-                name TEXT NOT NULL,
-                bio TEXT,
-                images TEXT,
-                tags TEXT,
-                gender TEXT DEFAULT 'Other',
-                interested_in TEXT DEFAULT 'Both'
-            );
-            */
-
             // Manage state
             app.manage(AppState {
                 db: Mutex::new(conn),
@@ -282,6 +319,7 @@ pub fn run() {
             revert_interaction,
             send_chat_message,
             get_chat_history,
+            get_chat_partners,
             save_peer_profile,
             get_peer_profiles
         ])

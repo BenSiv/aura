@@ -28,7 +28,11 @@
 - [x] Base "Aura" Projection Screen
 - [x] Visibility Mode Toggle (Cloaked, Resonant, Public)
 - [x] Proximity Simulation Tool
-- [ ] Recent Encounters List
+- [ ] Right-side Navigation Drawer (3-bar menu)
+    - [ ] Settings & Preferences
+    - [ ] Profile (View/Edit Details)
+    - [ ] Chat History
+    - [ ] Swipe History
 - [ ] Chat Interface (Local-First)
 
 ## Safety & Privacy

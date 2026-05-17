@@ -1,5 +1,5 @@
 import React from "react";
-import { Radar, Sparkles, X, Heart, Shield, RotateCcw } from "lucide-react";
+import { Radar, Sparkles, X, Heart, Shield, Menu } from "lucide-react";
 import SwipeCard, { Profile } from "../components/SwipeCard";
 
 interface DiscoveryScreenProps {
@@ -10,7 +10,7 @@ interface DiscoveryScreenProps {
   handleInteraction: (type: 'like' | 'pass') => void;
   setSelectedProfile: (profile: Profile) => void;
   visibilityInfo: { icon: React.ReactNode, label: string, desc: string };
-  onOpenHistory: () => void;
+  onOpenMenu: () => void;
 }
 
 export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
@@ -21,7 +21,7 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
   handleInteraction,
   setSelectedProfile,
   visibilityInfo,
-  onOpenHistory
+  onOpenMenu
 }) => {
   const { icon, label, desc } = visibilityInfo;
 
@@ -37,14 +37,15 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
             </div>
           </div>
           <div className="header-actions">
-            <button className="icon-btn" onClick={onOpenHistory} title="View History">
-              <RotateCcw size={20} />
+            <button className="icon-btn" onClick={onOpenMenu} title="Menu">
+              <Menu size={24} />
             </button>
             <button className="btn-mode-toggle" onClick={cycleVisibility}>
               {icon}
               <span className="mode-label">{label}</span>
             </button>
-            <label className="switch">
+...
+
               <input 
                 type="checkbox" 
                 checked={activeAura} 

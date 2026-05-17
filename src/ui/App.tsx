@@ -9,6 +9,9 @@ import { Profile } from "./components/SwipeCard";
 import { MatchScreen } from "./screens/MatchScreen";
 import { ChatScreen } from "./screens/ChatScreen";
 import { HistoryScreen } from "./screens/HistoryScreen";
+import { Sidebar } from "./components/Sidebar";
+import { ChatsScreen } from "./screens/ChatsScreen";
+import { SettingsScreen } from "./screens/SettingsScreen";
 import "./App.css";
 
 function App() {
@@ -29,6 +32,10 @@ function App() {
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [showChat, setShowChat] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showChatsList, setShowChatsList] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [toast, setToast] = useState<{ senderId: string; text: string } | null>(null);
 
   useEffect(() => {
@@ -77,8 +84,11 @@ function App() {
 
   if (isInitialLoading) return null;
 
-  if (!localProfile) {
-    return <OnboardingScreen onSave={handleSaveProfile} />;
+  if (!localProfile || showProfileEdit) {
+    return <OnboardingScreen onSave={(...args) => {
+      handleSaveProfile(...args);
+      setShowProfileEdit(false);
+    }} />;
   }
 
   if (showChat && matchedProfile) {
@@ -87,6 +97,21 @@ function App() {
 
   if (showHistory) {
     return <HistoryScreen onBack={() => setShowHistory(false)} />;
+  }
+
+  if (showChatsList) {
+    return <ChatsScreen 
+      onBack={() => setShowChatsList(false)} 
+      onSelectChat={(profile) => {
+        setMatchedProfile(profile);
+        setShowChat(true);
+        setShowChatsList(false);
+      }} 
+    />;
+  }
+
+  if (showSettings) {
+    return <SettingsScreen onBack={() => setShowSettings(false)} />;
   }
 
   return (
@@ -112,6 +137,25 @@ function App() {
         </div>
       )}
 
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)} 
+        onNavigate={(view) => {
+          setIsSidebarOpen(false);
+          // Reset all views first
+          setShowProfileEdit(false);
+          setShowHistory(false);
+          setShowChatsList(false);
+          setShowSettings(false);
+          setShowChat(false);
+
+          if (view === "profile") setShowProfileEdit(true);
+          if (view === "swipes") setShowHistory(true);
+          if (view === "chats") setShowChatsList(true);
+          if (view === "settings") setShowSettings(true);
+        }}
+      />
+
       <DiscoveryScreen 
         activeAura={activeAura}
         setActiveAura={setActiveAura}
@@ -120,7 +164,7 @@ function App() {
         handleInteraction={handleInteraction}
         setSelectedProfile={setSelectedProfile}
         visibilityInfo={getVisibilityInfo()}
-        onOpenHistory={() => setShowHistory(true)}
+        onOpenMenu={() => setIsSidebarOpen(true)}
       />
 
       {selectedProfile && (
@@ -131,7 +175,7 @@ function App() {
         />
       )}
 
-      {matchedProfile && (
+      {matchedProfile && !showChat && (
         <MatchScreen 
           localProfile={localProfile}
           matchedProfile={matchedProfile}
