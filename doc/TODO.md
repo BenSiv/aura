@@ -34,8 +34,8 @@
     - [x] Chat History
     - [x] Swipe History
 - [x] Chat Interface (Local-First)
-- [ ] Premium Light and Dark Theme Selection (under Settings)
-- [ ] Sidebar Profile Editing State Preservation (populate with existing config)
+- [x] Premium Light and Dark Theme Selection (under Settings)
+- [x] Sidebar Profile Editing State Preservation (populate with existing config)
 
 ## Safety & Privacy
 - [ ] Hourly ID Rotation
