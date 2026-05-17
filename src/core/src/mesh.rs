@@ -6,8 +6,18 @@ use serde::{Deserialize, Serialize};
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 use std::time::Duration;
-use tauri::{AppHandle, Emitter};
+use tauri::{AppHandle, Emitter, Manager};
 use tokio::sync::mpsc;
+
+#[derive(Clone, Serialize, Deserialize, Debug)]
+pub struct ChatMessage {
+    pub msg_type: String, // Always "chat"
+    pub id: String,
+    pub sender_id: String,
+    pub receiver_id: String,
+    pub text: String,
+    pub timestamp: u64,
+}
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct PeerProfile {
@@ -43,10 +53,10 @@ struct AuraBehaviour {
 }
 
 static TOPIC_NAME: &str = "aura-resonance-v1";
-static mut BROADCAST_TX: Option<mpsc::UnboundedSender<PeerProfile>> = None;
+static mut BROADCAST_TX: Option<mpsc::UnboundedSender<Vec<u8>>> = None;
 
 pub fn start_mesh(app: AppHandle) {
-    let (tx, mut rx) = mpsc::unbounded_channel::<PeerProfile>();
+    let (tx, mut rx) = mpsc::unbounded_channel::<Vec<u8>>();
     unsafe {
         BROADCAST_TX = Some(tx);
     }
@@ -106,12 +116,9 @@ pub fn start_mesh(app: AppHandle) {
 
             loop {
                 tokio::select! {
-                    profile = rx.recv() => {
-                        if let Some(p) = profile {
-                            if let Ok(encoded) = serde_json::to_vec(&p) {
-                                println!("[P2P] Publishing our Aura to the mesh...");
-                                swarm.behaviour_mut().gossipsub.publish(topic.clone(), encoded).ok();
-                            }
+                    encoded = rx.recv() => {
+                        if let Some(bytes) = encoded {
+                            swarm.behaviour_mut().gossipsub.publish(topic.clone(), bytes).ok();
                         }
                     }
                     event = swarm.select_next_some() => match event {
@@ -141,14 +148,35 @@ pub fn start_mesh(app: AppHandle) {
                             message,
                         })) => {
                             if let Ok(peer) = serde_json::from_slice::<PeerProfile>(&message.data) {
-                                println!("[P2P] Received Aura via Gossipsub from {}", peer_id);
-                                let res_event = ResonanceEvent {
-                                    profile_id: peer.id.clone(),
-                                    score: 1.0,
-                                    timestamp: std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs(),
-                                    peer_data: Some(peer),
-                                };
-                                app.emit("resonance_detected", res_event).ok();
+                                if !peer.id.is_empty() && peer.name.len() > 0 {
+                                    println!("[P2P] Received Aura via Gossipsub from {}", peer_id);
+                                    let res_event = ResonanceEvent {
+                                        profile_id: peer.id.clone(),
+                                        score: 1.0,
+                                        timestamp: std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs(),
+                                        peer_data: Some(peer),
+                                    };
+                                    app.emit("resonance_detected", res_event).ok();
+                                }
+                            }
+                            if let Ok(chat) = serde_json::from_slice::<ChatMessage>(&message.data) {
+                                if chat.msg_type == "chat" {
+                                    println!("[P2P] Received Chat Message from {}", chat.sender_id);
+                                    
+                                    // Persist incoming message directly to local SQLite DB
+                                    let state = app.state::<crate::AppState>();
+                                    if let Ok(conn) = state.db.lock() {
+                                        let _ = conn.execute(
+                                            "INSERT OR IGNORE INTO messages (id, senderId, receiverId, text, timestamp) VALUES (?1, ?2, ?3, ?4, ?5)",
+                                            (&chat.id, &chat.sender_id, &chat.receiver_id, &chat.text, &chat.timestamp),
+                                        );
+                                    }
+                                    
+                                    app.emit("chat_message_received", chat.clone()).ok();
+                                } else if chat.msg_type == "like" {
+                                    println!("[P2P] Received Like from {}", chat.sender_id);
+                                    app.emit("like_received", chat.clone()).ok();
+                                }
                             }
                         }
                         _ => {}
@@ -160,9 +188,21 @@ pub fn start_mesh(app: AppHandle) {
 }
 
 pub fn broadcast_profile(profile: PeerProfile) {
-    unsafe {
-        if let Some(ref tx) = BROADCAST_TX {
-            tx.send(profile).ok();
+    if let Ok(encoded) = serde_json::to_vec(&profile) {
+        unsafe {
+            if let Some(ref tx) = BROADCAST_TX {
+                tx.send(encoded).ok();
+            }
+        }
+    }
+}
+
+pub fn broadcast_chat(chat: ChatMessage) {
+    if let Ok(encoded) = serde_json::to_vec(&chat) {
+        unsafe {
+            if let Some(ref tx) = BROADCAST_TX {
+                tx.send(encoded).ok();
+            }
         }
     }
 }

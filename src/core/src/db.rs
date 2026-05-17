@@ -86,6 +86,14 @@ pub fn initialize_database(app_dir: PathBuf) -> Result<Connection> {
             FOREIGN KEY (targetProfileId) REFERENCES profiles(id)
         );
 
+        CREATE TABLE IF NOT EXISTS messages (
+            id TEXT PRIMARY KEY NOT NULL,
+            senderId TEXT NOT NULL,
+            receiverId TEXT NOT NULL,
+            text TEXT NOT NULL,
+            timestamp INTEGER NOT NULL
+        );
+
         INSERT OR IGNORE INTO settings (key, value) VALUES ('visibility_mode', 'resonant');
         INSERT OR IGNORE INTO settings (key, value) VALUES ('projection_timing', 'foreground');
         INSERT OR IGNORE INTO settings (key, value) VALUES ('active_aura', 'true');

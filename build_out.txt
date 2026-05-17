@@ -1,0 +1,116 @@
+        Info Using installed NDK: /home/bensiv/Android/Sdk/ndk/27.1.12297006
+        Info Looking up installed tauri packages to check mismatched versions...
+        Warn The bundle identifier "com.aura.app" set in `"tauri.conf.json" identifier` ends with `.app`. This is not recommended because it conflicts with the application bundle extension on macOS.
+[1m[92m   Compiling[0m aura v0.1.0 (/home/bensiv/Projects/aura/src/core)
+[1m[91merror[0m[1m: cannot find macro `__tauri_command_name_save_peer_profile` in this scope[0m
+   [1m[94m--> [0msrc/lib.rs:231:25
+    [1m[94m|[0m
+[1m[94m 24[0m [1m[94m|[0m   #[tauri::command]
+    [1m[94m|[0m   [1m[94m-----------------[0m [1m[94msimilarly named macro `__tauri_command_name_save_local_profile` defined here[0m
+[1m[94m...[0m
+[1m[94m231[0m [1m[94m|[0m           .invoke_handler(tauri::generate_handler![
+    [1m[94m|[0m [1m[91m _________________________^[0m
+[1m[94m232[0m [1m[94m|[0m [1m[91m|[0m             get_settings,
+[1m[94m233[0m [1m[94m|[0m [1m[91m|[0m             save_local_profile,
+[1m[94m234[0m [1m[94m|[0m [1m[91m|[0m             get_local_profile,
+[1m[94m...[0m   [1m[91m|[0m
+[1m[94m242[0m [1m[94m|[0m [1m[91m|[0m             get_peer_profiles
+[1m[94m243[0m [1m[94m|[0m [1m[91m|[0m         ])
+    [1m[94m|[0m [1m[91m|_________^[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: this error originates in the macro `tauri::generate_handler` (in Nightly builds, run with -Z macro-backtrace for more info)
+[1m[96mhelp[0m: a macro with a similar name exists
+    [1m[94m|[0m
+[1m[94m231[0m [91m- [0m        .invoke_handler([91mtauri::generate_handler![[0m
+[1m[94m232[0m [91m-             get_settings,[0m
+[1m[94m233[0m [91m-             save_local_profile,[0m
+[1m[94m234[0m [91m-             get_local_profile,[0m
+[1m[94m235[0m [91m-             start_broadcasting,[0m
+[1m[94m236[0m [91m-             record_local_interaction,[0m
+[1m[94m237[0m [91m-             get_interaction_history,[0m
+[1m[94m238[0m [91m-             revert_interaction,[0m
+[1m[94m239[0m [91m-             send_chat_message,[0m
+[1m[94m240[0m [91m-             get_chat_history,[0m
+[1m[94m241[0m [91m-             save_peer_profile,[0m
+[1m[94m242[0m [91m-             get_peer_profiles[0m
+[1m[94m243[0m [91m-         ][0m)
+[1m[94m231[0m [92m+ [0m        .invoke_handler([92m__tauri_command_name_save_local_profile[0m)
+    [1m[94m|[0m
+
+[1m[91merror[0m[1m: cannot find macro `__cmd__save_peer_profile` in this scope[0m
+   [1m[94m--> [0msrc/lib.rs:241:13
+    [1m[94m|[0m
+[1m[94m 24[0m [1m[94m|[0m #[tauri::command]
+    [1m[94m|[0m [1m[94m-----------------[0m [1m[94msimilarly named macro `__cmd__save_local_profile` defined here[0m
+[1m[94m...[0m
+[1m[94m241[0m [1m[94m|[0m             save_peer_profile,
+    [1m[94m|[0m             [1m[91m^^^^^^^^^^^^^^^^^[0m
+    [1m[94m|[0m
+[1m[96mhelp[0m: a macro with a similar name exists
+    [1m[94m|[0m
+[1m[94m241[0m [91m- [0m            [91msave_peer_profile[0m,
+[1m[94m241[0m [92m+ [0m            [92m__cmd__save_local_profile[0m,
+    [1m[94m|[0m
+
+[1m[91merror[0m[1m: cannot find macro `__tauri_command_name_get_peer_profiles` in this scope[0m
+   [1m[94m--> [0msrc/lib.rs:231:25
+    [1m[94m|[0m
+[1m[94m 42[0m [1m[94m|[0m   #[tauri::command]
+    [1m[94m|[0m   [1m[94m-----------------[0m [1m[94msimilarly named macro `__tauri_command_name_get_local_profile` defined here[0m
+[1m[94m...[0m
+[1m[94m231[0m [1m[94m|[0m           .invoke_handler(tauri::generate_handler![
+    [1m[94m|[0m [1m[91m _________________________^[0m
+[1m[94m232[0m [1m[94m|[0m [1m[91m|[0m             get_settings,
+[1m[94m233[0m [1m[94m|[0m [1m[91m|[0m             save_local_profile,
+[1m[94m234[0m [1m[94m|[0m [1m[91m|[0m             get_local_profile,
+[1m[94m...[0m   [1m[91m|[0m
+[1m[94m242[0m [1m[94m|[0m [1m[91m|[0m             get_peer_profiles
+[1m[94m243[0m [1m[94m|[0m [1m[91m|[0m         ])
+    [1m[94m|[0m [1m[91m|_________^[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: this error originates in the macro `tauri::generate_handler` (in Nightly builds, run with -Z macro-backtrace for more info)
+[1m[96mhelp[0m: a macro with a similar name exists
+    [1m[94m|[0m
+[1m[94m231[0m [91m- [0m        .invoke_handler([91mtauri::generate_handler![[0m
+[1m[94m232[0m [91m-             get_settings,[0m
+[1m[94m233[0m [91m-             save_local_profile,[0m
+[1m[94m234[0m [91m-             get_local_profile,[0m
+[1m[94m235[0m [91m-             start_broadcasting,[0m
+[1m[94m236[0m [91m-             record_local_interaction,[0m
+[1m[94m237[0m [91m-             get_interaction_history,[0m
+[1m[94m238[0m [91m-             revert_interaction,[0m
+[1m[94m239[0m [91m-             send_chat_message,[0m
+[1m[94m240[0m [91m-             get_chat_history,[0m
+[1m[94m241[0m [91m-             save_peer_profile,[0m
+[1m[94m242[0m [91m-             get_peer_profiles[0m
+[1m[94m243[0m [91m-         ][0m)
+[1m[94m231[0m [92m+ [0m        .invoke_handler([92m__tauri_command_name_get_local_profile[0m)
+    [1m[94m|[0m
+
+[1m[91merror[0m[1m: cannot find macro `__cmd__get_peer_profiles` in this scope[0m
+   [1m[94m--> [0msrc/lib.rs:242:13
+    [1m[94m|[0m
+[1m[94m 42[0m [1m[94m|[0m #[tauri::command]
+    [1m[94m|[0m [1m[94m-----------------[0m [1m[94msimilarly named macro `__cmd__get_local_profile` defined here[0m
+[1m[94m...[0m
+[1m[94m242[0m [1m[94m|[0m             get_peer_profiles
+    [1m[94m|[0m             [1m[91m^^^^^^^^^^^^^^^^^[0m
+    [1m[94m|[0m
+[1m[96mhelp[0m: a macro with a similar name exists
+    [1m[94m|[0m
+[1m[94m242[0m [91m- [0m            [91mget_peer_profiles[0m
+[1m[94m242[0m [92m+ [0m            [92m__cmd__get_local_profile[0m
+    [1m[94m|[0m
+
+[1m[33mwarning[0m[1m: unused variable: `state`[0m
+  [1m[94m--> [0msrc/lib.rs:79:23
+   [1m[94m|[0m
+[1m[94m79[0m [1m[94m|[0m fn start_broadcasting(state: tauri::State<AppState>, profile: mesh::PeerProfile) -> Result<(), String> {
+   [1m[94m|[0m                       [1m[33m^^^^^[0m [1m[33mhelp: if this is intentional, prefix it with an underscore: `_state`[0m
+   [1m[94m|[0m
+   [1m[94m= [0m[1mnote[0m: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m: `aura` (lib) generated 1 warning
+[1m[91merror[0m: could not compile `aura` (lib) due to 4 previous errors; 1 warning emitted
+failed to build Android app: `Failed to run `cargo build`: command ["cargo", "build", "--package", "aura", "--manifest-path", "/home/bensiv/Projects/aura/src/core/Cargo.toml", "--target", "aarch64-linux-android", "--features", "tauri/custom-protocol tauri/custom-protocol", "--lib"] exited with code 101
+       Error failed to build Android app: `Failed to run `cargo build`: command ["cargo", "build", "--package", "aura", "--manifest-path", "/home/bensiv/Projects/aura/src/core/Cargo.toml", "--target", "aarch64-linux-android", "--features", "tauri/custom-protocol tauri/custom-protocol", "--lib"] exited with code 101

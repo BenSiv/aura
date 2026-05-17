@@ -68,8 +68,8 @@ install:
 clean:
 	@echo "Cleaning up..."
 	@rm -rf $(OUT)
-	@rm -rf $(SRC)/core/target
 	@cargo clean --manifest-path $(SRC)/core/Cargo.toml
+	@if [ -d "$(SRC)/core/gen/android" ]; then cd $(SRC)/core/gen/android && ./gradlew clean; fi
 
 # Deploy to all connected devices
 deploy:

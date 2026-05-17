@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { listen } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/core';
 import { Profile } from "../components/SwipeCard";
@@ -14,14 +14,39 @@ export function useResonance() {
   const [localProfile, setLocalProfile] = useState<{ id: string, name: string, bio: string, images: string, tags: string, gender: string, interestedIn: string } | null>(null);
   const [matchedProfile, setMatchedProfile] = useState<Profile | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(!DEMO_CONFIG.IS_DEMO_MODE);
+  const myLikesRef = useRef<string[]>([]);
+  const seenProfilesRef = useRef<Record<string, Profile>>({});
+  const likesReceivedRef = useRef<string[]>([]);
+  const localProfileRef = useRef<{ id: string, name: string, bio: string, images: string, tags: string, gender: string, interestedIn: string } | null>(null);
+
+  // Initialize likes from DB
+  useEffect(() => {
+    invoke<any[]>("get_interaction_history").then(history => {
+      const likes = history.filter(h => h[1] === "like").map(h => h[0]);
+      myLikesRef.current = likes;
+    }).catch(err => console.error("Failed to load interactions:", err));
+  }, []);
 
   const startBroadcasting = useCallback((profile: any) => {
-    // Shout our presence every 10 seconds
     invoke("start_broadcasting", { profile });
-    const interval = setInterval(() => {
-      invoke("start_broadcasting", { profile });
+    
+    // Clear any existing broadcast intervals to prevent stale broadcasts
+    if ((window as any).broadcastInterval) {
+      clearInterval((window as any).broadcastInterval);
+    }
+    
+    (window as any).broadcastInterval = setInterval(() => {
+      if (localProfileRef.current) {
+        // Construct the payload to match what Rust expects
+        const payload = {
+          ...localProfileRef.current,
+          interested_in: localProfileRef.current.interestedIn
+        };
+        invoke("start_broadcasting", { profile: payload });
+      }
     }, 10000);
-    return () => clearInterval(interval);
+    
+    return () => clearInterval((window as any).broadcastInterval);
   }, []);
 
   useEffect(() => {
@@ -36,6 +61,7 @@ export function useResonance() {
       .then((profile) => {
         if (profile) {
           setLocalProfile(profile as any);
+          localProfileRef.current = profile as any;
           startBroadcasting(profile);
         }
         setIsInitialLoading(false);
@@ -60,13 +86,39 @@ export function useResonance() {
             distance: Math.round(score * 10) / 10
           };
 
+          if (!DEMO_CONFIG.IS_DEMO_MODE) {
+            invoke("save_peer_profile", { profile: newPeer }).catch(err => console.error("Failed to save peer:", err));
+          }
+
+          seenProfilesRef.current[newPeer.id] = newPeer;
           return [...prev, newPeer];
         });
       }
     });
 
+    // Listen for incoming explicit "like" messages
+    const unlistenLike = listen<any>('like_received', (event) => {
+      const { sender_id, receiver_id } = event.payload;
+      
+      if (localProfileRef.current && receiver_id === localProfileRef.current.id) {
+        // Record that they swiped Like on us
+        if (!likesReceivedRef.current.includes(sender_id)) {
+          likesReceivedRef.current = [...likesReceivedRef.current, sender_id];
+        }
+
+        // If we also swiped Like on them, trigger a mutual match!
+        if (myLikesRef.current.includes(sender_id)) {
+          const matched = seenProfilesRef.current[sender_id];
+          if (matched) {
+            setMatchedProfile(matched);
+          }
+        }
+      }
+    });
+
     return () => {
       unlisten.then(f => f());
+      unlistenLike.then(f => f());
     };
   }, [startBroadcasting]);
 
@@ -105,6 +157,7 @@ export function useResonance() {
     try {
       await invoke("save_local_profile", { profile: newProfile });
       setLocalProfile(newProfile as any);
+      localProfileRef.current = newProfile as any;
       startBroadcasting(newProfile);
     } catch (err) {
       console.error("Failed to save profile:", err);
@@ -112,8 +165,25 @@ export function useResonance() {
   };
 
   const handleInteraction = (type: 'like' | 'pass') => {
-    if (type === 'like' && pendingDiscoveries.length > 0 && DEMO_CONFIG.INSTANT_MATCH_ON_LIKE) {
-      setMatchedProfile(pendingDiscoveries[0]);
+    if (pendingDiscoveries.length > 0) {
+      const targetPeer = pendingDiscoveries[0];
+      
+      if (!DEMO_CONFIG.IS_DEMO_MODE) {
+        invoke("record_local_interaction", { profileId: targetPeer.id, interactionType: type }).catch(err => console.error("Failed to record interaction:", err));
+        if (type === 'like') {
+          myLikesRef.current = [...myLikesRef.current, targetPeer.id];
+          
+          // Check if they already liked us (symmetric match check!)
+          if (likesReceivedRef.current.includes(targetPeer.id)) {
+            setMatchedProfile(targetPeer);
+          }
+        }
+      } else {
+        // Fallback for demo instant matching
+        if (type === 'like' && DEMO_CONFIG.INSTANT_MATCH_ON_LIKE) {
+          setMatchedProfile(targetPeer);
+        }
+      }
     }
     setPendingDiscoveries(prev => prev.slice(1));
   };
