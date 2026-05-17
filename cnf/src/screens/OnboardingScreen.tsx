@@ -2,16 +2,40 @@ import React, { useState } from "react";
 import { User, FileText, Tag } from "lucide-react";
 
 interface OnboardingScreenProps {
+  initialProfile?: {
+    id: string;
+    name: string;
+    bio: string;
+    images: string;
+    tags: string;
+    gender: string;
+    interestedIn: string;
+  };
   onSave: (name: string, bio: string, tags: string, image: string, gender: string, interestedIn: string) => void;
 }
 
-export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onSave }) => {
-  const [setupName, setSetupName] = useState("");
-  const [setupBio, setSetupBio] = useState("");
-  const [setupTags, setSetupTags] = useState("");
-  const [setupImage, setSetupImage] = useState("https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=800&q=80");
-  const [setupGender, setSetupGender] = useState("Man");
-  const [setupInterestedIn, setSetupInterestedIn] = useState("Women");
+export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ initialProfile, onSave }) => {
+  const [setupName, setSetupName] = useState(initialProfile?.name || "");
+  const [setupBio, setSetupBio] = useState(initialProfile?.bio || "");
+  const [setupTags, setSetupTags] = useState(initialProfile?.tags || "");
+  
+  const getInitialImage = () => {
+    if (initialProfile?.images) {
+      try {
+        const parsed = JSON.parse(initialProfile.images);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed[0];
+        }
+      } catch (e) {
+        return initialProfile.images;
+      }
+    }
+    return "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=800&q=80";
+  };
+
+  const [setupImage, setSetupImage] = useState(getInitialImage);
+  const [setupGender, setSetupGender] = useState(initialProfile?.gender || "Man");
+  const [setupInterestedIn, setSetupInterestedIn] = useState(initialProfile?.interestedIn || "Women");
 
   const handleSave = () => {
     if (!setupName) return;

@@ -73,7 +73,7 @@ To tell the F-Droid build server how to compile Aura, you must submit a YAML rec
 
 The recipe is submitted via a Merge Request (MR) in the official [fdroiddata GitLab repository](https://gitlab.com/fdroid/fdroiddata).
 
-Create the file `metadata/com.aura.app.yml` with the following configuration:
+Create the file `mdt/com.aura.app.yml` with the following configuration:
 
 ```yaml
 Categories:
@@ -127,7 +127,7 @@ Before opening the GitLab Merge Request, you can test if F-Droid compiles your a
    cd fdroiddata
    ```
 3. **Copy your Recipe & Test Build**:
-   Place your `com.aura.app.yml` into the `metadata/` directory and run:
+   Place your `com.aura.app.yml` into the `mdt/` directory and run:
    ```bash
    fdroid build --docker -v com.aura.app
    ```
@@ -135,7 +135,7 @@ Before opening the GitLab Merge Request, you can test if F-Droid compiles your a
 
 #### Step 2.4: Submit to F-Droid
 1. Fork [fdroid/fdroiddata](https://gitlab.com/fdroid/fdroiddata) on GitLab.
-2. Commit your new recipe file to a feature branch: `metadata/com.aura.app.yml`.
+2. Commit your new recipe file to a feature branch: `mdt/com.aura.app.yml`.
 3. Open a Merge Request against the `master` branch.
 4. F-Droid's automated CI will run a test build. Once a maintainer reviews and merges the recipe, your app will automatically compile and appear on F-Droid within a few days!
 

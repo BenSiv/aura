@@ -26,7 +26,9 @@ function App() {
     handleSaveProfile,
     handleInteraction,
     matchedProfile,
-    setMatchedProfile
+    setMatchedProfile,
+    theme,
+    toggleTheme
   } = useResonance();
 
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
@@ -85,10 +87,13 @@ function App() {
   if (isInitialLoading) return null;
 
   if (!localProfile || showProfileEdit) {
-    return <OnboardingScreen onSave={(...args) => {
-      handleSaveProfile(...args);
-      setShowProfileEdit(false);
-    }} />;
+    return <OnboardingScreen 
+      initialProfile={localProfile || undefined}
+      onSave={(...args) => {
+        handleSaveProfile(...args);
+        setShowProfileEdit(false);
+      }} 
+    />;
   }
 
   if (showChat && matchedProfile) {
@@ -111,7 +116,7 @@ function App() {
   }
 
   if (showSettings) {
-    return <SettingsScreen onBack={() => setShowSettings(false)} />;
+    return <SettingsScreen theme={theme} onToggleTheme={toggleTheme} onBack={() => setShowSettings(false)} />;
   }
 
   return (

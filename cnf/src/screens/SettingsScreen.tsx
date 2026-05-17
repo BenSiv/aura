@@ -1,22 +1,41 @@
 import React from "react";
-import { ArrowLeft, Shield, Bell, Zap, Database, Lock } from "lucide-react";
+import { ArrowLeft, Shield, Bell, Zap, Database, Lock, Sun, Moon } from "lucide-react";
 
 interface SettingsScreenProps {
+  theme: "dark" | "light";
+  onToggleTheme: () => void;
   onBack: () => void;
 }
 
-export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
+export const SettingsScreen: React.FC<SettingsScreenProps> = ({ theme, onToggleTheme, onBack }) => {
   return (
     <div className="app-container" style={{ padding: '20px' }}>
-      <header className="header" style={{ marginBottom: '20px' }}>
-        <button className="icon-btn" onClick={onBack}>
+      <header className="header" style={{ marginBottom: '20px', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <button className="btn-icon" onClick={onBack}>
           <ArrowLeft size={24} />
         </button>
-        <div className="brand">Aura Settings</div>
-        <div style={{ width: 40 }} />
+        <div className="brand" style={{ fontSize: '1.25rem', fontWeight: 700 }}>Aura Settings</div>
+        <div style={{ width: 44 }} />
       </header>
 
       <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="detail-section">
+          <h3>Appearance</h3>
+          <div className="settings-item">
+            <div className="settings-item-info">
+              {theme === "light" ? <Sun size={20} style={{ color: 'var(--accent-primary)' }} /> : <Moon size={20} style={{ color: 'var(--accent-primary)' }} />}
+              <div>
+                <h4>Light Theme</h4>
+                <p>Enjoy a bright, clean, high-contrast visual design.</p>
+              </div>
+            </div>
+            <label className="switch">
+              <input type="checkbox" checked={theme === "light"} onChange={onToggleTheme} />
+              <span className="slider"></span>
+            </label>
+          </div>
+        </div>
+
         <div className="detail-section">
           <h3>Privacy & Security</h3>
           <div className="settings-item">
@@ -89,7 +108,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
         </div>
 
         <div style={{ marginTop: 'auto', padding: '2rem 0', textAlign: 'center' }}>
-          <button className="btn-primary" style={{ width: '100%', background: 'var(--accent-danger)' }}>
+          <button className="btn-primary" style={{ width: '100%', background: 'var(--accent-danger)', boxShadow: '0 4px 14px rgba(244, 63, 94, 0.4)' }}>
             Wipe Local Data & Reset ID
           </button>
           <p style={{ fontSize: '10px', color: 'var(--text-secondary)', marginTop: '1rem' }}>
@@ -97,42 +116,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ onBack }) => {
           </p>
         </div>
       </div>
-
-      <style>{`
-        .settings-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          background: rgba(255, 255, 255, 0.05);
-          padding: 1rem;
-          border-radius: 12px;
-          margin-bottom: 0.5rem;
-          border: 1px solid var(--glass-border);
-        }
-        .settings-item-info {
-          display: flex;
-          gap: 1rem;
-          align-items: center;
-        }
-        .settings-item-info h4 {
-          font-size: 0.9375rem;
-          margin: 0;
-        }
-        .settings-item-info p {
-          font-size: 0.75rem;
-          color: var(--text-secondary);
-          margin: 0;
-        }
-        .status-badge {
-          font-size: 0.625rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          color: var(--accent-success);
-          background: rgba(16, 185, 129, 0.1);
-          padding: 0.25rem 0.5rem;
-          border-radius: 4px;
-        }
-      `}</style>
     </div>
   );
 };

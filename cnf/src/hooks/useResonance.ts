@@ -18,6 +18,35 @@ export function useResonance() {
   const seenProfilesRef = useRef<Record<string, Profile>>({});
   const localProfileRef = useRef<{ id: string, name: string, bio: string, images: string, tags: string, gender: string, interestedIn: string } | null>(null);
 
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("aura-theme");
+      if (saved === "light" || saved === "dark") return saved;
+      return "dark";
+    }
+    return "dark";
+  });
+
+  const toggleTheme = useCallback(() => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("aura-theme", newTheme);
+    if (newTheme === "light") {
+      document.documentElement.classList.add("light-theme");
+    } else {
+      document.documentElement.classList.remove("light-theme");
+    }
+  }, [theme]);
+
+  // Synchronize theme on load
+  useEffect(() => {
+    if (theme === "light") {
+      document.documentElement.classList.add("light-theme");
+    } else {
+      document.documentElement.classList.remove("light-theme");
+    }
+  }, [theme]);
+
   // Initialize likes from DB
   useEffect(() => {
     invoke<any[]>("get_interaction_history").then(history => {
@@ -27,7 +56,11 @@ export function useResonance() {
   }, []);
 
   const startBroadcasting = useCallback((profile: any) => {
-    invoke("start_broadcasting", { profile });
+    const payload = {
+      ...profile,
+      interested_in: profile.interestedIn
+    };
+    invoke("start_broadcasting", { profile: payload });
     
     // Clear any existing broadcast intervals to prevent stale broadcasts
     if ((window as any).broadcastInterval) {
@@ -56,12 +89,21 @@ export function useResonance() {
     }
 
     // Standard Core Logic (Non-demo)
-    invoke<{ id: string, name: string, bio: string, tags: string, images?: string, gender: string, interestedIn: string } | null>("get_local_profile")
+    invoke<any>("get_local_profile")
       .then((profile) => {
         if (profile) {
-          setLocalProfile(profile as any);
-          localProfileRef.current = profile as any;
-          startBroadcasting(profile);
+          const normalized = {
+            id: profile.id,
+            name: profile.name,
+            bio: profile.bio,
+            images: profile.images || "[]",
+            tags: profile.tags || "",
+            gender: profile.gender || "Other",
+            interestedIn: profile.interested_in || "Both"
+          };
+          setLocalProfile(normalized);
+          localProfileRef.current = normalized;
+          startBroadcasting(normalized);
         }
         setIsInitialLoading(false);
       });
@@ -135,13 +177,13 @@ export function useResonance() {
 
   const handleSaveProfile = async (name: string, bio: string, tags: string, image: string, gender: string, interestedIn: string) => {
     const newProfile = {
-      id: crypto.randomUUID(),
+      id: localProfile?.id || crypto.randomUUID(),
       name,
       bio,
       tags,
       images: JSON.stringify([image]),
       gender,
-      interested_in: interestedIn // Match Rust naming
+      interestedIn
     };
 
     if (DEMO_CONFIG.BYPASS_DB_PERSISTENCE) {
@@ -161,7 +203,16 @@ export function useResonance() {
     }
 
     try {
-      await invoke("save_local_profile", { profile: newProfile });
+      const payload = {
+        id: newProfile.id,
+        name: newProfile.name,
+        bio: newProfile.bio,
+        tags: newProfile.tags,
+        images: newProfile.images,
+        gender: newProfile.gender,
+        interested_in: newProfile.interestedIn
+      };
+      await invoke("save_local_profile", { profile: payload });
       setLocalProfile(newProfile as any);
       localProfileRef.current = newProfile as any;
       startBroadcasting(newProfile);
@@ -208,6 +259,8 @@ export function useResonance() {
     handleSaveProfile,
     handleInteraction,
     matchedProfile,
-    setMatchedProfile
+    setMatchedProfile,
+    theme,
+    toggleTheme
   };
 }
