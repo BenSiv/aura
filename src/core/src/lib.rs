@@ -1,5 +1,6 @@
 mod db;
 mod mesh;
+mod zk_distance;
 
 use std::sync::Mutex;
 use rusqlite::Connection;
@@ -167,6 +168,22 @@ fn revert_interaction(state: tauri::State<AppState>, profile_id: String) -> Resu
         "DELETE FROM interactions WHERE profileId = ?",
         [&profile_id],
     ).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
+fn broadcast_zk_packet(sender_id: String, receiver_id: String, msg_type: String, text: String) -> Result<(), String> {
+    let timestamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+    let id = format!("zk_{}_{}", sender_id, timestamp);
+    let msg = mesh::ChatMessage {
+        msg_type,
+        id,
+        sender_id,
+        receiver_id,
+        text,
+        timestamp,
+    };
+    mesh::broadcast_chat(msg);
     Ok(())
 }
 
@@ -343,7 +360,14 @@ pub fn run() {
             get_chat_partners,
             check_mutual_match,
             save_peer_profile,
-            get_peer_profiles
+            get_peer_profiles,
+            broadcast_zk_packet,
+            zk_distance::generate_paillier_keypair,
+            zk_distance::encrypt_location,
+            zk_distance::compute_homomorphic_distance,
+            zk_distance::decrypt_blinded_distance,
+            zk_distance::generate_range_proof,
+            zk_distance::verify_range_proof
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

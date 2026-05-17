@@ -39,7 +39,7 @@
 
 ## Safety & Privacy
 - [ ] Hourly ID Rotation
-- [ ] Zero-Knowledge Proofs for distance
+- [x] Zero-Knowledge Proofs for distance (Continuous Additive Homomorphic Coordinates & ZK Range Proofs)
 - [ ] Automatic Blackout Zones
 - [x] Restructure metadata/ directory to mdt/ (strict 3-letter layout)
 

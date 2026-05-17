@@ -215,6 +215,18 @@ pub fn start_mesh(app: AppHandle) {
                                         );
                                     }
                                     app_handle.emit("chat_message_received", chat.clone()).ok();
+                                } else if chat.msg_type.starts_with("zk_") {
+                                    let mut is_target = false;
+                                    if let Ok(conn) = state.db.lock() {
+                                        let my_id: String = conn.query_row("SELECT id FROM local_profile LIMIT 1", [], |r| r.get(0)).unwrap_or_default();
+                                        if chat.receiver_id == my_id {
+                                            is_target = true;
+                                        }
+                                    }
+                                    if is_target {
+                                        println!("[P2P] Intercepted ZK Proximity packet type: {} from {}", chat.msg_type, chat.sender_id);
+                                        app_handle.emit("zk_proximity_received", chat.clone()).ok();
+                                    }
                                 } else if chat.msg_type == "blind_like" {
                                     // Only process if it targets us
                                     let mut is_target = false;

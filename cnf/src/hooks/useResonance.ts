@@ -18,6 +18,45 @@ export function useResonance() {
   const seenProfilesRef = useRef<Record<string, Profile>>({});
   const localProfileRef = useRef<{ id: string, name: string, bio: string, images: string, tags: string, gender: string, interestedIn: string } | null>(null);
 
+  // --- ZK Proximity Handshake Cryptographic States & Refs ---
+  const localCoordsRef = useRef({ x: 0.0, y: 0.0 });
+  const paillierKeysRef = useRef<Record<string, { pubkey: string, privkey: string }>>({});
+  const rValuesRef = useRef<Record<string, string>>({});
+  const blindedValuesRef = useRef<Record<string, string>>({});
+
+  const [zkThreshold, setZkThreshold] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("zk-proximity-threshold");
+      if (saved) return parseInt(saved, 10);
+    }
+    return 100; // 100 meters default
+  });
+
+  const updateZkThreshold = useCallback((val: number) => {
+    setZkThreshold(val);
+    localStorage.setItem("zk-proximity-threshold", val.toString());
+  }, []);
+
+  // Retrieve flat offset meter coordinates on mount
+  useEffect(() => {
+    if (typeof navigator !== "undefined" && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          // Flatten GPS spherical coordinates to planar meters
+          const x = lon * 111000 * Math.cos(lat * Math.PI / 180.0);
+          const y = lat * 111000;
+          localCoordsRef.current = { x, y };
+          console.log("[ZKP] Geolocation acquired flat meters:", localCoordsRef.current);
+        },
+        (err) => {
+          console.warn("[ZKP] Geolocation denied/unavailable. Falling back to coordinates (0, 0)");
+        }
+      );
+    }
+  }, []);
+
   const [theme, setTheme] = useState<"dark" | "light">(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("aura-theme");
@@ -81,6 +120,44 @@ export function useResonance() {
     return () => clearInterval((window as any).broadcastInterval);
   }, []);
 
+  // ZKP Challenge initiation (Peer B/Verifier)
+  const initiateZkChallenge = useCallback(async (peerId: string) => {
+    try {
+      console.log(`[ZKP] Initiating verification query to Peer: ${peerId}`);
+      
+      const [pubkey, privkey] = await invoke<[string, string]>("generate_paillier_keypair");
+      paillierKeysRef.current[peerId] = { pubkey, privkey };
+      
+      const [cx, cy, c_sq] = await invoke<[string, string, string]>("encrypt_location", {
+        x: localCoordsRef.current.x,
+        y: localCoordsRef.current.y,
+        pubkeyHex: pubkey
+      });
+      
+      const challengePayload = JSON.stringify({
+        enc_x: cx,
+        enc_y: cy,
+        enc_sq: c_sq,
+        pubkey_hex: pubkey
+      });
+      
+      if (localProfileRef.current) {
+        await invoke("broadcast_zk_packet", {
+          senderId: localProfileRef.current.id,
+          receiverId: peerId,
+          msgType: "zk_challenge",
+          text: challengePayload
+        });
+        console.log(`[ZKP] Round 1 Challenge packet broadcasted targeting Peer: ${peerId}`);
+      }
+    } catch (err) {
+      console.error("[ZKP] Handshake initialization failed:", err);
+      setPendingDiscoveries(prev => 
+        prev.map(p => p.id === peerId ? { ...p, zkStatus: "failed", distanceLabel: "Remote / Spoofed Peer" } : p)
+      );
+    }
+  }, []);
+
   useEffect(() => {
     if (DEMO_CONFIG.FORCE_RESET_ON_LAUNCH) {
       setLocalProfile(null);
@@ -124,11 +201,19 @@ export function useResonance() {
             images: peer_data.images || "[]",
             tags: peer_data.tags || "[]",
             gender: peer_data.gender || "Other",
-            distance: Math.round(score * 10) / 10
+            distance: Math.round(score * 10) / 10,
+            zkStatus: "verifying",
+            distanceLabel: "Verifying ZK Proximity..."
           };
 
           if (!DEMO_CONFIG.IS_DEMO_MODE) {
             invoke("save_peer_profile", { profile: newPeer }).catch(err => console.error("Failed to save peer:", err));
+            // Trigger interactive ZK verification challenge immediately
+            initiateZkChallenge(newPeer.id);
+          } else {
+            // Instant mock verified close for demo compatibility
+            newPeer.zkStatus = "verified_close";
+            newPeer.distanceLabel = `Verified < ${zkThreshold}m`;
           }
 
           seenProfilesRef.current[newPeer.id] = newPeer;
@@ -164,11 +249,163 @@ export function useResonance() {
       }
     });
 
+    // Listen for P2P ZK Handshake packets from Gossipsub
+    const unlistenZk = listen<any>('zk_proximity_received', async (event) => {
+      const chat = event.payload;
+      const senderId = chat.sender_id;
+      const msgType = chat.msg_type;
+      
+      if (msgType === "zk_challenge") {
+        console.log(`[ZKP] Round 2: Received challenge from Peer: ${senderId}`);
+        try {
+          const challenge = JSON.parse(chat.text);
+          
+          const [blindedEnc, r] = await invoke<[string, string]>("compute_homomorphic_distance", {
+            encX: challenge.enc_x,
+            encY: challenge.enc_y,
+            encSq: challenge.enc_sq,
+            myX: localCoordsRef.current.x,
+            myY: localCoordsRef.current.y,
+            pubkeyHex: challenge.pubkey_hex
+          });
+          
+          rValuesRef.current[senderId] = r;
+          
+          const responsePayload = JSON.stringify({
+            blinded_enc: blindedEnc
+          });
+          
+          if (localProfileRef.current) {
+            await invoke("broadcast_zk_packet", {
+              senderId: localProfileRef.current.id,
+              receiverId: senderId,
+              msgType: "zk_response",
+              text: responsePayload
+            });
+            console.log(`[ZKP] Round 2: Sent homomorphic response to Peer: ${senderId}`);
+          }
+        } catch (err) {
+          console.error("[ZKP] Homomorphic response failed:", err);
+        }
+      }
+      
+      else if (msgType === "zk_response") {
+        console.log(`[ZKP] Round 3: Received homomorphic response from Peer: ${senderId}`);
+        try {
+          const response = JSON.parse(chat.text);
+          const keys = paillierKeysRef.current[senderId];
+          if (!keys) return;
+          
+          const blindedDistanceDecrypted = await invoke<string>("decrypt_blinded_distance", {
+            blindedEncHex: response.blinded_enc,
+            privkeyHex: keys.privkey
+          });
+          
+          blindedValuesRef.current[senderId] = blindedDistanceDecrypted;
+          
+          const requestPayload = JSON.stringify({
+            blinded_val: blindedDistanceDecrypted
+          });
+          
+          if (localProfileRef.current) {
+            await invoke("broadcast_zk_packet", {
+              senderId: localProfileRef.current.id,
+              receiverId: senderId,
+              msgType: "zk_proof_request",
+              text: requestPayload
+            });
+            console.log(`[ZKP] Round 3: Broadcasted ZK range proof request to Peer: ${senderId}`);
+          }
+        } catch (err) {
+          console.error("[ZKP] Blinded distance decryption failed:", err);
+        }
+      }
+      
+      else if (msgType === "zk_proof_request") {
+        console.log(`[ZKP] Round 4: Received proof request from Peer: ${senderId}`);
+        try {
+          const req = JSON.parse(chat.text);
+          const r = rValuesRef.current[senderId];
+          if (!r) return;
+          
+          const [proofBytes, commitmentBytes] = await invoke<[number[], number[]]>("generate_range_proof", {
+            blindedDistanceDecrypted: req.blinded_val,
+            r,
+            maxDistanceMeters: zkThreshold
+          });
+          
+          const proofPayload = JSON.stringify({
+            proof_bytes: proofBytes,
+            commitment_bytes: commitmentBytes
+          });
+          
+          if (localProfileRef.current) {
+            await invoke("broadcast_zk_packet", {
+              senderId: localProfileRef.current.id,
+              receiverId: senderId,
+              msgType: "zk_proof",
+              text: proofPayload
+            });
+            console.log(`[ZKP] Round 4: Broadcasted Bulletproof range proof to Peer: ${senderId}`);
+          }
+        } catch (err) {
+          console.error("[ZKP] Bulletproof range proof generation failed:", err);
+        }
+      }
+      
+      else if (msgType === "zk_proof") {
+        console.log(`[ZKP] Verification: Received Bulletproof from Peer: ${senderId}`);
+        try {
+          const proofData = JSON.parse(chat.text);
+          const blindedVal = blindedValuesRef.current[senderId];
+          const keys = paillierKeysRef.current[senderId];
+          if (!blindedVal || !keys) return;
+          
+          const isValid = await invoke<boolean>("verify_range_proof", {
+            proofBytes: proofData.proof_bytes,
+            commitmentBytes: proofData.commitment_bytes,
+            blindedValDecryptedForVerif: blindedVal,
+            r: "1",
+            maxDistanceMeters: zkThreshold
+          });
+          
+          console.log(`[ZKP] Cryptographic Bulletproof verification result:`, isValid);
+          
+          setPendingDiscoveries(prev => 
+            prev.map(p => {
+              if (p.id === senderId) {
+                if (isValid) {
+                  return { 
+                    ...p, 
+                    zkStatus: "verified_close", 
+                    distanceLabel: `Verified < ${zkThreshold}m` 
+                  };
+                } else {
+                  return { 
+                    ...p, 
+                    zkStatus: "failed", 
+                    distanceLabel: "Remote / Spoofed Peer" 
+                  };
+                }
+              }
+              return p;
+            })
+          );
+        } catch (err) {
+          console.error("[ZKP] Bulletproof range proof verification failed:", err);
+          setPendingDiscoveries(prev => 
+            prev.map(p => p.id === senderId ? { ...p, zkStatus: "failed", distanceLabel: "Remote / Spoofed Peer" } : p)
+          );
+        }
+      }
+    });
+
     return () => {
       unlisten.then(f => f());
       unlistenMatch.then(f => f());
+      unlistenZk.then(f => f());
     };
-  }, [startBroadcasting]);
+  }, [startBroadcasting, initiateZkChallenge, zkThreshold]);
 
   const cycleVisibility = () => {
     const modes: VisibilityMode[] = ["cloaked", "resonant", "public"];
@@ -261,6 +498,8 @@ export function useResonance() {
     matchedProfile,
     setMatchedProfile,
     theme,
-    toggleTheme
+    toggleTheme,
+    zkThreshold,
+    updateZkThreshold
   };
 }

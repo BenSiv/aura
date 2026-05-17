@@ -1,5 +1,5 @@
 import { useState, useRef, TouchEvent } from 'react';
-import { MapPin } from 'lucide-react';
+import { MapPin, Shield, ShieldCheck, ShieldAlert } from 'lucide-react';
 
 export interface Profile {
   id: string;
@@ -9,6 +9,8 @@ export interface Profile {
   tags: string;   // JSON string array
   distance: number;
   gender?: string;
+  zkStatus?: "unverified" | "verifying" | "verified_close" | "verified_far" | "failed";
+  distanceLabel?: string;
 }
 
 interface Props {
@@ -102,9 +104,31 @@ export default function SwipeCard({ profile, onSwipe, onClick }: Props) {
       <div className="swipe-card-content">
         <div className="swipe-card-header">
           <h2 className="swipe-card-name">{profile.name}</h2>
-          <div className="swipe-card-distance">
-            <MapPin size={14} />
-            <span>{profile.distance} km away</span>
+          <div className={`swipe-card-distance ${profile.zkStatus || 'unverified'}`}>
+            {profile.zkStatus === 'verifying' && (
+              <>
+                <Shield size={14} className="pulse-icon" />
+                <span>Verifying ZK Proximity...</span>
+              </>
+            )}
+            {profile.zkStatus === 'verified_close' && (
+              <>
+                <ShieldCheck size={14} />
+                <span>{profile.distanceLabel || 'Verified < 100m'}</span>
+              </>
+            )}
+            {profile.zkStatus === 'failed' && (
+              <>
+                <ShieldAlert size={14} />
+                <span>Remote / Spoofed Peer</span>
+              </>
+            )}
+            {(!profile.zkStatus || profile.zkStatus === 'unverified' || profile.zkStatus === 'verified_far') && (
+              <>
+                <MapPin size={14} />
+                <span>{profile.distance} km away</span>
+              </>
+            )}
           </div>
         </div>
 

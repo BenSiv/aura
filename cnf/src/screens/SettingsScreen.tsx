@@ -5,9 +5,17 @@ interface SettingsScreenProps {
   theme: "dark" | "light";
   onToggleTheme: () => void;
   onBack: () => void;
+  zkThreshold: number;
+  onUpdateZkThreshold: (val: number) => void;
 }
 
-export const SettingsScreen: React.FC<SettingsScreenProps> = ({ theme, onToggleTheme, onBack }) => {
+export const SettingsScreen: React.FC<SettingsScreenProps> = ({ 
+  theme, 
+  onToggleTheme, 
+  onBack,
+  zkThreshold,
+  onUpdateZkThreshold
+}) => {
   return (
     <div className="app-container" style={{ padding: '20px' }}>
       <header className="header" style={{ marginBottom: '20px', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -38,6 +46,35 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ theme, onToggleT
 
         <div className="detail-section">
           <h3>Privacy & Security</h3>
+          <div className="settings-item" style={{ flexDirection: 'column', alignItems: 'stretch', gap: '0.75rem' }}>
+            <div className="settings-item-info">
+              <Shield size={20} style={{ color: 'var(--accent-primary)' }} />
+              <div>
+                <h4>ZK Proximity Circle</h4>
+                <p>Adjust the secure proximity threshold for distance matching.</p>
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: 600 }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Threshold Radius:</span>
+                <span style={{ color: 'var(--accent-primary)' }}>{zkThreshold} meters</span>
+              </div>
+              <input 
+                type="range" 
+                min="10" 
+                max="500" 
+                step="10" 
+                value={zkThreshold} 
+                onChange={(e) => onUpdateZkThreshold(parseInt(e.target.value, 10))}
+                className="range-slider"
+                style={{ width: '100%', accentColor: 'var(--accent-primary)', cursor: 'pointer' }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
+                <span>10m (Ultra Safe)</span>
+                <span>500m (Wide Area)</span>
+              </div>
+            </div>
+          </div>
           <div className="settings-item">
             <div className="settings-item-info">
               <Lock size={20} />

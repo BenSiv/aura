@@ -28,7 +28,9 @@ function App() {
     matchedProfile,
     setMatchedProfile,
     theme,
-    toggleTheme
+    toggleTheme,
+    zkThreshold,
+    updateZkThreshold
   } = useResonance();
 
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
@@ -116,7 +118,15 @@ function App() {
   }
 
   if (showSettings) {
-    return <SettingsScreen theme={theme} onToggleTheme={toggleTheme} onBack={() => setShowSettings(false)} />;
+    return (
+      <SettingsScreen 
+        theme={theme} 
+        onToggleTheme={toggleTheme} 
+        onBack={() => setShowSettings(false)} 
+        zkThreshold={zkThreshold}
+        onUpdateZkThreshold={updateZkThreshold}
+      />
+    );
   }
 
   return (

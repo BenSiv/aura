@@ -366,6 +366,43 @@ input:checked + .slider:before { transform: translateX(22px); }
 .swipe-card-header { margin-bottom: 0.75rem; }
 .swipe-card-name { font-size: 2rem; color: white; line-height: 1.1; margin-bottom: 0.25rem; }
 .swipe-card-distance { display: flex; align-items: center; gap: 0.25rem; color: #CBD5E1; font-size: 0.875rem; font-weight: 500; }
+.swipe-card-distance.verifying {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #60A5FA;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  animation: pulse-border 2s infinite ease-in-out;
+}
+.swipe-card-distance.verified_close {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34D399;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+}
+.swipe-card-distance.failed {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #F87171;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+}
+.pulse-icon {
+  animation: spin-pulse 3s infinite linear;
+}
+@keyframes pulse-border {
+  0%, 100% { border-color: rgba(59, 130, 246, 0.3); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.2); }
+  50% { border-color: rgba(59, 130, 246, 0.6); box-shadow: 0 0 8px 0 rgba(59, 130, 246, 0.4); }
+}
+@keyframes spin-pulse {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
 .swipe-card-bio {
   background: rgba(255,255,255,0.1);
   backdrop-filter: blur(8px);
