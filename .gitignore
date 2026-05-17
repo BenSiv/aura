@@ -43,3 +43,4 @@ memory_poller/
 src/core/gen/android/app/build/
 src/core/gen/android/build/
 src/core/gen/android/.gradle/
+*.keystore
