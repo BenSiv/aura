@@ -44,8 +44,7 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
               {icon}
               <span className="mode-label">{label}</span>
             </button>
-...
-
+            <label className="switch">
               <input 
                 type="checkbox" 
                 checked={activeAura} 

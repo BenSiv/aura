@@ -26,3 +26,4 @@ rusqlite = { version = "0.31.0", features = ["bundled"] }
 libp2p = { version = "0.53", features = ["tcp", "tls", "dns", "noise", "yamux", "quic", "gossipsub", "mdns", "kad", "identify", "macros", "tokio"] }
 futures = "0.3"
 tokio = { version = "1", features = ["full"] }
+fastrand = "2.3"

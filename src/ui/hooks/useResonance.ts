@@ -16,7 +16,6 @@ export function useResonance() {
   const [isInitialLoading, setIsInitialLoading] = useState(!DEMO_CONFIG.IS_DEMO_MODE);
   const myLikesRef = useRef<string[]>([]);
   const seenProfilesRef = useRef<Record<string, Profile>>({});
-  const likesReceivedRef = useRef<string[]>([]);
   const localProfileRef = useRef<{ id: string, name: string, bio: string, images: string, tags: string, gender: string, interestedIn: string } | null>(null);
 
   // Initialize likes from DB
@@ -96,29 +95,36 @@ export function useResonance() {
       }
     });
 
-    // Listen for incoming explicit "like" messages
-    const unlistenLike = listen<any>('like_received', (event) => {
-      const { sender_id, receiver_id } = event.payload;
-      
-      if (localProfileRef.current && receiver_id === localProfileRef.current.id) {
-        // Record that they swiped Like on us
-        if (!likesReceivedRef.current.includes(sender_id)) {
-          likesReceivedRef.current = [...likesReceivedRef.current, sender_id];
-        }
-
-        // If we also swiped Like on them, trigger a mutual match!
-        if (myLikesRef.current.includes(sender_id)) {
-          const matched = seenProfilesRef.current[sender_id];
-          if (matched) {
-            setMatchedProfile(matched);
+    // Listen for confirmed mutual matches from the Rust core
+    const unlistenMatch = listen<string>('mutual_match_established', (event) => {
+      const sender_id = event.payload;
+      console.log("MUTUAL MATCH ESTABLISHED:", sender_id);
+      const matched = seenProfilesRef.current[sender_id];
+      if (matched) {
+        setMatchedProfile(matched);
+      } else {
+        // Fetch profile from DB if not in current session cache
+        invoke<any[]>("get_peer_profiles", { profileIds: [sender_id] }).then(profiles => {
+          if (profiles.length > 0) {
+            const p = profiles[0];
+            const profile: Profile = {
+              id: p.id,
+              name: p.name,
+              bio: p.bio,
+              images: p.images || "[]",
+              tags: p.tags || "[]",
+              gender: p.gender || "Other",
+              distance: 0
+            };
+            setMatchedProfile(profile);
           }
-        }
+        });
       }
     });
 
     return () => {
       unlisten.then(f => f());
-      unlistenLike.then(f => f());
+      unlistenMatch.then(f => f());
     };
   }, [startBroadcasting]);
 
@@ -173,10 +179,12 @@ export function useResonance() {
         if (type === 'like') {
           myLikesRef.current = [...myLikesRef.current, targetPeer.id];
           
-          // Check if they already liked us (symmetric match check!)
-          if (likesReceivedRef.current.includes(targetPeer.id)) {
-            setMatchedProfile(targetPeer);
-          }
+          // Check if they already liked us (double-blind mutual check!)
+          invoke<boolean>("check_mutual_match", { profileId: targetPeer.id }).then(isMatch => {
+            if (isMatch) {
+              setMatchedProfile(targetPeer);
+            }
+          });
         }
       } else {
         // Fallback for demo instant matching

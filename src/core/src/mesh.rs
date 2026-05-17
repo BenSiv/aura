@@ -11,7 +11,7 @@ use tokio::sync::mpsc;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct ChatMessage {
-    pub msg_type: String, // Always "chat"
+    pub msg_type: String, // "chat", "blind_like", etc.
     pub id: String,
     pub sender_id: String,
     pub receiver_id: String,
@@ -58,9 +58,10 @@ static mut BROADCAST_TX: Option<mpsc::UnboundedSender<Vec<u8>>> = None;
 pub fn start_mesh(app: AppHandle) {
     let (tx, mut rx) = mpsc::unbounded_channel::<Vec<u8>>();
     unsafe {
-        BROADCAST_TX = Some(tx);
+        BROADCAST_TX = Some(tx.clone());
     }
 
+    let app_handle = app.clone();
     std::thread::spawn(move || {
         let rt = tokio::runtime::Runtime::new().unwrap();
         rt.block_on(async {
@@ -114,6 +115,29 @@ pub fn start_mesh(app: AppHandle) {
 
             println!("[P2P] Swarm started. PeerId: {}", swarm.local_peer_id());
 
+            // --- SCF Forwarder Task ---
+            let scf_app_handle = app_handle.clone();
+            let scf_tx = tx.clone();
+            tokio::spawn(async move {
+                let mut interval = tokio::time::interval(Duration::from_secs(300)); // Every 5 mins
+                loop {
+                    interval.tick().await;
+                    println!("[P2P] SCF: Checking carry_store for unexpired gossip...");
+                    let state = scf_app_handle.state::<crate::AppState>();
+                    if let Ok(conn) = state.db.lock() {
+                        let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+                        let mut stmt = conn.prepare("SELECT payload FROM carry_store WHERE expiresAt > ?").unwrap();
+                        let payloads = stmt.query_map([now], |row| row.get::<_, Vec<u8>>(0)).unwrap();
+                        
+                        for payload in payloads {
+                            if let Ok(data) = payload {
+                                scf_tx.send(data).ok();
+                            }
+                        }
+                    }
+                }
+            });
+
             loop {
                 tokio::select! {
                     encoded = rx.recv() => {
@@ -143,39 +167,76 @@ pub fn start_mesh(app: AppHandle) {
                             }
                         }
                         SwarmEvent::Behaviour(AuraBehaviourEvent::Gossipsub(gossipsub::Event::Message {
-                            propagation_source: peer_id,
+                            propagation_source: _peer_id,
                             message_id: _id,
                             message,
                         })) => {
+                            let state = app_handle.state::<crate::AppState>();
+                            
+                            // --- Phase 3: Store for SCF ---
+                            if let Ok(conn) = state.db.lock() {
+                                let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+                                let expires = now + 86400; // 24 hour TTL
+                                let mid = format!("msg_{}_{}", now, fastrand::u64(..));
+                                let _ = conn.execute(
+                                    "INSERT OR IGNORE INTO carry_store (id, payload, timestamp, expiresAt) VALUES (?1, ?2, ?3, ?4)",
+                                    (&mid, &message.data, now, expires),
+                                );
+                            }
+
                             if let Ok(peer) = serde_json::from_slice::<PeerProfile>(&message.data) {
                                 if !peer.id.is_empty() && peer.name.len() > 0 {
-                                    println!("[P2P] Received Aura via Gossipsub from {}", peer_id);
+                                    println!("[P2P] Received Aura via Gossipsub from {}", peer.id);
                                     let res_event = ResonanceEvent {
                                         profile_id: peer.id.clone(),
                                         score: 1.0,
                                         timestamp: std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs(),
                                         peer_data: Some(peer),
                                     };
-                                    app.emit("resonance_detected", res_event).ok();
+                                    app_handle.emit("resonance_detected", res_event).ok();
                                 }
                             }
+                            
                             if let Ok(chat) = serde_json::from_slice::<ChatMessage>(&message.data) {
                                 if chat.msg_type == "chat" {
                                     println!("[P2P] Received Chat Message from {}", chat.sender_id);
-                                    
-                                    // Persist incoming message directly to local SQLite DB
-                                    let state = app.state::<crate::AppState>();
                                     if let Ok(conn) = state.db.lock() {
                                         let _ = conn.execute(
                                             "INSERT OR IGNORE INTO messages (id, senderId, receiverId, text, timestamp) VALUES (?1, ?2, ?3, ?4, ?5)",
                                             (&chat.id, &chat.sender_id, &chat.receiver_id, &chat.text, &chat.timestamp),
                                         );
                                     }
-                                    
-                                    app.emit("chat_message_received", chat.clone()).ok();
-                                } else if chat.msg_type == "like" {
-                                    println!("[P2P] Received Like from {}", chat.sender_id);
-                                    app.emit("like_received", chat.clone()).ok();
+                                    app_handle.emit("chat_message_received", chat.clone()).ok();
+                                } else if chat.msg_type == "blind_like" {
+                                    // Only process if it targets us
+                                    let mut is_target = false;
+                                    if let Ok(conn) = state.db.lock() {
+                                        let my_id: String = conn.query_row("SELECT id FROM local_profile LIMIT 1", [], |r| r.get(0)).unwrap_or_default();
+                                        if chat.receiver_id == my_id {
+                                            is_target = true;
+                                            let _ = conn.execute(
+                                                "INSERT OR REPLACE INTO pending_likes (senderId, timestamp) VALUES (?1, ?2)",
+                                                (&chat.sender_id, &chat.timestamp),
+                                            );
+                                        }
+                                    }
+
+                                    if is_target {
+                                        println!("[P2P] Double-Blind: Received blind_like targeting us from {}", chat.sender_id);
+                                        // Check for mutual match
+                                        if let Ok(conn) = state.db.lock() {
+                                            let count: i64 = conn.query_row(
+                                                "SELECT COUNT(*) FROM interactions WHERE profileId = ? AND type = 'like'",
+                                                [&chat.sender_id],
+                                                |r| r.get(0)
+                                            ).unwrap_or(0);
+
+                                            if count > 0 {
+                                                println!("[P2P] Double-Blind: MUTUAL MATCH with {}", chat.sender_id);
+                                                app_handle.emit("mutual_match_established", chat.sender_id).ok();
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

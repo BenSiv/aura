@@ -94,6 +94,18 @@ pub fn initialize_database(app_dir: PathBuf) -> Result<Connection> {
             timestamp INTEGER NOT NULL
         );
 
+        CREATE TABLE IF NOT EXISTS carry_store (
+            id TEXT PRIMARY KEY NOT NULL,
+            payload BLOB NOT NULL,
+            timestamp INTEGER NOT NULL,
+            expiresAt INTEGER NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS pending_likes (
+            senderId TEXT PRIMARY KEY NOT NULL,
+            timestamp INTEGER NOT NULL
+        );
+
         INSERT OR IGNORE INTO settings (key, value) VALUES ('visibility_mode', 'resonant');
         INSERT OR IGNORE INTO settings (key, value) VALUES ('projection_timing', 'foreground');
         INSERT OR IGNORE INTO settings (key, value) VALUES ('active_aura', 'true');

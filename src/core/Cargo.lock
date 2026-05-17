@@ -378,6 +378,7 @@ dependencies = [
 name = "aura"
 version = "0.1.0"
 dependencies = [
+ "fastrand",
  "futures",
  "libp2p",
  "rusqlite",

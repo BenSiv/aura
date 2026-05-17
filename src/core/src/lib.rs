@@ -107,7 +107,7 @@ fn record_local_interaction(state: tauri::State<AppState>, profile_id: String, i
                 if let Ok(Some(row)) = rows.next() {
                     if let Ok(sender_id) = row.get::<_, String>(0) {
                         let msg = mesh::ChatMessage {
-                            msg_type: "like".to_string(),
+                            msg_type: "blind_like".to_string(),
                             id: format!("like_{}_{}", sender_id, timestamp),
                             sender_id,
                             receiver_id: profile_id.clone(),
@@ -122,6 +122,27 @@ fn record_local_interaction(state: tauri::State<AppState>, profile_id: String, i
     }
     
     Ok(())
+}
+
+#[tauri::command]
+fn check_mutual_match(state: tauri::State<AppState>, profile_id: String) -> Result<bool, String> {
+    let conn = state.db.lock().map_err(|e| e.to_string())?;
+    
+    // Check if we liked them
+    let our_like: i64 = conn.query_row(
+        "SELECT COUNT(*) FROM interactions WHERE profileId = ? AND type = 'like'",
+        [&profile_id],
+        |row| row.get(0)
+    ).unwrap_or(0);
+
+    // Check if they liked us
+    let their_like: i64 = conn.query_row(
+        "SELECT COUNT(*) FROM pending_likes WHERE senderId = ?",
+        [&profile_id],
+        |row| row.get(0)
+    ).unwrap_or(0);
+
+    Ok(our_like > 0 && their_like > 0)
 }
 
 #[tauri::command]
@@ -320,6 +341,7 @@ pub fn run() {
             send_chat_message,
             get_chat_history,
             get_chat_partners,
+            check_mutual_match,
             save_peer_profile,
             get_peer_profiles
         ])
