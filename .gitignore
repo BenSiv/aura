@@ -27,7 +27,6 @@ dist-ssr
 # Output/Build Artifacts
 pub/
 bin/
-bld/
 
 # Tauri/Rust
 target/
