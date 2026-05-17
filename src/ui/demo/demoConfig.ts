@@ -7,7 +7,7 @@
 export const DEMO_CONFIG = {
   IS_DEMO_MODE: false,
   FORCE_RESET_ON_LAUNCH: false,
-  INSTANT_MATCH_ON_LIKE: false,
+  INSTANT_MATCH_ON_LIKE: true,
   BYPASS_DB_PERSISTENCE: false,
   USE_SEED_PROFILES: false,
 };
