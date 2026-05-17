@@ -34,7 +34,14 @@ rm -rf "$SRCDIR/src/core/node_modules"
 ln -s "$SRCDIR/cnf/node_modules" "$SRCDIR/src/core/node_modules"
 echo "[+] Symlink created: src/core/node_modules -> cnf/node_modules"
 
-# Step 4: Build - Tauri Android Build
+# Step 4: Prebuild - Rust Dependencies Fetch
+echo ""
+echo "[*] Fetching Rust dependencies for offline compliance..."
+cd "$SRCDIR/src/core"
+cargo fetch
+echo "[+] Cargo fetch completed."
+
+# Step 5: Build - Tauri Android Build
 echo ""
 echo "[*] Commencing Tauri Android release build..."
 cd "$SRCDIR/src/core"

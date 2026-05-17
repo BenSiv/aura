@@ -1,7 +1,7 @@
 Categories:
   - Chat
   - Internet
-License: GPL-3.0-only
+License: AGPL-3.0-only
 SourceCode: https://github.com/bensiv/aura
 IssueTracker: https://github.com/bensiv/aura/issues
 
@@ -13,14 +13,11 @@ Builds:
     versionCode: 1
     commit: v0.1.0
     subdir: src/core/gen/android
-    sudo:
-      - apt-get update || true
-      - apt-get install -y --no-install-recommends nodejs npm
-    rust:
-      - yes
+    node: yes
+    rust: yes
     ndk: 27.1.12297006
     gradle:
-      - universalRelease
+      - assembleUniversalRelease
     prebuild:
       # 1. Install required Rust targets for cross-compiling the core
       - rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
@@ -29,4 +26,6 @@ Builds:
       - cd $SRCDIR/cnf && npm run build
       # 3. Create a local node_modules symlink in src/core so the offline gradle build can find @tauri-apps/cli
       - ln -s $SRCDIR/cnf/node_modules $SRCDIR/src/core/node_modules
-    output: app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
+      # 4. Fetch Rust dependencies while network is still available
+      - cd $SRCDIR/src/core && cargo fetch
+    output: src/core/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
