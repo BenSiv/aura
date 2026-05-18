@@ -8,6 +8,7 @@ use std::hash::{Hash, Hasher};
 use std::time::Duration;
 use tauri::{AppHandle, Emitter, Manager};
 use tokio::sync::mpsc;
+use tauri_plugin_notification::NotificationExt;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct ChatMessage {
@@ -195,6 +196,31 @@ pub fn start_mesh(app: AppHandle) {
                             if let Ok(peer) = serde_json::from_slice::<PeerProfile>(&message.data) {
                                 if !peer.id.is_empty() && peer.name.len() > 0 {
                                     println!("[P2P] Received Aura via Gossipsub from {}", peer.id);
+                                    
+                                    // Native Android Background Notification logic
+                                    let mut should_notify = false;
+                                    if let Ok(conn) = state.db.lock() {
+                                        let my_id: String = conn.query_row("SELECT id FROM local_profile LIMIT 1", [], |r| r.get(0)).unwrap_or_default();
+                                        if !my_id.is_empty() && peer.id != my_id {
+                                            let already_interacted: bool = conn.query_row(
+                                                "SELECT EXISTS(SELECT 1 FROM interactions WHERE profileId = ?1)",
+                                                [&peer.id],
+                                                |r| r.get(0),
+                                            ).unwrap_or(false);
+                                            if !already_interacted {
+                                                should_notify = true;
+                                            }
+                                        }
+                                    }
+                                    if should_notify {
+                                        app_handle.notification()
+                                            .builder()
+                                            .title("Aura Proximity Detected! ✨")
+                                            .body(format!("{} is close by. Connect with their energy!", peer.name))
+                                            .show()
+                                            .ok();
+                                    }
+
                                     let res_event = ResonanceEvent {
                                         profile_id: peer.id.clone(),
                                         score: 1.0,
@@ -208,6 +234,30 @@ pub fn start_mesh(app: AppHandle) {
                             if let Ok(chat) = serde_json::from_slice::<ChatMessage>(&message.data) {
                                 if chat.msg_type == "chat" {
                                     println!("[P2P] Received Chat Message from {}", chat.sender_id);
+                                    
+                                    // Native Android Background Notification logic for chats
+                                    let mut should_notify_chat = false;
+                                    let mut sender_name = "Someone".to_string();
+                                    if let Ok(conn) = state.db.lock() {
+                                        let my_id: String = conn.query_row("SELECT id FROM local_profile LIMIT 1", [], |r| r.get(0)).unwrap_or_default();
+                                        if !my_id.is_empty() && chat.sender_id != my_id {
+                                            should_notify_chat = true;
+                                            sender_name = conn.query_row(
+                                                "SELECT name FROM profiles WHERE id = ?1",
+                                                [&chat.sender_id],
+                                                |r| r.get(0),
+                                            ).unwrap_or_else(|_| "Someone".to_string());
+                                        }
+                                    }
+                                    if should_notify_chat {
+                                        app_handle.notification()
+                                            .builder()
+                                            .title(format!("Message from {} 💬", sender_name))
+                                            .body(&chat.text)
+                                            .show()
+                                            .ok();
+                                    }
+
                                     if let Ok(conn) = state.db.lock() {
                                         let _ = conn.execute(
                                             "INSERT OR IGNORE INTO messages (id, senderId, receiverId, text, timestamp) VALUES (?1, ?2, ?3, ?4, ?5)",

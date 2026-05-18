@@ -377,6 +377,7 @@ fn get_peer_feedback(state: tauri::State<AppState>, target_profile_id: String) -
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_notification::init())
         .setup(|app| {
             // Get platform-specific app data dir
             let app_dir = app.path().app_data_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));

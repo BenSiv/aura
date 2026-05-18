@@ -34,6 +34,7 @@ merlin = "3"
 curve25519-dalek-ng = "4"
 curv-kzen = { version = "0.10", default-features = false, features = ["num-bigint"] }
 rand = "0.8"
+tauri-plugin-notification = "2"
 
 [patch.crates-io]
 curv-kzen = { path = "../../dep/curv" }
