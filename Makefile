@@ -17,7 +17,7 @@ VERSION = $(shell grep '"version":' $(CNF)/package.json | cut -d'"' -f4)
 # Commands (using explicitly pointed config)
 # We run from root but point tools to cnf/
 VITE = npx vite --config $(CNF)/vite.config.ts
-TSC  = npx tsc -p $(CNF)/tsconfig.json
+TSC  = npx --prefix $(CNF) tsc -p $(CNF)/tsconfig.json
 TAURI = cd $(SRC)/core && npx @tauri-apps/cli
 
 # Default action
