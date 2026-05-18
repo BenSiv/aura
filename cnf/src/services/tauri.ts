@@ -64,8 +64,8 @@ export async function listen<T = unknown>(
   if (IS_TAURI) {
     // Use the raw IPC to register an event listener
     const internals = (window as any).__TAURI_INTERNALS__;
-    const id = internals.transformCallback((payload: T) =>
-      handler({ payload })
+    const id = internals.transformCallback((eventObj: any) =>
+      handler(eventObj)
     );
     await internals.invoke("plugin:event|listen", {
       event,
