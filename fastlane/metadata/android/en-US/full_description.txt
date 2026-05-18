@@ -1,0 +1,24 @@
+Aura is a decentralized, local-first networking app built to fight the loneliness pandemic by empowering people to connect directly, securely, and privately in the physical world.
+
+No servers. No algorithms. No data harvesting.
+
+HOW IT WORKS
+
+Aura uses your device's local radio (Wi-Fi Direct / Bluetooth) to discover other Aura users who are physically nearby. Profiles are exchanged only when both parties consent to a match, using a cryptographic double-blind handshake so neither side learns anything about non-matching users.
+
+PRIVACY BY DESIGN
+
+- Zero-Knowledge Proximity: your exact location is never shared. Aura only reveals that two users are "close", proven via a ZK-Paillier proof, without exposing coordinates.
+- Local-Only Storage: all profile data lives on your device. Nothing is uploaded to any central server.
+- Store-Carry-Forward Mesh: messages travel hop-by-hop through nearby devices, like a physical peer-to-peer network.
+- Open Protocol: the full source code is available under the AGPL-3.0 license.
+
+FEATURES
+
+- Private proximity discovery
+- Cryptographic double-blind match handshake
+- Decentralized mesh messaging (no internet required)
+- Light and dark themes
+- No account required, no phone number, no email
+
+Aura is a tool to get you off your phone and into a real conversation.

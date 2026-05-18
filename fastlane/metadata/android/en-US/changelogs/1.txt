@@ -1,0 +1,8 @@
+Initial release of Aura.
+
+- Private proximity discovery via Wi-Fi Direct and Bluetooth
+- Zero-Knowledge proximity proofs (Paillier-based)
+- Cryptographic double-blind match handshake
+- Store-Carry-Forward mesh messaging
+- Light and dark themes
+- No account, no server, no tracking
