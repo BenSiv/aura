@@ -111,8 +111,8 @@ pub fn start_mesh(app: AppHandle) {
             let topic = gossipsub::IdentTopic::new(TOPIC_NAME);
             swarm.behaviour_mut().gossipsub.subscribe(&topic).ok();
 
-            // Listen on all interfaces
-            swarm.listen_on("/ip4/0.0.0.0/tcp/0".parse().unwrap()).ok();
+            // Listen on all interfaces on fixed port 14224
+            swarm.listen_on("/ip4/0.0.0.0/tcp/14224".parse().unwrap()).ok();
 
             println!("[P2P] Swarm started. PeerId: {}", swarm.local_peer_id());
 
@@ -147,22 +147,47 @@ pub fn start_mesh(app: AppHandle) {
                 }
             });
 
+            let mut active_subnets: Vec<[u8; 4]> = Vec::new();
+            let mut scan_interval = tokio::time::interval(Duration::from_secs(15));
             loop {
                 tokio::select! {
+                    _ = scan_interval.tick() => {
+                        for ip_bytes in &active_subnets {
+                            println!("[P2P] Subnet Scan: Dialing peers in subnet {}.{}.{}.x...", ip_bytes[0], ip_bytes[1], ip_bytes[2]);
+                            for i in 1..=254 {
+                                if i != ip_bytes[3] {
+                                    if let Ok(dial_addr) = format!("/ip4/{}.{}.{}.{}/tcp/14224", ip_bytes[0], ip_bytes[1], ip_bytes[2], i).parse::<libp2p::Multiaddr>() {
+                                        swarm.dial(dial_addr).ok();
+                                    }
+                                }
+                            }
+                        }
+                    }
                     encoded = rx.recv() => {
                         if let Some(bytes) = encoded {
                             swarm.behaviour_mut().gossipsub.publish(topic.clone(), bytes).ok();
                         }
                     }
                     event = swarm.select_next_some() => match event {
+                        SwarmEvent::NewListenAddr { address, .. } => {
+                            println!("[P2P] Swarm listening on address: {:?}", address);
+                            if let Some(libp2p::multiaddr::Protocol::Ip4(ipv4_addr)) = address.iter().next() {
+                                if !ipv4_addr.is_loopback() && !ipv4_addr.is_unspecified() {
+                                    let octets = ipv4_addr.octets();
+                                    if !active_subnets.contains(&octets) {
+                                        active_subnets.push(octets);
+                                    }
+                                }
+                            }
+                        }
                         SwarmEvent::ConnectionEstablished { peer_id, endpoint, .. } => {
                             println!("[P2P] Connection established with {} at {:?}", peer_id, endpoint);
                         }
                         SwarmEvent::ConnectionClosed { peer_id, cause, .. } => {
                             println!("[P2P] Connection closed with {}: {:?}", peer_id, cause);
                         }
-                        SwarmEvent::OutgoingConnectionError { peer_id, error, .. } => {
-                            println!("[P2P] Failed to dial {:?}: {:?}", peer_id, error);
+                        SwarmEvent::OutgoingConnectionError { .. } => {
+                            // Safely ignore standard dial errors during subnet scans to keep logcat silent and performant
                         }
                         SwarmEvent::Behaviour(AuraBehaviourEvent::Gossipsub(gossipsub::Event::Subscribed { peer_id, topic })) => {
                             println!("[P2P] Peer {} subscribed to topic: {}", peer_id, topic);
