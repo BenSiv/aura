@@ -21,8 +21,8 @@ class AuraForegroundService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Aura Mesh Networking")
-            .setContentText("Scanning for nearby resonances in the background...")
+            .setContentTitle("AuraRadar Proximity Active")
+            .setContentText("Spontaneously scanning for nearby vibes...")
             .setSmallIcon(R.mipmap.ic_launcher)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
@@ -40,7 +40,7 @@ class AuraForegroundService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChannel = NotificationChannel(
                 CHANNEL_ID,
-                "Aura Proximity Service Channel",
+                "AuraRadar Proximity Service Channel",
                 NotificationManager.IMPORTANCE_LOW
             )
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

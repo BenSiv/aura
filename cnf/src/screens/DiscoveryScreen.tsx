@@ -30,7 +30,7 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
       <header className="header">
         <div className="header-top">
           <div>
-            <h1>Aura</h1>
+            <h1>AuraRadar</h1>
             <div className="status-pill">
               <div className={`status-dot ${activeAura ? "active" : "idle"}`} />
               <span>{activeAura ? "Projecting" : "Idle"}</span>
