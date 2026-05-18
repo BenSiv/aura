@@ -2,11 +2,14 @@ Categories:
   - Chat
   - Internet
 License: AGPL-3.0-only
-SourceCode: https://github.com/bensiv/aura
-IssueTracker: https://github.com/bensiv/aura/issues
+AuthorName: Ben Sivan
+AuthorEmail: bensiv92@gmail.com
+SourceCode: https://github.com/BenSiv/aura
+IssueTracker: https://github.com/BenSiv/aura/issues
+Summary: Local-first, private proximity networking to meet people nearby
 
 RepoType: git
-Repo: https://github.com/bensiv/aura.git
+Repo: https://github.com/BenSiv/aura.git
 
 Builds:
   - versionName: 0.1.0
@@ -29,3 +32,8 @@ Builds:
       # 4. Fetch Rust dependencies while network is still available
       - cd $SRCDIR/src/core && cargo fetch
     output: src/core/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
+
+AutoUpdateMode: Version v%v
+UpdateCheckMode: Tags
+CurrentVersion: 0.1.0
+CurrentVersionCode: 1
