@@ -96,6 +96,7 @@ export default function SwipeCard({ profile, onSwipe, onClick }: Props) {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onClick={onClick}
     >
       <img src={images[0]} alt={profile.name} className="swipe-card-image" />
       
