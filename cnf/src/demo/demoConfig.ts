@@ -5,10 +5,10 @@
  */
 
 export const DEMO_CONFIG = {
-  IS_DEMO_MODE: true,
-  FORCE_RESET_ON_LAUNCH: true,
-  INSTANT_MATCH_ON_LIKE: true,
+  IS_DEMO_MODE: false,
+  FORCE_RESET_ON_LAUNCH: false,
+  INSTANT_MATCH_ON_LIKE: false,
   MUTUAL_MATCH_DEMO: true,
-  BYPASS_DB_PERSISTENCE: true,
-  USE_SEED_PROFILES: true,
+  BYPASS_DB_PERSISTENCE: false,
+  USE_SEED_PROFILES: false,
 };
