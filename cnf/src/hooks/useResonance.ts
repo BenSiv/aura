@@ -103,7 +103,8 @@ export function useResonance() {
   const startBroadcasting = useCallback((profile: any) => {
     const payload = {
       ...profile,
-      interested_in: profile.interestedIn
+      interested_in: profile.interestedIn,
+      nonce: Math.random().toString() // Bypass Gossipsub duplicate message cache
     };
     invoke("start_broadcasting", { profile: payload });
     
@@ -117,7 +118,8 @@ export function useResonance() {
         // Construct the payload to match what Rust expects
         const payload = {
           ...localProfileRef.current,
-          interested_in: localProfileRef.current.interestedIn
+          interested_in: localProfileRef.current.interestedIn,
+          nonce: Math.random().toString() // Bypass Gossipsub duplicate message cache
         };
         invoke("start_broadcasting", { profile: payload });
       }
