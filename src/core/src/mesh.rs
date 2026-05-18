@@ -227,6 +227,18 @@ pub fn start_mesh(app: AppHandle) {
                                         println!("[P2P] Intercepted ZK Proximity packet type: {} from {}", chat.msg_type, chat.sender_id);
                                         app_handle.emit("zk_proximity_received", chat.clone()).ok();
                                     }
+                                } else if chat.msg_type == "peer_feedback" {
+                                    println!("[P2P] Received Peer Feedback from {} for target {}", chat.sender_id, chat.receiver_id);
+                                    if let Ok(conn) = state.db.lock() {
+                                        if let Some((rating_str, attrs)) = chat.text.split_once(':') {
+                                            if let Ok(rating) = rating_str.parse::<f64>() {
+                                                let _ = conn.execute(
+                                                    "INSERT OR REPLACE INTO peer_feedback (targetProfileId, reporterProfileId, rating, attributes, timestamp) VALUES (?1, ?2, ?3, ?4, ?5)",
+                                                    (&chat.receiver_id, &chat.sender_id, rating, attrs, &chat.timestamp),
+                                                );
+                                            }
+                                        }
+                                    }
                                 } else if chat.msg_type == "blind_like" {
                                     // Only process if it targets us
                                     let mut is_target = false;

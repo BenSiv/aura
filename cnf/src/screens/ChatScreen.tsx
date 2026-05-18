@@ -20,6 +20,7 @@ interface ChatMessage {
 export const ChatScreen: React.FC<ChatScreenProps> = ({ profile, localProfileId, onBack }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [rating, setRating] = useState<number>(3.0); // Default to 3.0 stars
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   let profileImage = "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=800&q=80";
@@ -36,18 +37,24 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ profile, localProfileId,
     scrollToBottom();
   }, [messages]);
 
-  // Load history and set up listener
+  // Load history and rating, and set up listener
   useEffect(() => {
-    const loadMessages = async () => {
+    const loadMessagesAndRating = async () => {
       try {
         const history = await invoke<ChatMessage[]>("get_chat_history", { peerId: profile.id });
         setMessages(history);
+        
+        // Fetch current rating for this peer
+        const ratingData = await invoke<[number, string] | null>("get_peer_feedback", { targetProfileId: profile.id });
+        if (ratingData) {
+          setRating(ratingData[0]); // ratingData is [rating, attributes]
+        }
       } catch (err) {
-        console.error("Failed to load chat history:", err);
+        console.error("Failed to load chat history or rating:", err);
       }
     };
     
-    loadMessages();
+    loadMessagesAndRating();
 
     // Listen for real-time messages
     const unlisten = listen<ChatMessage>('chat_message_received', (event) => {
@@ -93,6 +100,19 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ profile, localProfileId,
     }
   };
 
+  const handleRatingChange = async (val: number) => {
+    setRating(val);
+    try {
+      await invoke("submit_peer_feedback", {
+        targetProfileId: profile.id,
+        rating: val,
+        attributes: "rating"
+      });
+    } catch (err) {
+      console.error("Failed to submit peer rating:", err);
+    }
+  };
+
   return (
     <div className="app-container chat-screen">
       <header className="header chat-header">
@@ -133,6 +153,36 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ profile, localProfileId,
         )}
         <div ref={messagesEndRef} />
       </main>
+
+      <div className="chat-rating-bar" style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0.6rem 1.2rem',
+        background: 'rgba(255, 255, 255, 0.03)',
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        gap: '16px'
+      }}>
+        <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', minWidth: '150px' }}>
+          Resonance Rating: <strong style={{ color: 'var(--accent-primary)' }}>{rating.toFixed(1)}/5.0</strong>
+        </span>
+        <input 
+          type="range" 
+          min="0" 
+          max="5" 
+          step="0.5" 
+          value={rating} 
+          onChange={(e) => handleRatingChange(parseFloat(e.target.value))}
+          style={{ 
+            flexGrow: 1, 
+            accentColor: 'var(--accent-primary)', 
+            cursor: 'pointer',
+            height: '6px',
+            borderRadius: '3px',
+            background: 'rgba(255, 255, 255, 0.2)'
+          }}
+        />
+      </div>
 
       <footer className="chat-input-area">
         <div className="input-wrapper">

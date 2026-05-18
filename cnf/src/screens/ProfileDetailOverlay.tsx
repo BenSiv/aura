@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { X, Radar } from "lucide-react";
 import { Profile } from "../components/SwipeCard";
 
@@ -6,13 +6,93 @@ interface ProfileDetailOverlayProps {
   profile: Profile;
   onClose: () => void;
   onLike: () => void;
+  onReport: (reason: string) => void;
 }
 
 export const ProfileDetailOverlay: React.FC<ProfileDetailOverlayProps> = ({
   profile,
   onClose,
-  onLike
+  onLike,
+  onReport
 }) => {
+  const [isReporting, setIsReporting] = useState(false);
+  const [reason, setReason] = useState("");
+
+  if (isReporting) {
+    return (
+      <div className="profile-detail-overlay" onClick={onClose}>
+        <div className="profile-detail-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '380px' }}>
+          <div className="profile-detail-body" style={{ padding: '2rem' }}>
+            <h2 style={{ color: '#ff6384', marginBottom: '0.5rem' }}>Report Profile</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1.5rem', lineHeight: '1.4' }}>
+              In Aura's P2P mesh network, reporting immediately blocks this user locally and cryptographically broadcasts a trust-dampening warning to nearby peers.
+            </p>
+            
+            <div className="detail-section" style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>
+                Reasoning for report (optional):
+              </label>
+              <textarea 
+                placeholder="e.g. offensive language, spam/bot advertisement, harassment..."
+                value={reason}
+                onChange={e => setReason(e.target.value)}
+                style={{
+                  width: '100%',
+                  height: '100px',
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '8px',
+                  color: '#fff',
+                  padding: '0.75rem',
+                  fontSize: '0.9rem',
+                  resize: 'none',
+                  outline: 'none'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button 
+                className="btn-secondary" 
+                style={{ 
+                  flex: 1, 
+                  padding: '0.75rem', 
+                  borderRadius: '8px', 
+                  cursor: 'pointer', 
+                  background: 'rgba(255,255,255,0.05)', 
+                  border: '1px solid rgba(255,255,255,0.1)', 
+                  color: '#fff',
+                  fontWeight: 600
+                }}
+                onClick={() => setIsReporting(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn-primary" 
+                style={{ 
+                  flex: 1, 
+                  padding: '0.75rem', 
+                  borderRadius: '8px', 
+                  cursor: 'pointer', 
+                  background: '#ff6384', 
+                  border: 'none', 
+                  color: '#fff', 
+                  fontWeight: 600 
+                }}
+                onClick={() => {
+                  onReport(reason.trim());
+                }}
+              >
+                Submit Report
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="profile-detail-overlay" onClick={onClose}>
       <div className="profile-detail-content" onClick={e => e.stopPropagation()}>
@@ -49,11 +129,31 @@ export const ProfileDetailOverlay: React.FC<ProfileDetailOverlayProps> = ({
           </div>
 
           <div className="detail-section" style={{ marginTop: '2rem' }}>
-            <button className="btn-primary" style={{ width: '100%' }} onClick={() => {
+            <button className="btn-primary" style={{ width: '100%', marginBottom: '0.75rem' }} onClick={() => {
               onLike();
               onClose();
             }}>
               Establish Resonance
+            </button>
+            <button 
+              className="btn-report" 
+              style={{ 
+                width: '100%', 
+                background: 'rgba(255, 99, 132, 0.1)', 
+                border: '1px solid rgba(255, 99, 132, 0.4)', 
+                color: '#ff6384',
+                padding: '0.75rem',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 600,
+                transition: 'all 0.2s',
+                textAlign: 'center'
+              }} 
+              onClick={() => {
+                setIsReporting(true);
+              }}
+            >
+              Report Profile
             </button>
           </div>
         </div>

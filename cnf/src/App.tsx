@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Radar, Shield, Zap } from "lucide-react";
 import { useResonance } from "./hooks/useResonance";
-import { listen } from "./services/tauri";
+import { listen, invoke } from "./services/tauri";
 import { OnboardingScreen } from "./screens/OnboardingScreen";
 import { DiscoveryScreen } from "./screens/DiscoveryScreen";
 import { ProfileDetailOverlay } from "./screens/ProfileDetailOverlay";
@@ -187,6 +187,20 @@ function App() {
           profile={selectedProfile}
           onClose={() => setSelectedProfile(null)}
           onLike={() => handleInteraction('like')}
+          onReport={async (reason) => {
+            try {
+              const attributes = reason ? `report:inappropriate:${reason}` : "report:inappropriate";
+              await invoke("submit_peer_feedback", {
+                targetProfileId: selectedProfile.id,
+                rating: 0.0,
+                attributes
+              });
+              handleInteraction('pass');
+              setSelectedProfile(null);
+            } catch (err) {
+              console.error("Failed to submit peer report:", err);
+            }
+          }}
         />
       )}
 

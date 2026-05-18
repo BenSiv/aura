@@ -326,6 +326,53 @@ fn get_peer_profiles(state: tauri::State<AppState>, profile_ids: Vec<String>) ->
     Ok(profiles)
 }
 
+#[tauri::command]
+fn submit_peer_feedback(state: tauri::State<AppState>, target_profile_id: String, rating: f64, attributes: String) -> Result<(), String> {
+    let conn = state.db.lock().map_err(|e| e.to_string())?;
+    let timestamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
+    let reporter_profile_id: String = conn.query_row(
+        "SELECT id FROM local_profile LIMIT 1",
+        [],
+        |row| row.get(0)
+    ).unwrap_or_default();
+
+    conn.execute(
+        "INSERT OR REPLACE INTO peer_feedback (targetProfileId, reporterProfileId, rating, attributes, timestamp) VALUES (?1, ?2, ?3, ?4, ?5)",
+        (&target_profile_id, &reporter_profile_id, rating, &attributes, timestamp),
+    ).map_err(|e| e.to_string())?;
+
+    // Broadcast the feedback to the mesh
+    let msg = mesh::ChatMessage {
+        msg_type: "peer_feedback".to_string(),
+        id: format!("feedback_{}_{}", reporter_profile_id, timestamp),
+        sender_id: reporter_profile_id,
+        receiver_id: target_profile_id,
+        text: format!("{}:{}", rating, attributes),
+        timestamp,
+    };
+    mesh::broadcast_chat(msg);
+
+    Ok(())
+}
+
+#[tauri::command]
+fn get_peer_feedback(state: tauri::State<AppState>, target_profile_id: String) -> Result<Option<(f64, String)>, String> {
+    let conn = state.db.lock().map_err(|e| e.to_string())?;
+    let reporter_profile_id: String = conn.query_row(
+        "SELECT id FROM local_profile LIMIT 1",
+        [],
+        |row| row.get(0)
+    ).unwrap_or_default();
+
+    let result: Option<(f64, String)> = conn.query_row(
+        "SELECT rating, attributes FROM peer_feedback WHERE targetProfileId = ?1 AND reporterProfileId = ?2 LIMIT 1",
+        [&target_profile_id, &reporter_profile_id],
+        |row| Ok((row.get(0)?, row.get(1)?))
+    ).ok();
+
+    Ok(result)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -362,6 +409,8 @@ pub fn run() {
             save_peer_profile,
             get_peer_profiles,
             broadcast_zk_packet,
+            submit_peer_feedback,
+            get_peer_feedback,
             zk_distance::generate_paillier_keypair,
             zk_distance::encrypt_location,
             zk_distance::compute_homomorphic_distance,

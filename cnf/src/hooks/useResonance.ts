@@ -15,6 +15,7 @@ export function useResonance() {
   const [isInitialLoading, setIsInitialLoading] = useState(!DEMO_CONFIG.IS_DEMO_MODE);
   const myLikesRef = useRef<string[]>([]);
   const seenProfilesRef = useRef<Record<string, Profile>>({});
+  const interactedProfileIdsRef = useRef<Set<string>>(new Set());
   const localProfileRef = useRef<{ id: string, name: string, bio: string, images: string, tags: string, gender: string, interestedIn: string } | null>(null);
 
   // --- ZK Proximity Handshake Cryptographic States & Refs ---
@@ -85,11 +86,17 @@ export function useResonance() {
     }
   }, [theme]);
 
-  // Initialize likes from DB
+  // Initialize likes and interacted profile exclusions from DB
   useEffect(() => {
     invoke<any[]>("get_interaction_history").then(history => {
       const likes = history.filter(h => h[1] === "like").map(h => h[0]);
       myLikesRef.current = likes;
+      
+      const interacted = new Set<string>();
+      history.forEach(h => {
+        interacted.add(h[0]); // h[0] is the profileId
+      });
+      interactedProfileIdsRef.current = interacted;
     }).catch(err => console.error("Failed to load interactions:", err));
   }, []);
 
@@ -189,6 +196,9 @@ export function useResonance() {
       const { score, peer_data } = event.payload;
       
       if (peer_data) {
+        // Exclude profiles we have already interacted with (liked, passed, or blocked)
+        if (interactedProfileIdsRef.current.has(peer_data.id)) return;
+        
         setPendingDiscoveries(prev => {
           if (prev.some(p => p.id === peer_data.id)) return prev;
           
@@ -460,6 +470,9 @@ export function useResonance() {
   const handleInteraction = (type: 'like' | 'pass') => {
     if (pendingDiscoveries.length > 0) {
       const targetPeer = pendingDiscoveries[0];
+      
+      // Mark as interacted immediately to exclude it from future discoveries
+      interactedProfileIdsRef.current.add(targetPeer.id);
       
       if (!DEMO_CONFIG.IS_DEMO_MODE) {
         invoke("record_local_interaction", { profileId: targetPeer.id, interactionType: type }).catch(err => console.error("Failed to record interaction:", err));

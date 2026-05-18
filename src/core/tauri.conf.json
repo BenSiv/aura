@@ -2,7 +2,7 @@
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Aura",
   "version": "0.1.0",
-  "identifier": "com.aura.app",
+  "identifier": "com.bensivan.aura",
   "build": {
     "devUrl": "http://localhost:1420",
     "frontendDist": "../../out/web-dist"
