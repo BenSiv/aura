@@ -27,7 +27,7 @@ The core storage and UI foundation are solid. I’m now focusing on hardening th
 
 If you’re interested in P2P protocols, local-first architectures, or just want to help build a dating app that isn't a "Skinner Box," I'd love to have you join me.
 
-**GitHub:** [https://github.com/BenSiv/aura](https://github.com/BenSiv/aura)
+**GitHub:** [https://github.com/BenSiv/auraradar](https://github.com/BenSiv/auraradar)
 
 **Tech Stack:** Rust (Tauri v2), React (Vite), SQLCipher, TypeScript.
 

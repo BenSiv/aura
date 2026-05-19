@@ -80,11 +80,11 @@ Categories:
   - Chat
   - Internet
 License: AGPL-3.0-only
-SourceCode: https://github.com/bensiv/aura
-IssueTracker: https://github.com/bensiv/aura/issues
+SourceCode: https://github.com/bensiv/auraradar
+IssueTracker: https://github.com/bensiv/auraradar/issues
 
 RepoType: git
-Repo: https://github.com/bensiv/aura.git
+Repo: https://github.com/bensiv/auraradar.git
 
 Builds:
   - versionName: 0.1.0

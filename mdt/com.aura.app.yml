@@ -4,12 +4,12 @@ Categories:
 License: AGPL-3.0-only
 AuthorName: Ben Sivan
 AuthorEmail: bensiv92@gmail.com
-SourceCode: https://github.com/BenSiv/aura
-IssueTracker: https://github.com/BenSiv/aura/issues
+SourceCode: https://github.com/BenSiv/auraradar
+IssueTracker: https://github.com/BenSiv/auraradar/issues
 Summary: Decentralized, private proximity networking to meet people nearby
 
 RepoType: git
-Repo: https://github.com/BenSiv/aura.git
+Repo: https://github.com/BenSiv/auraradar.git
 
 Builds:
   - versionName: 0.1.0

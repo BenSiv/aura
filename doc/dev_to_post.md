@@ -35,7 +35,7 @@ Aura is fully open-source (AGPL v3). I've just finished the F-Droid metadata rec
 
 **I’m looking for contributors!** If you're into P2P protocols, local-first architectures, or just want to build tech that actually helps people connect in the real world, check out the repo:
 
-👉 [https://github.com/bensiv/aura](https://github.com/bensiv/aura)
+👉 [https://github.com/bensiv/auraradar](https://github.com/bensiv/auraradar)
 
 ---
 

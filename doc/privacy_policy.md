@@ -43,7 +43,7 @@ Aura employs a subjective, decentralized reputation model:
 ## 4. Open Source Transparency
 
 To guarantee the validity of our privacy statements, the entire codebase of Aura is completely open source under the **GNU Affero General Public License v3 (AGPL v3)**. You, or any independent auditor, can review the entire source code at:
-[https://github.com/bensiv/aura](https://github.com/bensiv/aura)
+[https://github.com/bensiv/auraradar](https://github.com/bensiv/auraradar)
 
 ---
 
@@ -63,4 +63,4 @@ We may update our Privacy Policy from time to time to reflect changes in our loc
 
 If you have any questions or feedback regarding this local-first Privacy Policy, please contact the developer:
 * **Developer Name**: Ben Sivan
-* **Open Source Repository**: [https://github.com/bensiv/aura/issues](https://github.com/bensiv/aura/issues)
+* **Open Source Repository**: [https://github.com/bensiv/auraradar/issues](https://github.com/bensiv/auraradar/issues)

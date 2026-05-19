@@ -41,6 +41,6 @@ We have appointed a designated Child Safety Officer who is prepared, qualified, 
 
 * **Designated Safety Contact**: Ben Sivan
 * **Designated Safety Email**: [bensiv92@gmail.com](mailto:bensiv92@gmail.com)
-* **Codebase & Issues Portal**: [AuraRadar GitHub Issues](https://github.com/bensiv/aura/issues)
+* **Codebase & Issues Portal**: [AuraRadar GitHub Issues](https://github.com/bensiv/auraradar/issues)
 
 If you discover any safety concerns or wish to report a compliance matter, please email our Child Safety Officer immediately. All inquiries are treated with the highest priority and discretion.

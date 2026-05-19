@@ -32,7 +32,7 @@ Technical Architecture and Features:
 - Zero-Knowledge Handshakes: Paillier homomorphic coordinate blinding + Merlin transcript Bulletproof range proofs to verify proximity without sharing absolute coordinates!
 
 Check out the open-source repository and contribute:
-GitHub: https://github.com/BenSiv/aura
+GitHub: https://github.com/BenSiv/auraradar
 
 #OpenSource #Tauri #Rust #P2P #ZeroKnowledge #React #Web3 #PrivacyFirst
 ```

@@ -1,85 +1,127 @@
-# Project Aura: Reclaiming Connection
+![AuraRadar Banner](./pub/store_assets/feature_graphic.png)
 
-**Aura** is a decentralized, local-first networking utility built to fight the loneliness pandemic by empowering people to connect directly, securely, and privately in the physical world.
+# ✨ AuraRadar ✨
 
----
+**Reclaiming Connection: A Decentralized, Local-First Proximity Network for Real-World Serendipity**
 
-## Why Aura? (The Social Mission)
-
-Aura is a response to a fundamental crisis of our time:
-
-- **Fighting the Loneliness Pandemic**: I use technology to break the digital barrier and facilitate real-world, face-to-face interactions.
-- **Reclaiming the Hold from Big Tech**: Taking the power of connection back from centralized algorithms and putting it into the hands of my users.
-- **Removing Conflicts of Interest**: Traditional dating apps want you to stay on the app. Aura is a tool I built to get you *off* your phone and *into* a conversation.
-- **Data Sovereignty**: Built on a secure, local-mesh network where your data remains yours, on your device, always.
-
-For a deeper dive into my philosophy, read the [Aura Manifesto](./manifesto.md).
+![Platform Support](https://img.shields.io/badge/Platform-Android%20%7C%20Desktop-brightgreen?style=flat-square&logo=android) ![Core Rust Tauri](https://img.shields.io/badge/Core-Rust%20%7C%20Tauri%20v2-orange?style=flat-square&logo=rust) ![Security](https://img.shields.io/badge/Security-SQLCipher%20%26%20Zero--Knowledge-blueviolet?style=flat-square) ![License AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-red?style=flat-square)
 
 ---
 
-## Core Architectural Pillars
+## 🎬 Quick Video Demo
+
+Watch the **40-second walkthrough** of the core AuraRadar experience in action:
+
+[![Watch AuraRadar Youtube Video](./pub/auraradar_youtube_demo.webp)](https://www.youtube.com/shorts/aaZ9QfXklVw)
+
+👉 **[Click Here to Watch the YouTube Shorts Demo!](https://www.youtube.com/shorts/aaZ9QfXklVw)** 🎬
+
+---
+
+## 🌟 The Social Mission: Reclaiming Connection
+
+We live in a paradox: we are more digitally connected than ever, yet we are in the midst of a global **loneliness pandemic**. 
+
+**AuraRadar** is a direct response to this crisis. It is a local-first, serverless networking utility built to get you **off your screen** and **into a face-to-face conversation** with the people physically around you.
+
+*   **No Centralized Hold**: Taking the power of connection back from Big Tech's centralized matching algorithms and returning it directly to your local proximity space.
+*   **Zero Conflicts of Interest**: Commercial dating and social apps are designed to keep you swiping endlessly on their platform so they can monetize your attention. AuraRadar is built to facilitate immediate real-world introductions and then get out of your way.
+*   **Absolute Data Sovereignty**: Your profile data, swipes history, preferences, and private conversations are stored only on your physical device, fully encrypted. Your "type" never leaves your hardware.
+
+*For a deep dive into our philosophy, read the full [AuraRadar Manifesto](./manifesto.md).*
+
+---
+
+## 📱 Live Core Flow Preview
+
+When another user enters your physical proximity, AuraRadar automatically initiates a zero-knowledge proximity handshake and establishes a secure, local peer-to-peer mesh chat thread.
+
+![AuraRadar Core Flow Preview](./pub/auraradar_scan_match_chat.webp)
+
+---
+
+## 📸 Interface & Journey Showcase
+
+Explore the standard **9:16 portrait views** of AuraRadar, showing the high-fidelity glassmorphism interface and interactive features:
+
+| **1. Secure Onboarding** | **2. Proximity Radar** | **3. Swipe Discovery** | **4. Profile Details** |
+| :---: | :---: | :---: | :---: |
+| ![Onboard securely](./fst/metadata/android/en-US/images/phoneScreenshots/1.png) | ![Scan proximity](./fst/metadata/android/en-US/images/phoneScreenshots/2.png) | ![Encounter cards](./fst/metadata/android/en-US/images/phoneScreenshots/3.png) | ![Profile details](./fst/metadata/android/en-US/images/phoneScreenshots/4.png) |
+| *Onboard securely with name and bio* | *Scan proximity space for local resonances* | *Encounter and swipe on nearby active profile cards* | *Inspect profile bio, interests, and distance* |
+
+| **5. Mutual Match** | **6. Encrypted P2P Chat** | **7. Interaction History** | **8. Zero-Knowledge Settings** |
+| :---: | :---: | :---: | :---: |
+| ![Celebrate match](./fst/metadata/android/en-US/images/phoneScreenshots/5.png) | ![Direct mesh chat](./fst/metadata/android/en-US/images/phoneScreenshots/6.png) | ![Swipes history](./fst/metadata/android/en-US/images/phoneScreenshots/7.png) | ![Settings coordinates](./fst/metadata/android/en-US/images/phoneScreenshots/8.png) |
+| *Instant match celebration screen* | *Secure mesh chat thread with live resonance scoring* | *Review history of past matches and encounters* | *Configure privacy and coordinate blinding tooltips* |
+
+---
+
+## 🛠️ Core Architectural Pillars
 
 ### 1. Local-First Data Sovereignty (Rust + SQLCipher)
-Unlike traditional platforms, Aura does not utilize a central database. 
-- **Encrypted Storage**: All personal data lives in an encrypted **SQLCipher** database managed directly by the native Rust backend process (`src/core`).
-- **On-Device Processing**: Preference learning and profile ranking are handled locally via a **preference optimizer** (a tiny ML model). Your "type" and behavioral patterns never leave your hardware.
+*   **Encrypted Storage**: Personal profile data and interaction history reside in a secure, local **SQLCipher** database managed directly by our native Rust core process (`src/core`).
+*   **On-Device Machine Learning**: Profile scoring and preference calculations are performed entirely locally on your device. Your swipe patterns and behavioral footprints never leave your physical hardware.
 
 ### 2. Decentralized Discovery & Mesh Networking
-The app replaces the central "matchmaking" server with a P2P discovery layer.
-- **Background Proximity**: The Rust backend continuously scans for nearby BLE "Resonances" using **libp2p**, even when the UI is suspended.
-- **Security-Conscious Networking**: Connections are established directly between devices (P2P) using secure, authenticated protocols.
+*   **No Central Servers**: Proximity discovery replaces standard matchmaking servers with an autonomous P2P swarm.
+*   **Persistent Background Scanning**: A native Android Foreground Service (`AuraForegroundService.kt`) runs continuously in the background using specialized `meshNetworkScan` bindings, scanning for BLE/Wi-Fi proximity and firing local notifications even when the app is suspended.
+*   **Bypassing Hotspot Blocks**: Using a dedicated swarm port (`14224`) and an asynchronous subnet discovery thread, we successfully establish P2P TCP handshakes across complex mobile hotspot configurations, bypassing OS-level multicast blocks.
 
-### 3. Advanced Reputation & Trust (The "Aura" System)
-Aura uses a decentralized reputation mesh to ensure safety and authenticity.
-- **Relational Valence**: Your "Aura Score" is not a global number. It is calculated locally based on the specific gossip your device has received, making reputation a subjective, relational perception.
-- **Confidence Metrics**: All scores are presented with a confidence percentage, indicating the density of unique peer verifications.
+### 3. Zero-Knowledge Proximity Handshakes
+*   **Zero Coordinate Leaks**: AuraRadar uses homomorphic mathematics to verify that two peers are close without ever revealing their raw GPS coordinates.
+*   **Advanced Cryptography**: Built on **Paillier homomorphic coordinate blinding** combined with **Merlin transcript Bulletproof range proofs**, providing absolute cryptographic privacy for your physical movements.
 
-### 4. High-Performance Hybrid UI
-Aura utilizes **Tauri v2** combined with a **Vite + React** frontend.
-- **Premium Aesthetics**: The UI is constructed with standard HTML/Vanilla CSS, leveraging glassmorphism and modern web animations.
-- **Atomic IPC**: The React frontend communicates with the secure Rust backend via Tauri's high-speed IPC bridge.
+### 4. субъективное Gossip Reputation System
+*   **Relational Reputation**: Your "Aura Score" is calculated subjectively by your device based on gossip routing, preventing global sybil/rating attacks while preserving neighborhood-level trust.
 
 ---
 
-## Technical Summary
+## 📊 Technical Stack Summary
 
-| Feature | Implementation |
+| Layer | Technologies & Implementations |
 | --- | --- |
-| **Frontend UI** | React (Vite), Vanilla CSS, Lucide Icons |
-| **Backend Core** | Rust (Tauri v2, libp2p) |
-| **Database** | `rusqlite` + `bundled-sqlcipher` |
-| **Networking** | P2P Mesh / Gossipsub / mDNS |
+| **Frontend UI** | React (Vite), Vanilla CSS, Lucide Icons, Glassmorphic Styling |
+| **Native Core** | Rust, Tauri v2 (IPC Bridge, Native Notifications) |
+| **Database** | SQLite + SQLCipher (`rusqlite` + `bundled-sqlcipher`) |
+| **Networking** | Serverless P2P Mesh (`libp2p` / Gossipsub / Subnet Dialing) |
+| **Cryptography** | Paillier Homomorphic Encryption, Merlin Bulletproofs |
 | **Licensing** | AGPL v3 |
 
 ---
 
-## Building Aura
+## ⚙️ Building AuraRadar
 
-Aura uses a standard Unix-style `Makefile` to simplify cross-platform building.
+AuraRadar uses a standard Unix-style `Makefile` to simplify building, testing, and deploying across multiple platform targets.
 
 ### Prerequisites
-- [Rust Toolchain](https://rustup.rs/) (cargo, rustc)
-- [Node.js](https://nodejs.org/) & npm
-- Android NDK & SDK (for mobile builds)
+*   [Rust Toolchain](https://rustup.rs/) (cargo, rustc)
+*   [Node.js](https://nodejs.org/) & npm
+*   Android NDK & SDK (required for mobile/APK builds)
 
 ### Development Commands
 
-Start the full Desktop native app (Rust + UI):
+Start the full Desktop native app (Rust backend + Web interface):
 ```bash
 make run
 ```
 
-Build the local Android APK development client:
+Build the local Android development client (APK):
 ```bash
 make build-local
 ```
 
-Deploy to all connected Android devices:
+Compile the optimized, signed production release packages (AAB and APK):
+```bash
+make build
+```
+
+Deploy the client directly to all connected USB Android devices:
 ```bash
 make deploy
 ```
 
 ---
 
-## License
-Licensed under the **GNU Affero General Public License v3 (AGPL v3)**. See [LICENSE.txt](./license.txt) for details.
+## 📄 License
+
+Licensed under the **GNU Affero General Public License v3 (AGPL v3)**. See [LICENSE.txt](./license.txt) for absolute legal transparency.

@@ -3,7 +3,7 @@ name = "aura"
 version = "0.1.0"
 description = "Decentralized, private proximity networking app"
 authors = ["Ben Sivan <bensiv92@gmail.com>"]
-homepage = "https://github.com/BenSiv/aura"
+homepage = "https://github.com/BenSiv/auraradar"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
