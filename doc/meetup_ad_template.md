@@ -1,18 +1,18 @@
-AuraRadar Live Mesh Testing: Privacy-First Offline Peer-to-Peer Meetup
+AuraRadar Proximity Discovery: Local Offline Matching Meetup
 
-Are you interested in privacy, cryptography, and off-grid networking? Come join us for a hands-on physical user-testing meetup to try out AuraRadar, a decentralized local matchmaking application.
+Are you curious about new tech, privacy, or connecting with people nearby offline? Come join us for a hands-on physical meetup to test AuraRadar, a new local matching app that works entirely without internet or central servers.
 
-AuraRadar is an offline-first proximity discovery app. It uses local Bluetooth and zero-knowledge distance calculations to find nearby users who share matching interests, maintaining absolute anonymity and location secrecy without central servers. Since the app relies on physical proximity, we need to test it together in the same space.
+AuraRadar is a privacy-first app designed to help you discover people nearby who share similar interests. Using standard phone-to-phone Bluetooth, it securely checks compatibility with people in the same room without revealing your actual location or identity. Since the discovery runs directly between nearby devices, we need to gather in the same physical space to see it in action.
 
-Prerequisites:
+Requirements:
 - An Android smartphone running Android 8.0 or newer.
-- Willingness to join our Google Play closed testing group on-site to install the app.
+- Willingness to join our Google Play closed testing group on-site to download the app.
 
-Agenda:
-- Introduction and brief concept overview.
-- Quick on-site app installation.
-- Proximity field testing to verify offline Bluetooth range and matching.
-- Feedback discussion and socializing.
+What we will do:
+- Welcome and a brief talk about how offline private matching works.
+- On-site app installation helper.
+- Proximity test: walking around the space to see the local discovery and private compatibility matching work in real-time.
+- Coffee, discussion, and feedback.
 
 Where and When:
 - Location: [Insert Address]
