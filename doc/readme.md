@@ -124,4 +124,4 @@ make deploy
 
 ## 📄 License
 
-Licensed under the **GNU Affero General Public License v3 (AGPL v3)**. See [LICENSE](doc/license.txt) for absolute legal transparency.
+Licensed under the **GNU Affero General Public License v3 (AGPL v3)**. See [LICENSE](license.txt) for absolute legal transparency.
