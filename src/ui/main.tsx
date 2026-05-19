@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
 
-window.onerror = function(msg, url, line, col, error) {
+window.onerror = function(msg, url, line, col) {
   alert("JS Error: " + msg + "\nAt: " + url + ":" + line + ":" + col);
   return false;
 };

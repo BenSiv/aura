@@ -50,7 +50,7 @@ export function useResonance() {
           localCoordsRef.current = { x, y };
           console.log("[ZKP] Geolocation acquired flat meters:", localCoordsRef.current);
         },
-        (err) => {
+        () => {
           console.warn("[ZKP] Geolocation denied/unavailable. Falling back to coordinates (0, 0)");
         }
       );

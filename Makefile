@@ -2,7 +2,7 @@
 
 # Paths
 BLD = bld
-CNF = cnf
+CFG = cfg
 DOC = doc
 OUT = out
 PUB = pub
@@ -11,13 +11,13 @@ SRC = src
 WWW = web
 DEP = dep
 
-# Version from cnf/package.json
-VERSION = $(shell grep '"version":' $(CNF)/package.json | cut -d'"' -f4)
+# Version from cfg/package.json
+VERSION = $(shell grep '"version":' $(CFG)/package.json | cut -d'"' -f4)
 
 # Commands (using explicitly pointed config)
-# We run from root but point tools to cnf/
-VITE = npx vite --config $(CNF)/vite.config.ts
-TSC  = npx --prefix $(CNF) tsc -p $(CNF)/tsconfig.json
+# We run from root but point tools to cfg/
+VITE = npx vite --config $(CFG)/vite.config.ts
+TSC  = npx --prefix $(CFG) tsc -p $(CFG)/tsconfig.json
 TAURI = cd $(SRC)/core && npx @tauri-apps/cli
 
 # Default action
@@ -37,7 +37,7 @@ build-dev-android:
 build-local:
 	@echo "Building local Android debug APK..."
 	@$(TSC)
-	@cd $(CNF) && npx vite build
+	@cd $(CFG) && npx vite build
 	@$(TAURI) android build --debug
 	@mkdir -p $(PUB)
 	@cp $(SRC)/core/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk $(PUB)/aura-debug.apk
@@ -47,7 +47,7 @@ build-local:
 build:
 	@echo "Building production web and android bundle..."
 	@$(TSC)
-	@cd $(CNF) && npx vite build
+	@cd $(CFG) && npx vite build
 	@$(TAURI) android build
 
 # Release pipeline
@@ -61,7 +61,7 @@ release:
 # Install dependencies
 install:
 	@echo "Installing dependencies..."
-	@cd $(CNF) && npm install
+	@cd $(CFG) && npm install
 
 # Clean output
 clean:

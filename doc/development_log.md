@@ -12,7 +12,7 @@
 #### 2. Build System Improvements
 - `Makefile`: 
     - Added `make build-local` target to automate the debug APK build and deployment staging.
-    - Fixed the `install` target to correctly run in the `cnf/` directory where `package.json` resides.
+    - Fixed the `install` target to correctly run in the `cfg/` directory where `package.json` resides.
 - Gradle Build Fix: Modified `BuildTask.kt` in the Android build source to use `npx @tauri-apps/cli` directly. This resolves pathing issues where the Android build couldn't find the Tauri CLI in the project root.
 
 #### 3. UI & UX (Huawei Scrolling Fixes)

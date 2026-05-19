@@ -18,8 +18,8 @@ rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-andro
 
 # Step 2: Prebuild - Frontend Dependencies and Compilation
 echo ""
-echo "[*] Installing frontend dependencies in cnf/..."
-cd "$SRCDIR/cnf"
+echo "[*] Installing frontend dependencies in cfg/..."
+cd "$SRCDIR/cfg"
 npm install
 
 echo ""
@@ -31,8 +31,8 @@ echo ""
 echo "[*] Setting up offline node_modules symlink for Tauri CLI..."
 # Remove any existing symlink or folder first
 rm -rf "$SRCDIR/src/core/node_modules"
-ln -s "$SRCDIR/cnf/node_modules" "$SRCDIR/src/core/node_modules"
-echo "[+] Symlink created: src/core/node_modules -> cnf/node_modules"
+ln -s "$SRCDIR/cfg/node_modules" "$SRCDIR/src/core/node_modules"
+echo "[+] Symlink created: src/core/node_modules -> cfg/node_modules"
 
 # Step 4: Prebuild - Rust Dependencies Fetch
 echo ""

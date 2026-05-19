@@ -15,16 +15,16 @@ Run the following command in your terminal to generate a secure keystore file.
 > Keep this keystore file and its passwords extremely secure. If you lose this key, you will never be able to update your app on the Google Play Store.
 
 ```bash
-keytool -genkey -v -keystore cnf/aura-release.keystore \
+keytool -genkey -v -keystore cfg/aura-release.keystore \
   -alias aura-key-alias -keyalg RSA -keysize 2048 -validity 10000
 ```
-This will generate `cnf/aura-release.keystore`. Make sure to **never commit this keystore to a public Git repository** (it should be added to `.gitignore`).
+This will generate `cfg/aura-release.keystore`. Make sure to **never commit this keystore to a public Git repository** (it should be added to `.gitignore`).
 
 ### Step 1.2: Configure Environment Variables for Signing
 Tauri's Android compiler automatically signs your package if specific environment variables are set during compilation. Add these variables to your shell or compile environment:
 
 ```bash
-export TAURI_ANDROID_KEYSTORE_PATH="/home/bensiv/Projects/aura/cnf/aura-release.keystore"
+export TAURI_ANDROID_KEYSTORE_PATH="/home/bensiv/Projects/aura/cfg/aura-release.keystore"
 export TAURI_ANDROID_KEYSTORE_PASSWORD="your_keystore_password"
 export TAURI_ANDROID_KEY_ALIAS="aura-key-alias"
 export TAURI_ANDROID_KEY_PASSWORD="your_key_password"
@@ -100,10 +100,10 @@ Builds:
       # 1. Install required Rust targets for cross-compiling the core
       - rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
       # 2. Install node dependencies and compile web assets (TSC & Vite) to `out/`
-      - cd $SRCDIR/cnf && npm install
-      - cd $SRCDIR/cnf && npm run build
+      - cd $SRCDIR/cfg && npm install
+      - cd $SRCDIR/cfg && npm run build
       # 3. Create a local node_modules symlink in src/core so the offline gradle build can find @tauri-apps/cli
-      - ln -s $SRCDIR/cnf/node_modules $SRCDIR/src/core/node_modules
+      - ln -s $SRCDIR/cfg/node_modules $SRCDIR/src/core/node_modules
       # 4. Fetch Rust dependencies while network is still available
       - cd $SRCDIR/src/core && cargo fetch
     output: src/core/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk
@@ -111,7 +111,7 @@ Builds:
 
 > [!IMPORTANT]
 > **Why do we need the symlink?**
-> The F-Droid build server turns off network access completely during the `gradle` execution phase. Since Tauri's custom Gradle plugin invokes `npx @tauri-apps/cli` internally during compilation, creating a symlink to `$SRCDIR/cnf/node_modules` inside `src/core` allows `npx` to locate the CLI locally and run completely offline!
+> The F-Droid build server turns off network access completely during the `gradle` execution phase. Since Tauri's custom Gradle plugin invokes `npx @tauri-apps/cli` internally during compilation, creating a symlink to `$SRCDIR/cfg/node_modules` inside `src/core` allows `npx` to locate the CLI locally and run completely offline!
 
 #### Step 2.3: Test the Build Locally (Optional but Recommended)
 Before opening the GitLab Merge Request, you can test if F-Droid compiles your app flawlessly using their local build tools:

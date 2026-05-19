@@ -26,7 +26,7 @@ android {
     }
     signingConfigs {
         create("release") {
-            storeFile = file("/home/bensiv/Projects/aura/cnf/release.keystore")
+            storeFile = file("/home/bensiv/Projects/aura/cfg/release.keystore")
             storePassword = "aurapassword"
             keyAlias = "aura_alias"
             keyPassword = "aurapassword"

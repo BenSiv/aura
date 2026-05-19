@@ -11,10 +11,9 @@ Following a strict Unix-style directory structure, every top-level folder has a 
 ```
 aura/
 ├── bld/          # Build and deployment scripts (e.g., build_release.sh, deploy_to_all.sh)
-├── cnf/          # Front-end configuration (React, Vite, TSConfig, package.json)
-│   ├── src/      # React Native / Web TSX screen components and custom hooks
+├── cfg/          # Front-end configuration (React, Vite, TSConfig, package.json)
 │   └── index.html
-├── dep/          # Frontend node_modules dependency folder (symlinked as cnf/node_modules)
+├── dep/          # Frontend node_modules dependency folder (symlinked as cfg/node_modules)
 ├── doc/          # Project documentation, mathematical guides, and todo lists
 │   ├── map.md    # [This File] Directory mapping and data flows
 │   └── todo.md   # Project milestone checklist
@@ -24,8 +23,9 @@ aura/
 │   └── web-dist/    # Production Web client assets built by Vite (isolated from rust)
 ├── pub/          # Staged build artifacts ready for public deployment (.apks, tag packages)
 ├── res/          # Public-facing resources, fonts, icons, and static images
-├── src/          # Rust/Tauri native core components
-│   └── core/     # Native application runtime, libp2p network swarm, and cryptography
+├── src/          # Application source code
+│   ├── core/     # Native application runtime, libp2p network swarm, and cryptography
+│   └── ui/       # Front-end UI Components (React, TSX, Screens, Hooks)
 └── web/          # Static web views and HTML templates
 ```
 
@@ -33,11 +33,11 @@ aura/
 
 ## 2. Component Directory & Module Breakdown
 
-### A. Front-end UI Components (`cnf/src/`)
-* **[App.tsx](file:///home/bensiv/Projects/aura/cnf/src/App.tsx)**: Root component managing light/dark context themes, swipe screen loading, and stateful side-drawer navigation.
-* **[screens/SettingsScreen.tsx](file:///home/bensiv/Projects/aura/cnf/src/screens/SettingsScreen.tsx)**: Handles settings state and configurations, including the interactive **ZK Proximity Threshold Slider** (10m to 500m).
-* **[components/SwipeCard.tsx](file:///home/bensiv/Projects/aura/cnf/src/components/SwipeCard.tsx)**: Render layer for local resonance cards, wired up with rotating loaders and cryptographic shield badges for real-time ZK handshake states.
-* **[hooks/useResonance.ts](file:///home/bensiv/Projects/aura/cnf/src/hooks/useResonance.ts)**: The primary front-end orchestrator. Manages:
+### A. Front-end UI Components (`src/ui/`)
+* **[App.tsx](file:///home/bensiv/Projects/aura/src/ui/App.tsx)**: Root component managing light/dark context themes, swipe screen loading, and stateful side-drawer navigation.
+* **[screens/SettingsScreen.tsx](file:///home/bensiv/Projects/aura/src/ui/screens/SettingsScreen.tsx)**: Handles settings state and configurations, including the interactive **ZK Proximity Threshold Slider** (10m to 500m).
+* **[components/SwipeCard.tsx](file:///home/bensiv/Projects/aura/src/ui/components/SwipeCard.tsx)**: Render layer for local resonance cards, wired up with rotating loaders and cryptographic shield badges for real-time ZK handshake states.
+* **[hooks/useResonance.ts](file:///home/bensiv/Projects/aura/src/ui/hooks/useResonance.ts)**: The primary front-end orchestrator. Manages:
   1. GPS tracking.
   2. Local equirectangular flat-meter coordinate projection.
   3. Interactive ZK proximity handshake state machine (from challenge generation to Bulletproof range verification).

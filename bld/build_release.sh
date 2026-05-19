@@ -6,7 +6,7 @@
 
 set -e
 
-KEYSTORE="cnf/aura-release.keystore"
+KEYSTORE="cfg/aura-release.keystore"
 ALIAS="aura-key-alias"
 
 echo "=== Aura Production Build and Deployment Pipeline ==="
@@ -19,7 +19,7 @@ if [ ! -f "$KEYSTORE" ]; then
     read -r GENERATE
     if [ "$GENERATE" = "y" ] || [ "$GENERATE" = "Y" ]; then
         echo "[*] Generating release keystore..."
-        mkdir -p cnf
+        mkdir -p cfg
         keytool -genkey -v -keystore "$KEYSTORE" \
           -alias "$ALIAS" -keyalg RSA -keysize 2048 -validity 10000
         echo "[+] Keystore successfully generated at $KEYSTORE"
@@ -54,8 +54,8 @@ make clean
 echo ""
 echo "[*] Compiling production Android App Bundle (AAB)..."
 # Compile production build
-npx tsc -p cnf/tsconfig.json
-cd cnf && npx vite build && cd ..
+npx tsc -p cfg/tsconfig.json
+cd cfg && npx vite build && cd ..
 cd src/core && npx @tauri-apps/cli android build && cd ../..
 
 echo ""
