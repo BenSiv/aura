@@ -6,12 +6,10 @@ This document contains ready-to-copy metadata assets for publishing the **AuraRa
 
 ## 🏷️ Title Options
 
-* **Option 1 (Catchy / Creator style — Best for reach):**
-  > **I Built a Dating App with NO SERVERS. (Zero-Knowledge & P2P)**
-* **Option 2 (Clean & Professional):**
-  > **AuraRadar: Local-First P2P Dating App Demo (Rust + Tauri + React)**
-* **Option 3 (Technical / Open-Source):**
-  > **How to build a P2P Local-Mesh Dating App | Project Aura Demo**
+* **Option 1 (Engaging / Clean):**
+  > **I Built a Serverless Dating App to Fight Loneliness (No Ads, No Tracking)**
+* **Option 2 (Clean & Generic):**
+  > **AuraRadar: Open Source Dating Utility for Real-World Connection**
 
 ---
 
