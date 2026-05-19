@@ -4,12 +4,9 @@ This document contains ready-to-copy metadata assets for publishing the **AuraRa
 
 ---
 
-## 🏷️ Title Options
+## 🏷️ Video Title
 
-* **Option 1 (Engaging / Clean):**
-  > **I Built a Serverless Dating App to Fight Loneliness (No Ads, No Tracking)**
-* **Option 2 (Clean & Generic):**
-  > **AuraRadar: Open Source Dating Utility for Real-World Connection**
+> **AuraRadar: Open Source Dating Utility for Real-World Connection**
 
 ---
 
