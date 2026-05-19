@@ -13,7 +13,7 @@ Aura is a response to a fundamental crisis of our time:
 - **Removing Conflicts of Interest**: Traditional dating apps want you to stay on the app. Aura is a tool I built to get you *off* your phone and *into* a conversation.
 - **Data Sovereignty**: Built on a secure, local-mesh network where your data remains yours, on your device, always.
 
-For a deeper dive into my philosophy, read the [Aura Manifesto](./MANIFESTO.md).
+For a deeper dive into my philosophy, read the [Aura Manifesto](./manifesto.md).
 
 ---
 
@@ -82,4 +82,4 @@ make deploy
 ---
 
 ## License
-Licensed under the **GNU Affero General Public License v3 (AGPL v3)**. See [LICENSE.txt](./LICENSE.txt) for details.
+Licensed under the **GNU Affero General Public License v3 (AGPL v3)**. See [LICENSE.txt](./license.txt) for details.

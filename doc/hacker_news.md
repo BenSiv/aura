@@ -31,6 +31,6 @@ If you’re interested in P2P protocols, local-first architectures, or just want
 
 **Tech Stack:** Rust (Tauri v2), React (Vite), SQLCipher, TypeScript.
 
-Check out `doc/SIMULATION_LESSONS.md` for the theory behind the reputation mesh.
+Check out `doc/simulation_lessons.md` for the theory behind the reputation mesh.
 
 Looking forward to your feedback and thoughts!

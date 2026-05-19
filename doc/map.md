@@ -16,8 +16,8 @@ aura/
 │   └── index.html
 ├── dep/          # Frontend node_modules dependency folder (symlinked as cnf/node_modules)
 ├── doc/          # Project documentation, mathematical guides, and todo lists
-│   ├── MAP.md    # [This File] Directory mapping and data flows
-│   └── TODO.md   # Project milestone checklist
+│   ├── map.md    # [This File] Directory mapping and data flows
+│   └── todo.md   # Project milestone checklist
 ├── mdt/          # App metadata recipes and packaging definitions (e.g., F-Droid)
 ├── out/          # Unified compiler targets
 │   ├── rust-target/ # Cargo intermediate NDK/local compiled objects
