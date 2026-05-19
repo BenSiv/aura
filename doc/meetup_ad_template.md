@@ -1,4 +1,4 @@
-AuraRadar Proximity Discovery: Local Offline Matching Meetup
+AuraRadar Proximity Discovery: App Testing Session
 
 Are you curious about new tech, privacy, or connecting with people nearby offline? Come join us for a hands-on physical meetup to test AuraRadar, a new local matching app that works entirely without internet or central servers.
 
@@ -13,8 +13,3 @@ What we will do:
 - On-site app installation helper.
 - Proximity test: walking around the space to see the local discovery and private compatibility matching work in real-time.
 - Coffee, discussion, and feedback.
-
-Where and When:
-- Location: [Insert Address]
-- Date and Time: [Insert Date and Time]
-- Host Contact: [Insert Contact Details]
