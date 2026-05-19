@@ -4,18 +4,18 @@ This document contains ready-to-copy metadata assets for publishing the **AuraRa
 
 ---
 
-## 🏷️ Video Title
+## Video Title
 
 > **AuraRadar: Open Source Dating Utility for Real-World Connection**
 
 ---
 
-## 📝 Video Description
+## Video Description
 
 ```markdown
 Say hello to AuraRadar, a local-first, decentralized, and zero-knowledge privacy-preserving proximity network built to fight the loneliness pandemic by helping people connect directly, securely, and privately in the real world. 
 
-Traditional dating apps have a fundamental conflict of interest—their business success relies on you staying on the app. Aura is designed to get you off your phone and into a face-to-face conversation.
+Traditional dating apps have a fundamental conflict of interest - their business success relies on you staying on the app. Aura is designed to get you off your phone and into a face-to-face conversation.
 
 In this quick demo walkthrough, we demonstrate the scan-to-match core flow using local P2P simulated nodes:
 0:00 - Setup profile on encrypted local storage
@@ -24,14 +24,14 @@ In this quick demo walkthrough, we demonstrate the scan-to-match core flow using
 0:25 - Liking the profile to trigger the "Mutual Match Established" celebrate screen
 0:32 - Navigating into the direct P2P mesh chat thread to send a secure greeting
 
-🚀 Technical Architecture & Features:
-• Front-End: Vite + React, Vanilla CSS (Glassmorphism design)
-• Native Core: Rust, Tauri v2 (bridges the UI to native systems)
-• Encrypted Local Database: SQLCipher managed directly in Rust (your "type" and swipe history never leave your hardware)
-• P2P Swarm Discovery: libp2p, gossipsub, and mDNS for serverless proximity scanning
-• Zero-Knowledge Handshakes: Paillier homomorphic coordinate blinding + Merlin transcript Bulletproof range proofs to verify proximity without sharing absolute coordinates!
+Technical Architecture and Features:
+- Front-End: Vite + React, Vanilla CSS (Glassmorphism design)
+- Native Core: Rust, Tauri v2 (bridges the UI to native systems)
+- Encrypted Local Database: SQLCipher managed directly in Rust (your "type" and swipe history never leave your hardware)
+- P2P Swarm Discovery: libp2p, gossipsub, and mDNS for serverless proximity scanning
+- Zero-Knowledge Handshakes: Paillier homomorphic coordinate blinding + Merlin transcript Bulletproof range proofs to verify proximity without sharing absolute coordinates!
 
-💻 Check out the open-source repository & contribute:
+Check out the open-source repository and contribute:
 GitHub: https://github.com/BenSiv/aura
 
 #OpenSource #Tauri #Rust #P2P #ZeroKnowledge #React #Web3 #PrivacyFirst
@@ -39,7 +39,7 @@ GitHub: https://github.com/BenSiv/aura
 
 ---
 
-## 🎬 How to Transcode WebP to MP4
+## How to Transcode WebP to MP4
 
 If you record a browser session using WebP animation, run the following command from the root of the project to cleanly transcode it into a high-quality, YouTube-compatible MP4:
 
