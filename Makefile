@@ -77,3 +77,13 @@ clean:
 # Deploy to all connected devices
 deploy:
 	@./$(BLD)/deploy_to_all.sh
+
+# Capture app screenshots in demo mode (no manual config changes needed)
+screenshot:
+	@echo "Starting Vite in demo mode for screenshot capture..."
+	@cd $(CFG) && npx vite --mode demo &
+	@sleep 5
+	@echo "Capturing screenshots..."
+	@node $(BLD)/capture_screenshots.mjs
+	@pkill -f "vite --mode demo" || true
+	@echo "Screenshots saved to fastlane/metadata/android/en-US/images/phoneScreenshots/"
