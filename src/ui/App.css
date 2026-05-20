@@ -94,6 +94,14 @@ body {
   align-items: center;
 }
 
+/* Second header row: status pill left, mode toggle + switch right */
+.header-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .mode-description {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--glass-border);

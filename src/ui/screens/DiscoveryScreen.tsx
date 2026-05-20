@@ -29,17 +29,17 @@ export const DiscoveryScreen: React.FC<DiscoveryScreenProps> = ({
     <div className="app-container">
       <header className="header">
         <div className="header-top">
-          <div>
-            <h1>AuraRadar</h1>
-            <div className="status-pill">
-              <div className={`status-dot ${activeAura ? "active" : "idle"}`} />
-              <span>{activeAura ? "Projecting" : "Idle"}</span>
-            </div>
+          <h1>AuraRadar</h1>
+          <button className="icon-btn" onClick={onOpenMenu} title="Menu">
+            <Menu size={24} />
+          </button>
+        </div>
+        <div className="header-actions-row">
+          <div className="status-pill">
+            <div className={`status-dot ${activeAura ? "active" : "idle"}`} />
+            <span>{activeAura ? "Projecting" : "Idle"}</span>
           </div>
           <div className="header-actions">
-            <button className="icon-btn" onClick={onOpenMenu} title="Menu">
-              <Menu size={24} />
-            </button>
             <button className="btn-mode-toggle" onClick={cycleVisibility}>
               {icon}
               <span className="mode-label">{label}</span>
