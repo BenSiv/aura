@@ -33,6 +33,11 @@ build-dev-android:
 	@echo "Building Aura Android Dev Client..."
 	@$(TAURI) android dev
 
+# Build the iOS development client (Requires macOS)
+build-dev-ios:
+	@echo "Building Aura iOS Dev Client..."
+	@$(TAURI) ios dev
+
 # Build the local Android APK (debug)
 build-local:
 	@echo "Building local Android debug APK..."
@@ -43,7 +48,7 @@ build-local:
 	@cp $(SRC)/core/gen/android/app/build/outputs/apk/universal/debug/app-universal-debug.apk $(PUB)/aura-debug.apk
 	@echo "Local build complete: $(PUB)/aura-debug.apk"
 
-# Build production bundle
+# Build production bundle (Android and Web)
 build:
 	@echo "Building production web and android bundle..."
 	@$(TSC)
@@ -53,6 +58,14 @@ build:
 	@cp $(SRC)/core/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk $(PUB)/aura-release.apk
 	@cp $(SRC)/core/gen/android/app/build/outputs/bundle/universalRelease/app-universal-release.aab $(PUB)/aura-release.aab
 	@echo "Production build complete: $(PUB)/aura-release.apk and $(PUB)/aura-release.aab"
+
+# Build production iOS bundle (Requires macOS)
+build-ios:
+	@echo "Building production iOS bundle..."
+	@$(TSC)
+	@cd $(CFG) && npx vite build
+	@$(TAURI) ios build
+	@echo "iOS build complete. Open src/core/gen/apple in Xcode to sign and archive."
 
 # Release pipeline
 release:
