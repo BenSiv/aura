@@ -116,6 +116,8 @@ pub fn initialize_database(app_dir: PathBuf) -> Result<Connection> {
     conn.execute("ALTER TABLE local_profile ADD COLUMN images TEXT;", []).ok();
     conn.execute("ALTER TABLE local_profile ADD COLUMN gender TEXT DEFAULT 'Other';", []).ok();
     conn.execute("ALTER TABLE local_profile ADD COLUMN interested_in TEXT DEFAULT 'Both';", []).ok();
+    conn.execute("ALTER TABLE local_profile ADD COLUMN dob TEXT DEFAULT '';", []).ok();
+    conn.execute("ALTER TABLE profiles ADD COLUMN dob TEXT DEFAULT '';", []).ok();
 
     Ok(conn)
 }

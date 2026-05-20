@@ -8,7 +8,8 @@ export const DEMO_PROFILES: Profile[] = [
     images: JSON.stringify(["https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=800&q=80"]),
     tags: JSON.stringify(["coding", "mesh", "solarpunk"]),
     distance: 1.2,
-    gender: "Man"
+    gender: "Man",
+    dob: "1994-06-12"
   },
   {
     id: "demo_jamie",
@@ -17,7 +18,8 @@ export const DEMO_PROFILES: Profile[] = [
     images: JSON.stringify(["https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80"]),
     tags: JSON.stringify(["art", "coffee", "ui/ux"]),
     distance: 0.8,
-    gender: "Woman"
+    gender: "Woman",
+    dob: "1998-03-24"
   },
   {
     id: "demo_sam",
@@ -26,7 +28,8 @@ export const DEMO_PROFILES: Profile[] = [
     images: JSON.stringify(["https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80"]),
     tags: JSON.stringify(["hiking", "photo", "music"]),
     distance: 2.5,
-    gender: "Other"
+    gender: "Other",
+    dob: "2001-11-05"
   }
 ];
 

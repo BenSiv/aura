@@ -10,13 +10,13 @@ export function useResonance() {
   const [activeAura, setActiveAura] = useState(true);
   const [visibilityMode, setVisibilityMode] = useState<VisibilityMode>("resonant");
   const [pendingDiscoveries, setPendingDiscoveries] = useState<Profile[]>([]);
-  const [localProfile, setLocalProfile] = useState<{ id: string, name: string, bio: string, images: string, tags: string, gender: string, interestedIn: string } | null>(null);
+  const [localProfile, setLocalProfile] = useState<{ id: string, name: string, bio: string, images: string, tags: string, gender: string, interestedIn: string, dob: string } | null>(null);
   const [matchedProfile, setMatchedProfile] = useState<Profile | null>(null);
   const [isInitialLoading, setIsInitialLoading] = useState(!DEMO_CONFIG.IS_DEMO_MODE);
   const myLikesRef = useRef<string[]>([]);
   const seenProfilesRef = useRef<Record<string, Profile>>({});
   const interactedProfileIdsRef = useRef<Set<string>>(new Set());
-  const localProfileRef = useRef<{ id: string, name: string, bio: string, images: string, tags: string, gender: string, interestedIn: string } | null>(null);
+  const localProfileRef = useRef<{ id: string, name: string, bio: string, images: string, tags: string, gender: string, interestedIn: string, dob: string } | null>(null);
 
   // --- ZK Proximity Handshake Cryptographic States & Refs ---
   const localCoordsRef = useRef({ x: 0.0, y: 0.0 });
@@ -184,7 +184,8 @@ export function useResonance() {
             images: profile.images || "[]",
             tags: profile.tags || "",
             gender: profile.gender || "Other",
-            interestedIn: profile.interested_in || "Both"
+            interestedIn: profile.interested_in || "Both",
+            dob: profile.dob || ""
           };
           setLocalProfile(normalized);
           localProfileRef.current = normalized;
@@ -423,7 +424,7 @@ export function useResonance() {
     setVisibilityMode(modes[(modes.indexOf(visibilityMode) + 1) % modes.length]);
   };
 
-  const handleSaveProfile = async (name: string, bio: string, tags: string, image: string, gender: string, interestedIn: string) => {
+  const handleSaveProfile = async (name: string, bio: string, tags: string, image: string, gender: string, interestedIn: string, dob: string) => {
     const newProfile = {
       id: localProfile?.id || crypto.randomUUID(),
       name,
@@ -431,7 +432,8 @@ export function useResonance() {
       tags,
       images: JSON.stringify([image]),
       gender,
-      interestedIn
+      interestedIn,
+      dob
     };
 
     if (DEMO_CONFIG.BYPASS_DB_PERSISTENCE) {
@@ -458,7 +460,8 @@ export function useResonance() {
         tags: newProfile.tags,
         images: newProfile.images,
         gender: newProfile.gender,
-        interested_in: newProfile.interestedIn
+        interested_in: newProfile.interestedIn,
+        dob: newProfile.dob
       };
       await invoke("save_local_profile", { profile: payload });
       setLocalProfile(newProfile as any);

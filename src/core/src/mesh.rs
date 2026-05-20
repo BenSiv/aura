@@ -36,6 +36,8 @@ pub struct PeerProfile {
     pub gender: String,
     #[serde(default)]
     pub interested_in: String,
+    #[serde(default)]
+    pub dob: String,
 }
 
 #[derive(Clone, Serialize)]

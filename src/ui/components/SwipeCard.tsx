@@ -11,6 +11,20 @@ export interface Profile {
   gender?: string;
   zkStatus?: "unverified" | "verifying" | "verified_close" | "verified_far" | "failed";
   distanceLabel?: string;
+  dob?: string;
+}
+
+export function calculateAge(dobString?: string): number | null {
+  if (!dobString) return null;
+  const birthDate = new Date(dobString);
+  if (isNaN(birthDate.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
 }
 
 interface Props {
@@ -104,7 +118,10 @@ export default function SwipeCard({ profile, onSwipe, onClick }: Props) {
 
       <div className="swipe-card-content">
         <div className="swipe-card-header">
-          <h2 className="swipe-card-name">{profile.name}</h2>
+          <h2 className="swipe-card-name">
+            {profile.name}
+            {calculateAge(profile.dob) !== null && ` ${calculateAge(profile.dob)}`}
+          </h2>
           <div className={`swipe-card-distance ${profile.zkStatus || 'unverified'}`}>
             {profile.zkStatus === 'verifying' && (
               <>

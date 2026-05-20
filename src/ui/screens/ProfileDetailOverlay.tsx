@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { X, Radar } from "lucide-react";
-import { Profile } from "../components/SwipeCard";
+import { Profile, calculateAge } from "../components/SwipeCard";
 
 interface ProfileDetailOverlayProps {
   profile: Profile;
@@ -104,7 +104,10 @@ export const ProfileDetailOverlay: React.FC<ProfileDetailOverlayProps> = ({
         </div>
         <div className="profile-detail-body">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1rem' }}>
-            <h2>{profile.name}</h2>
+            <h2>
+              {profile.name}
+              {calculateAge(profile.dob) !== null && `, ${calculateAge(profile.dob)}`}
+            </h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--accent-primary)', fontWeight: 600 }}>
               <Radar size={16} />
               <span>{Math.round(98)}% Resonance</span>

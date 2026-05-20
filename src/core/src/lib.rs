@@ -20,13 +20,14 @@ struct LocalProfile {
     tags: String,
     gender: String,
     interested_in: String,
+    dob: String,
 }
 
 #[tauri::command]
 fn save_local_profile(state: tauri::State<AppState>, profile: LocalProfile) -> Result<(), String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     conn.execute(
-        "INSERT OR REPLACE INTO local_profile (id, name, bio, images, tags, gender, interested_in) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        "INSERT OR REPLACE INTO local_profile (id, name, bio, images, tags, gender, interested_in, dob) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
         [
             &profile.id, 
             &profile.name, 
@@ -34,7 +35,8 @@ fn save_local_profile(state: tauri::State<AppState>, profile: LocalProfile) -> R
             &profile.images, 
             &profile.tags,
             &profile.gender,
-            &profile.interested_in
+            &profile.interested_in,
+            &profile.dob
         ],
     ).map_err(|e| e.to_string())?;
     Ok(())
@@ -43,7 +45,7 @@ fn save_local_profile(state: tauri::State<AppState>, profile: LocalProfile) -> R
 #[tauri::command]
 fn get_local_profile(state: tauri::State<AppState>) -> Result<Option<LocalProfile>, String> {
     let conn = state.db.lock().map_err(|e| e.to_string())?;
-    let mut stmt = conn.prepare("SELECT id, name, bio, images, tags, gender, interested_in FROM local_profile LIMIT 1").map_err(|e| e.to_string())?;
+    let mut stmt = conn.prepare("SELECT id, name, bio, images, tags, gender, interested_in, dob FROM local_profile LIMIT 1").map_err(|e| e.to_string())?;
     let mut rows = stmt.query([]).map_err(|e| e.to_string())?;
 
     if let Some(row) = rows.next().map_err(|e| e.to_string())? {
@@ -55,6 +57,7 @@ fn get_local_profile(state: tauri::State<AppState>) -> Result<Option<LocalProfil
             tags: row.get(4).map_err(|e| e.to_string())?,
             gender: row.get::<_, Option<String>>(5).map_err(|e| e.to_string())?.unwrap_or_else(|| "Other".to_string()),
             interested_in: row.get::<_, Option<String>>(6).map_err(|e| e.to_string())?.unwrap_or_else(|| "Both".to_string()),
+            dob: row.get::<_, Option<String>>(7).map_err(|e| e.to_string())?.unwrap_or_else(|| "".to_string()),
         }))
     } else {
         Ok(None)
@@ -259,7 +262,7 @@ fn get_chat_partners(state: tauri::State<AppState>) -> Result<Vec<mesh::PeerProf
 
     // Fetch full profiles for these IDs
     let placeholders = peer_ids.iter().map(|_| "?").collect::<Vec<_>>().join(",");
-    let query = format!("SELECT id, name, bio, images, tags FROM profiles WHERE id IN ({})", placeholders);
+    let query = format!("SELECT id, name, bio, images, tags, dob FROM profiles WHERE id IN ({})", placeholders);
     
     let mut stmt = conn.prepare(&query).map_err(|e| e.to_string())?;
     let params = rusqlite::params_from_iter(peer_ids.iter());
@@ -273,6 +276,7 @@ fn get_chat_partners(state: tauri::State<AppState>) -> Result<Vec<mesh::PeerProf
             tags: row.get(4)?,
             gender: "Other".to_string(),
             interested_in: "Both".to_string(),
+            dob: row.get::<_, Option<String>>(5)?.unwrap_or_default(),
         })
     })
     .map_err(|e| e.to_string())?
@@ -288,8 +292,8 @@ fn save_peer_profile(state: tauri::State<AppState>, profile: mesh::PeerProfile) 
     let timestamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs();
     
     conn.execute(
-        "INSERT OR REPLACE INTO profiles (id, name, bio, images, tags, lastSeen) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
-        (&profile.id, &profile.name, &profile.bio, &profile.images, &profile.tags, timestamp),
+        "INSERT OR REPLACE INTO profiles (id, name, bio, images, tags, lastSeen, dob) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        (&profile.id, &profile.name, &profile.bio, &profile.images, &profile.tags, timestamp, &profile.dob),
     ).map_err(|e| e.to_string())?;
     
     Ok(())
@@ -303,7 +307,7 @@ fn get_peer_profiles(state: tauri::State<AppState>, profile_ids: Vec<String>) ->
     
     let conn = state.db.lock().map_err(|e| e.to_string())?;
     let placeholders = profile_ids.iter().map(|_| "?").collect::<Vec<_>>().join(",");
-    let query = format!("SELECT id, name, bio, images, tags FROM profiles WHERE id IN ({})", placeholders);
+    let query = format!("SELECT id, name, bio, images, tags, dob FROM profiles WHERE id IN ({})", placeholders);
     
     let mut stmt = conn.prepare(&query).map_err(|e| e.to_string())?;
     let params = rusqlite::params_from_iter(profile_ids.iter());
@@ -317,6 +321,7 @@ fn get_peer_profiles(state: tauri::State<AppState>, profile_ids: Vec<String>) ->
             tags: row.get(4)?,
             gender: "Other".to_string(),
             interested_in: "Both".to_string(),
+            dob: row.get::<_, Option<String>>(5)?.unwrap_or_default(),
         })
     })
     .map_err(|e| e.to_string())?

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { User, FileText, Tag } from "lucide-react";
+import { User, FileText, Tag, Calendar } from "lucide-react";
 
 interface OnboardingScreenProps {
   initialProfile?: {
@@ -10,8 +10,9 @@ interface OnboardingScreenProps {
     tags: string;
     gender: string;
     interestedIn: string;
+    dob?: string;
   };
-  onSave: (name: string, bio: string, tags: string, image: string, gender: string, interestedIn: string) => void;
+  onSave: (name: string, bio: string, tags: string, image: string, gender: string, interestedIn: string, dob: string) => void;
 }
 
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ initialProfile, onSave }) => {
@@ -36,10 +37,49 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ initialProfi
   const [setupImage, setSetupImage] = useState(getInitialImage);
   const [setupGender, setSetupGender] = useState(initialProfile?.gender || "Man");
   const [setupInterestedIn, setSetupInterestedIn] = useState(initialProfile?.interestedIn || "Women");
+  const [setupDob, setSetupDob] = useState(initialProfile?.dob || "");
+  const [dobError, setDobError] = useState("");
+
+  const validateDob = (val: string): boolean => {
+    if (!val) {
+      setDobError("");
+      return true;
+    }
+    
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!regex.test(val)) {
+      setDobError("Please enter YYYY-MM-DD (e.g. 1998-04-20)");
+      return false;
+    }
+    
+    const parts = val.split("-");
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+    
+    const currentYear = new Date().getFullYear();
+    if (year < 1900 || year > currentYear) {
+      setDobError(`Year must be between 1900 and ${currentYear}`);
+      return false;
+    }
+    if (month < 1 || month > 12) {
+      setDobError("Month must be between 01 and 12");
+      return false;
+    }
+    
+    const daysInMonth = new Date(year, month, 0).getDate();
+    if (day < 1 || day > daysInMonth) {
+      setDobError(`Day must be between 01 and ${daysInMonth} for this month`);
+      return false;
+    }
+    
+    setDobError("");
+    return true;
+  };
 
   const handleSave = () => {
-    if (!setupName) return;
-    onSave(setupName, setupBio, setupTags, setupImage, setupGender, setupInterestedIn);
+    if (!setupName || dobError !== "") return;
+    onSave(setupName, setupBio, setupTags, setupImage, setupGender, setupInterestedIn, setupDob);
   };
 
   return (
@@ -50,7 +90,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ initialProfi
           <button 
             className="btn-primary btn-save-header" 
             onClick={handleSave}
-            disabled={!setupName}
+            disabled={!setupName || dobError !== ""}
           >
             Save Profile
           </button>
@@ -90,6 +130,44 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ initialProfi
             value={setupName}
             onChange={e => setSetupName(e.target.value)}
           />
+        </div>
+        <div className="input-group">
+          <label><Calendar size={16} /> Date of Birth (Optional)</label>
+          <input 
+            type="text" 
+            placeholder="YYYY-MM-DD (e.g. 1998-04-20)" 
+            value={setupDob}
+            onChange={e => {
+              const val = e.target.value;
+              setSetupDob(val);
+              validateDob(val);
+            }}
+            style={{
+              borderColor: dobError ? 'rgba(255, 99, 132, 0.6)' : setupDob && !dobError ? 'rgba(75, 192, 192, 0.6)' : undefined,
+              boxShadow: dobError ? '0 0 8px rgba(255, 99, 132, 0.2)' : setupDob && !dobError ? '0 0 8px rgba(75, 192, 192, 0.2)' : undefined,
+              transition: 'all 0.3s ease'
+            }}
+          />
+          {dobError && (
+            <span style={{ 
+              color: '#ff6384', 
+              fontSize: '0.78rem', 
+              marginTop: '4px', 
+              display: 'block'
+            }}>
+              ⚠️ {dobError}
+            </span>
+          )}
+          {setupDob && !dobError && (
+            <span style={{ 
+              color: '#4bc0c0', 
+              fontSize: '0.78rem', 
+              marginTop: '4px', 
+              display: 'block' 
+            }}>
+              ✓ Format valid
+            </span>
+          )}
         </div>
         <div className="input-group">
           <label><FileText size={16} /> Resonance Bio</label>
