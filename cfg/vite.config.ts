@@ -8,9 +8,23 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
 
+// Plugin: rewrite ../src/ui/main.tsx -> absolute /@fs/ path at dev time
+function rewriteEntryPlugin(): import('vite').Plugin {
+  const absUiPath = path.resolve(__dirname, '../src/ui/main.tsx');
+  return {
+    name: 'rewrite-entry',
+    transformIndexHtml(html) {
+      return html.replace(
+        '../src/ui/main.tsx',
+        `/@fs${absUiPath}`
+      );
+    },
+  };
+}
+
 // https://vite.dev/config/
 export default defineConfig(async () => ({
-  plugins: [react()],
+  plugins: [react(), rewriteEntryPlugin()],
   root: __dirname,
   publicDir: path.resolve(__dirname, "../web"),
   build: {
@@ -27,6 +41,9 @@ export default defineConfig(async () => ({
     port: 1420,
     strictPort: true,
     host: host || false,
+    fs: {
+      allow: [path.resolve(__dirname, "..")]
+    },
     hmr: host
       ? {
           protocol: "ws",
