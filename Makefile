@@ -49,6 +49,10 @@ build:
 	@$(TSC)
 	@cd $(CFG) && npx vite build
 	@$(TAURI) android build
+	@mkdir -p $(PUB)
+	@cp $(SRC)/core/gen/android/app/build/outputs/apk/universal/release/app-universal-release.apk $(PUB)/aura-release.apk
+	@cp $(SRC)/core/gen/android/app/build/outputs/bundle/universalRelease/app-universal-release.aab $(PUB)/aura-release.aab
+	@echo "Production build complete: $(PUB)/aura-release.apk and $(PUB)/aura-release.aab"
 
 # Release pipeline
 release:
