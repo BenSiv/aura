@@ -32,6 +32,11 @@ bin/
 target/
 src/core/target/
 
+# Ruby/Fastlane
+.bundle/
+vendor/bundle
+Gemfile.lock
+
 # Android
 **/*.apk
 **/*.aab

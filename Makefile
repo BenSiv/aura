@@ -91,6 +91,13 @@ clean:
 deploy:
 	@./$(BLD)/deploy_to_all.sh
 
+# Deploy to Google Play Store using Fastlane (Requires GOOGLE_APPLICATION_CREDENTIALS)
+# Uses local bundler if installed in ~/.local
+deploy-play:
+	@echo "Deploying to Google Play Store..."
+	@export PATH="$(HOME)/.local/share/gem/ruby/3.3.0/bin:$(PATH)" && \
+	 bundle exec fastlane android deploy
+
 # Capture app screenshots in demo mode (no manual config changes needed)
 screenshot:
 	@echo "Starting Vite in demo mode for screenshot capture..."

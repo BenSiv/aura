@@ -1,0 +1,38 @@
+# fastlane/Fastfile
+# This file defines the lanes (automation pipelines) for fastlane.
+
+default_platform(:android)
+
+platform :android do
+  desc "Deploy a new version to the Google Play Store"
+  lane :deploy do
+    # 1. Build the production AAB using the existing Makefile
+    # This ensures we use the exact same build process as manual builds
+    sh("cd .. && make build")
+
+    # 2. Upload the AAB and Metadata to Google Play
+    # 'supply' is the fastlane tool for Google Play Store interaction
+    supply(
+      package_name: "com.bensivan.aura",
+      track: "production", # Options: production, beta, alpha, internal
+      aab: "pub/aura-release.aab",
+      metadata_path: "./fastlane/metadata",
+      # Set skip_upload_images: true if you only want to update text/binary
+      # skip_upload_images: false,
+      # Set skip_upload_screenshots: true if you have many screenshots and don't want to re-upload every time
+      # skip_upload_screenshots: false
+    )
+  end
+
+  desc "Internal test flight - Uploads AAB to the internal sharing track"
+  lane :internal do
+    sh("cd .. && make build")
+    supply(
+      track: "internal",
+      aab: "pub/aura-release.aab",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end
