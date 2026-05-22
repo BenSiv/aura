@@ -40,6 +40,9 @@ Gemfile.lock
 # Android
 **/*.apk
 **/*.aab
+**/*.keystore
+*-key.json
+google-play-key.json
 .gradle/
 build/
 local.properties
