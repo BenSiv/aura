@@ -117,3 +117,41 @@ While appealing in theory, a rigorous security evaluation reveals four critical 
 4. **Sabotaging Legitimate In-Person Discovery**:
    * **The Vulnerability**: If two users are *already* validated mutual matches, they explicitly require each other's visual cues (photos/names) to find and approach one another in the real world. 
    * **The Threat**: Automatically blurring the photo when they get close makes it impossible for mutual matches to recognize each other in a crowd. Conversely, if they are *not* mutual matches, their photos should be completely hidden rather than blurred, as a blurred photo still leaks skin tone, clothing shapes, and general silhouettes, which are enough to visually target someone on a bus.
+
+---
+
+## 5. The Asymmetric Resolution of the Discovery Paradox
+
+The conflict of desires between men and women in proximity discovery is a classic game-theoretic coordination problem:
+* **The Male Scarcity Dynamic**: High-volume, low-friction visibility and direct real-world approaches.
+* **The Female Vulnerability Dynamic**: High-precision filtering, physical safety, and complete control over digital exposure.
+
+On legacy platforms, this tension degrades into a toxic, low-value equilibrium: men send spam messages to stand out, women feel overwhelmed and delete the app, and overall connection rates collapse.
+
+### Aura's Solution: Asymmetric Equilibrium
+
+AuraRadar resolves this paradox not by forcing a single, symmetric compromise, but by embracing a **complementary, asymmetric design**:
+
+```
+ ┌────────────────────────────────────────┐
+ │       Proactive Broadcasters           │ (Typically Men)
+ │       * "Resonant" or "Public" Mode     │ 
+ └───────────────────┬────────────────────┘
+                     │ (Passive Airwave Broadcast)
+                     ▼
+ ┌────────────────────────────────────────┐
+ │         Passive Stealth Scanners       │ (Typically Women)
+ │         * Invisible "Ghost" Mode       │
+ └───────────────────┬────────────────────┘
+                     │ (Conscious, Highly Targeted Handshake)
+                     ▼
+ ┌────────────────────────────────────────┐
+ │       Mutual Cryptographic Match       │
+ │       * Identity Decrypted & Revealed  │
+ └────────────────────────────────────────┘
+```
+
+1. **Safety for Women**: By operating in **Stealth Scan (Ghost Mode)**, women gain **100% selective safety**. They walk through physical spaces completely invisible, scanning ambient signals and observing profiles at their own pace. They are immune to triangulation, visual targeting on buses, and cold physical approaches.
+2. **Success for Men**: Instead of cold-approaching strangers or spamming messages in the dark, men who choose to broadcast are rewarded with **high-intent, verified handshakes**. A targeted handshake from a stealth scanner represents a peer who has already vetted their vibes, checked compatibility, and initiated a secure connection.
+3. **Harmonized Desires**: By dividing roles into **Active Broadcasters** and **Silent Selectors**, both genders receive exactly what they need: women receive absolute safety and spatial control, while men receive high-quality, mutual-intent real-world connections. 
+
