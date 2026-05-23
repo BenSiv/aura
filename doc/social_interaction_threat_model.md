@@ -155,3 +155,41 @@ AuraRadar resolves this paradox not by forcing a single, symmetric compromise, b
 2. **Success for Men**: Instead of cold-approaching strangers or spamming messages in the dark, men who choose to broadcast are rewarded with **high-intent, verified handshakes**. A targeted handshake from a stealth scanner represents a peer who has already vetted their vibes, checked compatibility, and initiated a secure connection.
 3. **Harmonized Desires**: By dividing roles into **Active Broadcasters** and **Silent Selectors**, both genders receive exactly what they need: women receive absolute safety and spatial control, while men receive high-quality, mutual-intent real-world connections. 
 
+### 5.1. The Out-of-Proximity Communication Flow
+
+If a Stealth Scanner decides to delay matching for safety reasons—only approving the handshake hours later when they are in a safe, private location—they are no longer in active local RF (Bluetooth/Wi-Fi) range of the Broadcaster. 
+
+To bridge this spatial gap without relying on centralized dating servers, AuraRadar utilizes the **IMAP/SMTP Email Bridge** as a long-range federated fallback:
+
+```
+                  ┌───────────────────────────────┐
+                  │    LOCAL DISCOVERY (Mesh)     │
+                  │  * Silent scan & record vibe  │
+                  └───────────────┬───────────────┘
+                                  │ (Target peer leaves proximity)
+                                  ▼
+                  ┌───────────────────────────────┐
+                  │  DELAYED MATCHING (Offline)   │
+                  │  * User accepts match at home │
+                  └───────────────┬───────────────┘
+                                  │ (Triggers encrypted SMTP email)
+                                  ▼
+                  ┌───────────────────────────────┐
+                  │  IMAP POLL & REGISTRATION     │
+                  │  * Peer pulls match via IMAP  │
+                  └───────────────┬───────────────┘
+                                  │ (Establishes async chat channel)
+                                  ▼
+                  ┌───────────────────────────────┐
+                  │  LONG-RANGE FEDERATED CHAT    │
+                  │  * Bridged over email transport│
+                  └───────────────────────────────┘
+```
+
+1. **The Ephemeral Discovery Handshake**: During the initial local proximity scan, the Stealth Scanner's device silently caches the Broadcaster’s public key and public email address metadata (derived from their public profile packet).
+2. **The Delayed Match (Asynchronous SMTP)**: When the Stealth Scanner is home and clicks "Accept", their device generates an encrypted validation packet. Since the Broadcaster is out of range, the app sends this packet as an end-to-end encrypted email via SMTP to the Broadcaster's federated address.
+3. **The Recipient Registration (Asynchronous IMAP)**: The Broadcaster's client periodically polls their IMAP mailbox. Upon receiving the validation email, the client decrypts it, registers the mutual match, and displays the profile in their local SQLite database.
+4. **Seamless Long-Range Chatting**: When either user opens the chat, [ChatScreen.tsx](file:///home/bensiv/Projects/auraradar/src/ui/screens/ChatScreen.tsx) detects they are out of mesh range and seamlessly routes all messages as Autocrypt-encrypted emails via the SMTP/IMAP bridge. 
+5. **Proximity Re-up**: If they happen to walk into the same cafe or shared space in the future, the app automatically detects the mesh beacon and seamlessly hot-swaps the transport back to real-time, zero-latency local Gossipsub.
+
+
