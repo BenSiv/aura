@@ -548,6 +548,8 @@ export function useResonance() {
   };
 
   const handleSaveProfile = async (name: string, bio: string, tags: string, image: string, gender: string, interestedIn: string, dob: string) => {
+    const isNewProfile = localProfile === null;
+
     const newProfile = {
       id: localProfile?.id || crypto.randomUUID(),
       name,
@@ -558,6 +560,19 @@ export function useResonance() {
       interestedIn,
       dob
     };
+
+    // Apply safety comfort defaults based on gender for fresh installations
+    if (isNewProfile) {
+      if (gender === "Woman") {
+        setStealthScan(true);
+        localStorage.setItem("stealth-scan", "true");
+        setVisibilityMode("cloaked");
+      } else {
+        setStealthScan(false);
+        localStorage.setItem("stealth-scan", "false");
+        setVisibilityMode("resonant");
+      }
+    }
 
     if (DEMO_CONFIG.BYPASS_DB_PERSISTENCE) {
       setLocalProfile(newProfile as any);
