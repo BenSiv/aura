@@ -1,6 +1,24 @@
 use serde::{Deserialize, Serialize};
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
+use lettre::message::header::{Header, HeaderName, HeaderValue};
+
+#[derive(Clone, Debug)]
+struct AutocryptHeader(String);
+
+impl Header for AutocryptHeader {
+    fn name() -> HeaderName {
+        HeaderName::new_from_ascii_str("Autocrypt")
+    }
+
+    fn parse(_s: &str) -> Result<Self, Box<dyn std::error::Error + Send + Sync>> {
+        Err("Parsing AutocryptHeader not implemented".into())
+    }
+
+    fn display(&self) -> HeaderValue {
+        HeaderValue::new(Self::name(), self.0.clone())
+    }
+}
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct EmailConfig {
@@ -25,7 +43,7 @@ pub fn send_email_chat_message(
         .from(from_addr)
         .to(to_addr)
         .subject("Aura Proximity Chat")
-        .header(lettre::message::header::HeaderName::new_from_ascii_str("Autocrypt").unwrap(), format!("addr={}; prefer-encrypt=mutual", config.email))
+        .header(AutocryptHeader(format!("addr={}; prefer-encrypt=mutual", config.email)))
         .body(message_json)
         .map_err(|e| e.to_string())?;
 
@@ -47,12 +65,16 @@ pub fn send_email_chat_message(
 pub fn poll_email_chat_messages(config: EmailConfig) -> Result<Vec<String>, String> {
     println!("[EmailBridge] Polling IMAP mailbox for new chat bubbles...");
     
-    let tls = native_tls::TlsConnector::builder().build().map_err(|e| e.to_string())?;
-    let client = imap::connect((config.imap_server.as_str(), 993), &config.imap_server, &tls)
-        .map_err(|e| e.to_string())?;
+    let tcp = std::net::TcpStream::connect((config.imap_server.as_str(), 993))
+        .map_err(|e| format!("Failed to connect to IMAP server: {}", e))?;
+    let connector = rustls_connector::RustlsConnector::new_with_native_certs()
+        .map_err(|e| format!("Failed to create RustlsConnector: {:?}", e))?;
+    let tls_stream = connector.connect(&config.imap_server, tcp)
+        .map_err(|e| format!("TLS handshake failed: {:?}", e))?;
+    let client = imap::Client::new(tls_stream);
 
     let mut session = client.login(&config.email, &config.password)
-        .map_err(|e| e.to_string())?;
+        .map_err(|(e, _client)| e.to_string())?;
 
     session.select("INBOX").map_err(|e| e.to_string())?;
 

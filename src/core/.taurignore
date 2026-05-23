@@ -1,0 +1,9 @@
+target/
+node_modules/
+gen/
+build/
+dist/
+out/
+bin/
+*.apk
+*.aab

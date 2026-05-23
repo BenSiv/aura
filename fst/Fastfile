@@ -15,13 +15,12 @@ platform :android do
     supply(
       package_name: "com.bensivan.aura",
       json_key: "cfg/google-play-key.json",
-      track: "production", # Options: production, beta, alpha, internal
+      track: "internal", # Options: production, beta, alpha, internal
       aab: "pub/aura-release.aab",
-      metadata_path: "./fastlane/metadata",
-      # Set skip_upload_images: true if you only want to update text/binary
-      # skip_upload_images: false,
-      # Set skip_upload_screenshots: true if you have many screenshots and don't want to re-upload every time
-      # skip_upload_screenshots: false
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true
     )
   end
 

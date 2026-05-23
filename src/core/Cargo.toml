@@ -36,9 +36,7 @@ curv-kzen = { version = "0.10", default-features = false, features = ["num-bigin
 rand = "0.8"
 tauri-plugin-notification = "2"
 lettre = { version = "0.11", default-features = false, features = ["smtp-transport", "rustls-tls", "builder"] }
-imap = "3.0.0-alpha.12"
-native-tls = "0.2"
-
+imap = { version = "3.0.0-alpha.12", default-features = false, features = ["rustls-tls"] }
+rustls-connector = "0.19"
 [patch.crates-io]
 curv-kzen = { path = "../../dep/curv" }
-

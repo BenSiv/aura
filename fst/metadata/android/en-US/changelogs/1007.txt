@@ -1,0 +1,6 @@
+- Added Asymmetric Stealth Scan and Bilateral Age Filtering.
+- Added SMTP/IMAP secure chat bridge for long-range communication.
+- Added optional Date of Birth field with swipe card age display.
+- Added background IMAP polling for incoming match proposals.
+- Added passive proximity notification silencing configuration.
+- Improved user onboarding safety and documentation.
