@@ -6,6 +6,19 @@ import { DEMO_PROFILES } from "../demo/demoData";
 
 export type VisibilityMode = "cloaked" | "resonant" | "public";
 
+const calculateAge = (dobString?: string): number | null => {
+  if (!dobString) return null;
+  const birth = new Date(dobString);
+  if (isNaN(birth.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  return age;
+};
+
 export function useResonance() {
   const [activeAura, setActiveAura] = useState(true);
   const [visibilityMode, setVisibilityMode] = useState<VisibilityMode>("resonant");
@@ -35,6 +48,98 @@ export function useResonance() {
   const updateZkThreshold = useCallback((val: number) => {
     setZkThreshold(val);
     localStorage.setItem("zk-proximity-threshold", val.toString());
+  }, []);
+
+  // --- Safety & Comfort states ---
+  const [stealthScan, setStealthScan] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("stealth-scan");
+      return saved === "true";
+    }
+    return false;
+  });
+
+  const toggleStealthScan = useCallback(() => {
+    setStealthScan(prev => {
+      const next = !prev;
+      localStorage.setItem("stealth-scan", String(next));
+      return next;
+    });
+  }, []);
+
+  const [minAge, setMinAge] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("min-age");
+      if (saved) return parseInt(saved, 10);
+    }
+    return 18;
+  });
+
+  const updateMinAge = useCallback((val: number) => {
+    setMinAge(val);
+    localStorage.setItem("min-age", val.toString());
+  }, []);
+
+  const [maxAge, setMaxAge] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("max-age");
+      if (saved) return parseInt(saved, 10);
+    }
+    return 99;
+  });
+
+  const updateMaxAge = useCallback((val: number) => {
+    setMaxAge(val);
+    localStorage.setItem("max-age", val.toString());
+  }, []);
+
+  // --- Email Bridge config states ---
+  const [emailAddress, setEmailAddress] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("email-address") || "";
+    }
+    return "";
+  });
+
+  const updateEmailAddress = useCallback((val: string) => {
+    setEmailAddress(val);
+    localStorage.setItem("email-address", val);
+  }, []);
+
+  const [emailPassword, setEmailPassword] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("email-password") || "";
+    }
+    return "";
+  });
+
+  const updateEmailPassword = useCallback((val: string) => {
+    setEmailPassword(val);
+    localStorage.setItem("email-password", val);
+  }, []);
+
+  const [imapServer, setImapServer] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("imap-server") || "";
+    }
+    return "";
+  });
+
+  const updateImapServer = useCallback((val: string) => {
+    setImapServer(val);
+    localStorage.setItem("imap-server", val);
+  }, []);
+
+  const [smtpServer, setSmtpServer] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("smtp-server") || "";
+    }
+    return "";
+  });
+
+  const updateSmtpServer = useCallback((val: string) => {
+    setSmtpServer(val);
+    localStorage.setItem("smtp-server", val);
   }, []);
 
   // Retrieve flat offset meter coordinates on mount
@@ -100,33 +205,41 @@ export function useResonance() {
     }).catch(err => console.error("Failed to load interactions:", err));
   }, []);
 
-  const startBroadcasting = useCallback((profile: any) => {
-    const payload = {
-      ...profile,
-      interested_in: profile.interestedIn,
-      nonce: Math.random().toString() // Bypass Gossipsub duplicate message cache
+  // Reactive background broadcasting effect reacting to activeAura, localProfile, and stealthScan
+  useEffect(() => {
+    if (!localProfile || !activeAura || stealthScan) {
+      console.log("[Broadcasting] Passive Stealth Mode Active or Cloaked. No broadcasting.");
+      if ((window as any).broadcastInterval) {
+        clearInterval((window as any).broadcastInterval);
+      }
+      return;
+    }
+
+    const broadcast = () => {
+      const payload = {
+        ...localProfile,
+        interested_in: localProfile.interestedIn,
+        nonce: Math.random().toString() // Bypass Gossipsub duplicate message cache
+      };
+      invoke("start_broadcasting", { profile: payload }).catch(err => 
+        console.error("Failed to start broadcasting:", err)
+      );
     };
-    invoke("start_broadcasting", { profile: payload });
-    
-    // Clear any existing broadcast intervals to prevent stale broadcasts
+
+    broadcast();
+
     if ((window as any).broadcastInterval) {
       clearInterval((window as any).broadcastInterval);
     }
-    
-    (window as any).broadcastInterval = setInterval(() => {
-      if (localProfileRef.current) {
-        // Construct the payload to match what Rust expects
-        const payload = {
-          ...localProfileRef.current,
-          interested_in: localProfileRef.current.interestedIn,
-          nonce: Math.random().toString() // Bypass Gossipsub duplicate message cache
-        };
-        invoke("start_broadcasting", { profile: payload });
+
+    (window as any).broadcastInterval = setInterval(broadcast, 10000);
+
+    return () => {
+      if ((window as any).broadcastInterval) {
+        clearInterval((window as any).broadcastInterval);
       }
-    }, 10000);
-    
-    return () => clearInterval((window as any).broadcastInterval);
-  }, []);
+    };
+  }, [localProfile, activeAura, stealthScan]);
 
   // ZKP Challenge initiation (Peer B/Verifier)
   const initiateZkChallenge = useCallback(async (peerId: string) => {
@@ -189,7 +302,6 @@ export function useResonance() {
           };
           setLocalProfile(normalized);
           localProfileRef.current = normalized;
-          startBroadcasting(normalized);
         }
         setIsInitialLoading(false);
       });
@@ -201,6 +313,17 @@ export function useResonance() {
       if (peer_data) {
         // Exclude profiles we have already interacted with (liked, passed, or blocked)
         if (interactedProfileIdsRef.current.has(peer_data.id)) return;
+        
+        // Bilateral Age Matching Filter check
+        if (peer_data.dob) {
+          const peerAge = calculateAge(peer_data.dob);
+          if (peerAge !== null) {
+            if (peerAge < minAge || peerAge > maxAge) {
+              console.log(`[AgeFilter] Silently dropping peer ${peer_data.name} (age ${peerAge}) because they do not fit the bilateral criteria [${minAge}, ${maxAge}]`);
+              return;
+            }
+          }
+        }
         
         setPendingDiscoveries(prev => {
           if (prev.some(p => p.id === peer_data.id)) return prev;
@@ -417,7 +540,7 @@ export function useResonance() {
       unlistenMatch.then(f => f());
       unlistenZk.then(f => f());
     };
-  }, [startBroadcasting, initiateZkChallenge, zkThreshold]);
+  }, [initiateZkChallenge, zkThreshold, minAge, maxAge]);
 
   const cycleVisibility = () => {
     const modes: VisibilityMode[] = ["cloaked", "resonant", "public"];
@@ -466,7 +589,6 @@ export function useResonance() {
       await invoke("save_local_profile", { profile: payload });
       setLocalProfile(newProfile as any);
       localProfileRef.current = newProfile as any;
-      startBroadcasting(newProfile);
     } catch (err) {
       console.error("Failed to save profile:", err);
     }
@@ -517,6 +639,20 @@ export function useResonance() {
     theme,
     toggleTheme,
     zkThreshold,
-    updateZkThreshold
+    updateZkThreshold,
+    stealthScan,
+    toggleStealthScan,
+    minAge,
+    updateMinAge,
+    maxAge,
+    updateMaxAge,
+    emailAddress,
+    updateEmailAddress,
+    emailPassword,
+    updateEmailPassword,
+    imapServer,
+    updateImapServer,
+    smtpServer,
+    updateSmtpServer
   };
 }

@@ -35,6 +35,9 @@ curve25519-dalek-ng = "4"
 curv-kzen = { version = "0.10", default-features = false, features = ["num-bigint"] }
 rand = "0.8"
 tauri-plugin-notification = "2"
+lettre = { version = "0.11", default-features = false, features = ["smtp-transport", "rustls-tls", "builder"] }
+imap = { version = "3" }
+native-tls = "0.2"
 
 [patch.crates-io]
 curv-kzen = { path = "../../dep/curv" }

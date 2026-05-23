@@ -1,6 +1,7 @@
 mod db;
 mod mesh;
 mod zk_distance;
+mod email_bridge;
 
 use std::sync::Mutex;
 use rusqlite::Connection;
@@ -422,7 +423,9 @@ pub fn run() {
             zk_distance::compute_homomorphic_distance,
             zk_distance::decrypt_blinded_distance,
             zk_distance::generate_range_proof,
-            zk_distance::verify_range_proof
+            zk_distance::verify_range_proof,
+            email_bridge::send_email_chat_message,
+            email_bridge::poll_email_chat_messages
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

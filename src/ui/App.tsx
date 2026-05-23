@@ -30,7 +30,21 @@ function App() {
     theme,
     toggleTheme,
     zkThreshold,
-    updateZkThreshold
+    updateZkThreshold,
+    stealthScan,
+    toggleStealthScan,
+    minAge,
+    updateMinAge,
+    maxAge,
+    updateMaxAge,
+    emailAddress,
+    updateEmailAddress,
+    emailPassword,
+    updateEmailPassword,
+    imapServer,
+    updateImapServer,
+    smtpServer,
+    updateSmtpServer
   } = useResonance();
 
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
@@ -125,6 +139,20 @@ function App() {
         onBack={() => setShowSettings(false)} 
         zkThreshold={zkThreshold}
         onUpdateZkThreshold={updateZkThreshold}
+        stealthScan={stealthScan}
+        onToggleStealthScan={toggleStealthScan}
+        minAge={minAge}
+        onUpdateMinAge={updateMinAge}
+        maxAge={maxAge}
+        onUpdateMaxAge={updateMaxAge}
+        emailAddress={emailAddress}
+        onUpdateEmailAddress={updateEmailAddress}
+        emailPassword={emailPassword}
+        onUpdateEmailPassword={updateEmailPassword}
+        imapServer={imapServer}
+        onUpdateImapServer={updateImapServer}
+        smtpServer={smtpServer}
+        onUpdateSmtpServer={updateSmtpServer}
       />
     );
   }

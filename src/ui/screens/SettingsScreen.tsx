@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowLeft, Shield, Bell, Zap, Database, Lock, Sun, Moon } from "lucide-react";
+import { ArrowLeft, Shield, Bell, Zap, Database, Lock, Sun, Moon, EyeOff, Sliders, Mail } from "lucide-react";
 import { InfoTip } from "../components/InfoTip";
 
 interface SettingsScreenProps {
@@ -8,6 +8,26 @@ interface SettingsScreenProps {
   onBack: () => void;
   zkThreshold: number;
   onUpdateZkThreshold: (val: number) => void;
+  
+  // Asymmetric Stealth Mode
+  stealthScan: boolean;
+  onToggleStealthScan: () => void;
+  
+  // Bilateral Age Filtering
+  minAge: number;
+  onUpdateMinAge: (val: number) => void;
+  maxAge: number;
+  onUpdateMaxAge: (val: number) => void;
+  
+  // Email Chat Bridge
+  emailAddress: string;
+  onUpdateEmailAddress: (val: string) => void;
+  emailPassword: string;
+  onUpdateEmailPassword: (val: string) => void;
+  imapServer: string;
+  onUpdateImapServer: (val: string) => void;
+  smtpServer: string;
+  onUpdateSmtpServer: (val: string) => void;
 }
 
 export const SettingsScreen: React.FC<SettingsScreenProps> = ({
@@ -16,6 +36,20 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
   onBack,
   zkThreshold,
   onUpdateZkThreshold,
+  stealthScan,
+  onToggleStealthScan,
+  minAge,
+  onUpdateMinAge,
+  maxAge,
+  onUpdateMaxAge,
+  emailAddress,
+  onUpdateEmailAddress,
+  emailPassword,
+  onUpdateEmailPassword,
+  imapServer,
+  onUpdateImapServer,
+  smtpServer,
+  onUpdateSmtpServer,
 }) => {
   return (
     <div className="app-container" style={{ padding: "20px" }}>
@@ -75,6 +109,107 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               />
               <span className="slider" />
             </label>
+          </div>
+        </div>
+
+        {/* ── Safety & Comfort (New!) ─────────────────────────────────── */}
+        <div className="detail-section">
+          <h3>Safety &amp; Comfort</h3>
+
+          {/* Stealth Mode Switch */}
+          <div className="settings-item">
+            <div className="settings-item-info">
+              <EyeOff size={20} style={{ color: "var(--accent-primary)" }} />
+              <div>
+                <h4 style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  Asymmetric Stealth Scan
+                  <InfoTip
+                    title="Asymmetric Stealth Scan (Ghost Mode)"
+                    body="Conceal your presence while discovering nearby aura fields. When active, you do not advertise/broadcast your profile, but you can still passively listen and scan for other active users."
+                    rows={[
+                      ["Advantage:", "Absolute comfort walking in public without revealing your presence."],
+                      ["How to match:", "Your identity is only revealed to a peer when you actively swipe 'Like' on them."],
+                    ]}
+                  />
+                </h4>
+                <p>Conceal your presence while scanning nearby aura fields.</p>
+              </div>
+            </div>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={stealthScan}
+                onChange={onToggleStealthScan}
+              />
+              <span className="slider" />
+            </label>
+          </div>
+
+          {/* Age Filters */}
+          <div
+            className="settings-item"
+            style={{
+              flexDirection: "column",
+              alignItems: "stretch",
+              gap: "0.75rem",
+            }}
+          >
+            <div className="settings-item-info">
+              <Sliders size={20} style={{ color: "var(--accent-primary)" }} />
+              <div>
+                <h4 style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  Bilateral Age Filters
+                  <InfoTip
+                    title="Bilateral Age Match Filters"
+                    body="Set your target age limits. AuraRadar enforces these parameters on both ends of the mesh before completing handshakes or alerting either party."
+                    rows={[
+                      ["Zero-Knowledge:", "Enforced cryptographically using Bulletproof range proofs. Your exact date of birth is never transmitted."],
+                      ["Mutual gatekeeping:", "If either user falls outside the other's preferred age bracket, the discovery is silently dropped."],
+                    ]}
+                  />
+                </h4>
+                <p>Restrict encounters to preferred age brackets (both ways).</p>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
+                <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Min Age</span>
+                <input
+                  type="number"
+                  min="18"
+                  max="99"
+                  value={minAge}
+                  onChange={(e) => onUpdateMinAge(Math.max(18, parseInt(e.target.value) || 18))}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: "8px",
+                    background: "rgba(255, 255, 255, 0.05)",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                    color: "var(--text-primary)",
+                    fontSize: "0.9rem",
+                  }}
+                />
+              </div>
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
+                <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Max Age</span>
+                <input
+                  type="number"
+                  min="18"
+                  max="99"
+                  value={maxAge}
+                  onChange={(e) => onUpdateMaxAge(Math.min(99, parseInt(e.target.value) || 99))}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: "8px",
+                    background: "rgba(255, 255, 255, 0.05)",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                    color: "var(--text-primary)",
+                    fontSize: "0.9rem",
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -212,6 +347,115 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
           </div>
         </div>
 
+        {/* ── Communication Bridge (New!) ─────────────────────────────── */}
+        <div className="detail-section">
+          <h3>Communication Bridge</h3>
+          
+          <div
+            className="settings-item"
+            style={{
+              flexDirection: "column",
+              alignItems: "stretch",
+              gap: "0.75rem",
+            }}
+          >
+            <div className="settings-item-info">
+              <Mail size={20} style={{ color: "var(--accent-primary)" }} />
+              <div>
+                <h4 style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  Persistent Long-Range Email Chat
+                  <InfoTip
+                    title="Persistent Email P2P Chat Bridge"
+                    body="Exchange encryption keys over the short-range mesh, then bridge the conversation securely over federated SMTP/IMAP (email) once out of physical mesh range."
+                    rows={[
+                      ["Delta Chat model:", "Leverages standard existing email networks to route P2P encrypted chat bubbles, avoiding centralized chat servers."],
+                      ["Privacy:", "Autocrypt headers ensure messages are PGP/ECC encrypted. Stored only in local SQLite DB."],
+                      ["Setup:", "Provide your IMAP/SMTP details. Verified on-device only."],
+                    ]}
+                  />
+                </h4>
+                <p>Sync mesh chats with persistent SMTP/IMAP email channels.</p>
+              </div>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Aura Email Address</span>
+                <input
+                  type="email"
+                  placeholder="user@example.com"
+                  value={emailAddress}
+                  onChange={(e) => onUpdateEmailAddress(e.target.value)}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: "8px",
+                    background: "rgba(255, 255, 255, 0.05)",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                    color: "var(--text-primary)",
+                    fontSize: "0.9rem",
+                  }}
+                />
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Bridge Password / App Password</span>
+                <input
+                  type="password"
+                  placeholder="••••••••••••••••"
+                  value={emailPassword}
+                  onChange={(e) => onUpdateEmailPassword(e.target.value)}
+                  style={{
+                    padding: "8px 12px",
+                    borderRadius: "8px",
+                    background: "rgba(255, 255, 255, 0.05)",
+                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                    color: "var(--text-primary)",
+                    fontSize: "0.9rem",
+                  }}
+                />
+              </div>
+
+              <div style={{ display: "flex", gap: "1rem" }}>
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>IMAP Server</span>
+                  <input
+                    type="text"
+                    placeholder="imap.example.com"
+                    value={imapServer}
+                    onChange={(e) => onUpdateImapServer(e.target.value)}
+                    style={{
+                      padding: "8px 12px",
+                      borderRadius: "8px",
+                      background: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      color: "var(--text-primary)",
+                      fontSize: "0.9rem",
+                    }}
+                  />
+                </div>
+
+                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
+                  <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>SMTP Server</span>
+                  <input
+                    type="text"
+                    placeholder="smtp.example.com"
+                    value={smtpServer}
+                    onChange={(e) => onUpdateSmtpServer(e.target.value)}
+                    style={{
+                      padding: "8px 12px",
+                      borderRadius: "8px",
+                      background: "rgba(255, 255, 255, 0.05)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      color: "var(--text-primary)",
+                      fontSize: "0.9rem",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* ── Mesh Configuration ───────────────────────────────────────── */}
         <div className="detail-section">
           <h3>Mesh Configuration</h3>
@@ -323,3 +567,4 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
     </div>
   );
 };
+
