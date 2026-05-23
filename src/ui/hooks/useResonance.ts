@@ -542,6 +542,85 @@ export function useResonance() {
     };
   }, [initiateZkChallenge, zkThreshold, minAge, maxAge]);
 
+  // Periodically poll Email Bridge for incoming out-of-proximity match proposals (Stealth matches)
+  useEffect(() => {
+    const email = localStorage.getItem("email-address");
+    const password = localStorage.getItem("email-password");
+    const imap_server = localStorage.getItem("imap-server");
+    const smtp_server = localStorage.getItem("smtp-server");
+
+    if (!email || !password || !imap_server) return;
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const proposalsJson = await invoke<string[]>("poll_email_chat_messages", {
+          config: { email, password, imap_server, smtp_server }
+        });
+
+        for (const jsonStr of proposalsJson) {
+          try {
+            const envelope = JSON.parse(jsonStr);
+            if (envelope.msg_type === "stealth_match_proposal" && envelope.sender_profile) {
+              const sender = envelope.sender_profile;
+              
+              // 1. Record the discovered peer in local database so it is in our system
+              await invoke("save_peer_profile", { profile: {
+                id: sender.id,
+                name: sender.name,
+                bio: sender.bio,
+                tags: sender.tags,
+                images: sender.images,
+                gender: sender.gender,
+                interested_in: sender.interestedIn,
+                dob: sender.dob
+              }});
+
+              // 2. Automatically record their like for us!
+              await invoke("record_local_interaction", { profileId: sender.id, interactionType: "like" });
+
+              // 3. Trigger mutual match checks reactively!
+              if (myLikesRef.current.includes(sender.id)) {
+                setMatchedProfile({
+                  id: sender.id,
+                  name: sender.name,
+                  bio: sender.bio,
+                  tags: sender.tags,
+                  images: sender.images,
+                  gender: sender.gender,
+                  distance: 0,
+                  zkStatus: "verified_close"
+                });
+              } else {
+                // If we haven't liked them yet, quietly add them to discoveries list so we can see them!
+                setPendingDiscoveries(prev => {
+                  if (prev.some(p => p.id === sender.id)) return prev;
+                  return [...prev, {
+                    id: sender.id,
+                    name: sender.name,
+                    bio: sender.bio,
+                    tags: sender.tags,
+                    images: sender.images,
+                    gender: sender.gender,
+                    distance: 9999, // Marked as Remote/Out-of-proximity match
+                    distanceLabel: "Remote Discovery",
+                    score: 0.95,
+                    zkStatus: "verified_close"
+                  }];
+                });
+              }
+            }
+          } catch (e) {
+            console.error("Failed to process stealth match proposal email payload:", e);
+          }
+        }
+      } catch (err) {
+        console.warn("[EmailBridge] Background IMAP match polling skipped:", err);
+      }
+    }, 15000);
+
+    return () => clearInterval(pollInterval);
+  }, [localProfile]);
+
   const cycleVisibility = () => {
     const modes: VisibilityMode[] = ["cloaked", "resonant", "public"];
     setVisibilityMode(modes[(modes.indexOf(visibilityMode) + 1) % modes.length]);
@@ -627,6 +706,27 @@ export function useResonance() {
               setMatchedProfile(targetPeer);
             }
           });
+
+          // Transmit out-of-proximity match proposal via Email Bridge (Mitigation 6 & Section 5.1)
+          const email = localStorage.getItem("email-address");
+          const password = localStorage.getItem("email-password");
+          const imap_server = localStorage.getItem("imap-server");
+          const smtp_server = localStorage.getItem("smtp-server");
+          
+          if (email && password && smtp_server && localProfile) {
+            const peerEmail = `${targetPeer.name.toLowerCase().replace(/\s+/g, "")}@auramail.net`;
+            const handshakeEnvelope = {
+              msg_type: "stealth_match_proposal",
+              id: `match_${localProfile.id}_${Date.now()}`,
+              sender_profile: localProfile,
+              timestamp: Math.floor(Date.now() / 1000)
+            };
+            invoke("send_email_chat_message", {
+              config: { email, password, imap_server, smtp_server },
+              toEmail: peerEmail,
+              messageJson: JSON.stringify(handshakeEnvelope)
+            }).catch(err => console.warn("[EmailBridge] Match proposal skipped:", err));
+          }
         }
       } else {
         // Fallback for demo instant matching
