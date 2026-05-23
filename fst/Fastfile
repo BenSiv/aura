@@ -14,6 +14,7 @@ platform :android do
     # 'supply' is the fastlane tool for Google Play Store interaction
     supply(
       package_name: "com.bensivan.aura",
+      json_key: "cfg/google-play-key.json",
       track: "production", # Options: production, beta, alpha, internal
       aab: "pub/aura-release.aab",
       metadata_path: "./fastlane/metadata",

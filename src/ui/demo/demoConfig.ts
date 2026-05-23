@@ -16,7 +16,7 @@ const bool = (val: string | undefined) => val === "true";
 export const DEMO_CONFIG = {
   IS_DEMO_MODE:          bool(import.meta.env.VITE_DEMO_MODE),
   FORCE_RESET_ON_LAUNCH: bool(import.meta.env.VITE_FORCE_RESET),
-  INSTANT_MATCH_ON_LIKE: false,
+  INSTANT_MATCH_ON_LIKE: bool(import.meta.env.VITE_DEMO_MODE),
   MUTUAL_MATCH_DEMO:     true,
   BYPASS_DB_PERSISTENCE: bool(import.meta.env.VITE_BYPASS_DB),
   USE_SEED_PROFILES:     bool(import.meta.env.VITE_USE_SEED_PROFILES),

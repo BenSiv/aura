@@ -104,6 +104,7 @@ screenshot:
 	@cd $(CFG) && npx vite --mode demo &
 	@sleep 5
 	@echo "Capturing screenshots..."
-	@node $(BLD)/capture_screenshots.mjs
+	@cd $(CFG) && node ../$(BLD)/capture_screenshots.mjs
 	@pkill -f "vite --mode demo" || true
 	@echo "Screenshots saved to fastlane/metadata/android/en-US/images/phoneScreenshots/"
+

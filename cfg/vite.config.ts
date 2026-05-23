@@ -23,7 +23,7 @@ function rewriteEntryPlugin(): import('vite').Plugin {
 }
 
 // https://vite.dev/config/
-export default defineConfig(async () => ({
+export default defineConfig(async ({ mode }) => ({
   plugins: [react(), rewriteEntryPlugin()],
   root: __dirname,
   publicDir: path.resolve(__dirname, "../web"),
@@ -51,9 +51,10 @@ export default defineConfig(async () => ({
           port: 1421,
         }
       : undefined,
-    watch: {
+    watch: mode === 'demo' ? null : {
       // 3. tell Vite to ignore watching `src-tauri`
       ignored: ["**/src-tauri/**", "**/src/core/target/**"],
     },
   },
 }));
+
