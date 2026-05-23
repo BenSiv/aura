@@ -222,39 +222,19 @@ pub fn start_mesh(app: AppHandle) {
 
                             if let Ok(peer) = serde_json::from_slice::<PeerProfile>(&message.data) {
                                 if !peer.id.is_empty() && peer.name.len() > 0 {
-                                    println!("[P2P] Received Aura via Gossipsub from {}", peer.id);
-                                    
-                                    // Native Android Background Notification logic
-                                    let mut should_notify = false;
-                                    if let Ok(conn) = state.db.lock() {
-                                        let my_id: String = conn.query_row("SELECT id FROM local_profile LIMIT 1", [], |r| r.get(0)).unwrap_or_default();
-                                        if !my_id.is_empty() && peer.id != my_id {
-                                            let already_interacted: bool = conn.query_row(
-                                                "SELECT EXISTS(SELECT 1 FROM interactions WHERE profileId = ?1)",
-                                                [&peer.id],
-                                                |r| r.get(0),
-                                            ).unwrap_or(false);
-                                            if !already_interacted {
-                                                should_notify = true;
-                                            }
-                                        }
-                                    }
-                                    if should_notify {
-                                        app_handle.notification()
-                                            .builder()
-                                            .title("Aura Proximity Detected! ✨")
-                                            .body(format!("{} is close by. Connect with their energy!", peer.name))
-                                            .show()
-                                            .ok();
-                                    }
-
-                                    let res_event = ResonanceEvent {
-                                        profile_id: peer.id.clone(),
-                                        score: 1.0,
-                                        timestamp: std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs(),
-                                        peer_data: Some(peer),
-                                    };
-                                    app_handle.emit("resonance_detected", res_event).ok();
+                                     println!("[P2P] Received Aura via Gossipsub from {}", peer.id);
+                                     
+                                     // Passive proximity notifications are silenced by default (Mitigation 8)
+                                     // to prevent visual targeting/physical harassment in confined spaces.
+                                     // Proximity discoveries quietly populate the on-app Radar screen instead.
+                                     
+                                     let res_event = ResonanceEvent {
+                                         profile_id: peer.id.clone(),
+                                         score: 1.0,
+                                         timestamp: std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs(),
+                                         peer_data: Some(peer),
+                                     };
+                                     app_handle.emit("resonance_detected", res_event).ok();
                                 }
                             }
                             
