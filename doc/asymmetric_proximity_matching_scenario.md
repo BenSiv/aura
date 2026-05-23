@@ -13,7 +13,15 @@ The typical central safety problem of proximity-based discovery is the **Transit
 
 ---
 
-## 2. Step-by-Step Walkthrough
+## 2. Comic Concept Illustration
+
+Here is a visual representation of this dynamic:
+
+![Asymmetric Proximity-to-Email Transit Matching Concept](../res/images/asymmetric_transit_matching_comic.png)
+
+---
+
+## 3. Step-by-Step Walkthrough
 
 ```mermaid
 sequenceDiagram
@@ -51,7 +59,7 @@ sequenceDiagram
 
 ---
 
-## 3. Detailed Data Flow Mechanics
+## 4. Detailed Data Flow Mechanics
 
 ### Phase A: Local Silent Scan (Co-presence)
 1. **User B (Broadcaster)**'s device continuously advertises its profile beacon over the local P2P mesh network (`libp2p` Gossipsub). The profile beacon includes:
@@ -84,7 +92,7 @@ sequenceDiagram
 
 ---
 
-## 4. Architectural Advantages
+## 5. Architectural Advantages
 
 1. **Perfect Spatial Security**: The vulnerable party is never visible during the in-person encounter, preventing any immediate threat, visual stalking, or physical boundaries mapping.
 2. **Zero Centralized Servers**: Matching does not rely on a centralized dating database. All profiles are stored on user devices, and match proposals are delivered directly through secure, end-to-end encrypted emails.
