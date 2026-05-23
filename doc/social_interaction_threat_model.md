@@ -47,6 +47,11 @@ Because AuraRadar operates on local radio frequencies (Wi-Fi, Bluetooth) and uti
 * **The Danger**: The stalker can continuously bypass blocks, continuing to appear on the victim's radar. Alternatively, a group of malicious users can collude to spam fake peer feedback ratings against a target, tarnishing their local reputation.
 * **Legacy Comparison**: Legacy platforms employ permanent device bans, IP bans, phone number verification, and manual moderation teams.
 
+### Threat E: The Transit Nightmare (Visual Targeting in Confined Spaces)
+* **The Scenario**: A female user is riding on a crowded bus or subway with the app active. Multiple other passengers also have the app active. Because the network detects proximity, it triggers alert notifications on the other passengers' devices.
+* **The Danger**: A nearby passenger receives the notification, scans the tight, confined space of the bus visually for anyone looking at their phone matching the vibe silhouette, and approaches them physically on the spot. Because the physical environment restricts movement or escape, the target user feels trapped, targeted, and highly unsafe. 
+* **Legacy Comparison**: In centralized dating apps, you swipe on someone who might be miles away, and you only chat when a mutual match is completed at your own leisure. The app never alerts nearby strangers of your exact physical co-presence inside a specific vehicle.
+
 ---
 
 ## 3. AuraRadar Mitigation Framework
@@ -76,3 +81,16 @@ To guarantee physical safety, privacy, and device stability in a serverless envi
 ### Mitigation 6: Persistent Chat Email Bridge Failover
 * **Mechanism**: Once a mutual connection is validated, users are encouraged to bridge their chat to the SMTP/IMAP network. 
 * **Safety Benefit**: This allows communication to continue safely at a distance. Users no longer need to hang around in physical proximity to keep talking, removing the incentive for stalkers to hover around a target's physical coordinates.
+
+### Mitigation 7: Automated Transit Cloaking (Velocity & Density Defense)
+* **Mechanism**: The app monitors device velocity (via coarse cellular/GPS speed metrics) and ambient mesh node density. If the speed matches vehicle movement (> 15 km/h) or if more than 3 active nodes are detected within a sub-10m radius, the app **automatically and silently switches to Stealth Scan (Ghost Mode)**.
+* **Safety Benefit**: This completely prevents broadcasts in highly confined, unescapable spaces like buses, subways, trains, and elevators. The user continues to receive passive vibes but is completely invisible to others during the journey.
+
+### Mitigation 8: Elimination of Passive Proximity Notifications
+* **Mechanism**: The native tauri core never triggers active OS push/system notifications ("Aura Proximity Detected") for public or un-matched profiles. Proximity discoveries quietly populate the on-app Radar screen without buzzing or flashing interrupting banners.
+* **Safety Benefit**: Passive mesh encounters remain completely silent. Nearby strangers are not actively prompted or alerted to look around their environment unless they are manually gazing at their phone within the app, reducing the rate of spontaneous real-life approaches.
+
+### Mitigation 9: Absolute Visual Anonymization of Vibe Silhouettes
+* **Mechanism**: Vibe Silhouettes contain strictly non-visual, non-physical attributes. Gender, age, physical descriptors, hair color, and precise distances are entirely stripped. Silhouettes only present abstract compatibility vectors (e.g. "92% compatibility") and generic lifestyle tags (e.g. "Jazz, Cooking").
+* **Safety Benefit**: It is physically impossible for a stranger to look around a crowded bus and link a specific passenger to a profile card on their screen, as the profile lacks any physical correlate. Visual identity is only revealed once double-blind matching completes.
+
