@@ -18,6 +18,20 @@ Watch the **40-second walkthrough** of the core AuraRadar experience in action:
 
 ---
 
+## 📲 Join the Android Beta Test Group! 🧪
+
+AuraRadar is actively seeking beta testers to join our private Google Play Store test group! Since the app is built on a decentralized local-first architecture, having active testers in the real world is incredibly helpful for discovering edge cases and improving proximity mesh routing.
+
+If you would like to install AuraRadar on your Android device and join the private test group:
+
+1. **Send an Email**: Click to email **[bensiv92@gmail.com](mailto:bensiv92@gmail.com?subject=AuraRadar%20Beta%20Testing%20Request&body=Hi%20Ben,%0D%0A%0D%0AI%20would%20love%20to%20join%20the%20AuraRadar%20private%20beta%20testing%20group!%20Please%20add%20my%20Google%20account%20email%20to%20the%20Google%20Play%20Console.%0D%0A%0D%0AMy%20Google%20Play%20Store%20Email:%20[Your%20Google%20Account%20Email%20Here]%0D%0A%0D%0AThanks!)** requesting to join.
+2. **Provide your Google Email**: Make sure to include the email address associated with your **Google Play Store / Google Account** (so we can register you in the Google Play Console).
+3. **Install the App**: Once registered, we will reply with your official Play Store opt-in link to download and install the app!
+
+We'd love to have your feedback!
+
+---
+
 ## 🌟 The Social Mission: Reclaiming Connection
 
 We live in a paradox: we are more digitally connected than ever, yet we are in the midst of a global **loneliness pandemic**. 
