@@ -94,3 +94,26 @@ To guarantee physical safety, privacy, and device stability in a serverless envi
 * **Mechanism**: Vibe Silhouettes contain strictly non-visual, non-physical attributes. Gender, age, physical descriptors, hair color, and precise distances are entirely stripped. Silhouettes only present abstract compatibility vectors (e.g. "92% compatibility") and generic lifestyle tags (e.g. "Jazz, Cooking").
 * **Safety Benefit**: It is physically impossible for a stranger to look around a crowded bus and link a specific passenger to a profile card on their screen, as the profile lacks any physical correlate. Visual identity is only revealed once double-blind matching completes.
 
+---
+
+## 4. Evaluation of Proposed Proximity-Based Image Blurring (The Blur Vector)
+
+An intuitive safety proposal is to dynamically apply a visual blur (e.g. Gaussian blur) to profile images in extreme physical proximity (e.g. within 5 meters), returning to clear rendering when the peer moves further away. 
+
+While appealing in theory, a rigorous security evaluation reveals four critical engineering and safety drawbacks:
+
+1. **The Boundary-Side-Channel Leak (Reverse Triangulation)**:
+   * **The Vulnerability**: A discrete UI transition (blurred to clear) acting at a precise distance threshold serves as a mathematical boundary marker. 
+   * **The Threat**: A malicious user can move slightly, noting the exact step where the image transitions. By plotting three transition spots, they can perform highly precise physical triangulation, revealing the target's exact coordinates.
+
+2. **UI Interception Bypass (False Sense of Security)**:
+   * **The Vulnerability**: A CSS or app-level blur is only applied at the display layer. 
+   * **The Threat**: If the underlying image data has already been transmitted over the local mesh network, a malicious actor running a custom client can easily intercept the raw, unblurred image bytes from the P2P traffic and view it in high definition, making the UI blur completely useless.
+
+3. **RSSI Noise & Flickering UX**:
+   * **The Vulnerability**: Local radio frequencies (Bluetooth/Wi-Fi RSSI) fluctuate constantly due to walls, bodies, and moving metal.
+   * **The Threat**: In a moving environment like a bus or train, the calculated distance would bounce wildly, causing the profile image to erratically flicker between blurred and unblurred, frustrating users and leaking spatial telemetry.
+
+4. **Sabotaging Legitimate In-Person Discovery**:
+   * **The Vulnerability**: If two users are *already* validated mutual matches, they explicitly require each other's visual cues (photos/names) to find and approach one another in the real world. 
+   * **The Threat**: Automatically blurring the photo when they get close makes it impossible for mutual matches to recognize each other in a crowd. Conversely, if they are *not* mutual matches, their photos should be completely hidden rather than blurred, as a blurred photo still leaks skin tone, clothing shapes, and general silhouettes, which are enough to visually target someone on a bus.
