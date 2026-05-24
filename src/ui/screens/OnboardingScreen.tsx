@@ -31,7 +31,11 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ initialProfi
         return initialProfile.images;
       }
     }
-    return "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=800&q=80";
+    const gender = initialProfile?.gender || "Man";
+    if (gender === "Woman") {
+      return "https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=800&q=80&sat=-100";
+    }
+    return "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=800&q=80&sat=-100";
   };
 
   const [setupImage, setSetupImage] = useState(getInitialImage);
@@ -39,6 +43,25 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ initialProfi
   const [setupInterestedIn, setSetupInterestedIn] = useState(initialProfile?.interestedIn || "Women");
   const [setupDob, setSetupDob] = useState(initialProfile?.dob || "");
   const [dobError, setDobError] = useState("");
+
+  const handleGenderChange = (gender: string) => {
+    setSetupGender(gender);
+    const isCurrentlyDefault = setupImage === "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=800&q=80&sat=-100" || 
+                               setupImage === "https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=800&q=80&sat=-100";
+    if (isCurrentlyDefault) {
+      if (gender === "Man") {
+        setSetupImage("https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=800&q=80&sat=-100");
+      } else if (gender === "Woman") {
+        setSetupImage("https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=800&q=80&sat=-100");
+      }
+    }
+  };
+
+  const getNamePlaceholder = () => {
+    if (setupGender === "Man") return "e.g. Adam";
+    if (setupGender === "Woman") return "e.g. Eve";
+    return "e.g. Alex";
+  };
 
   const validateDob = (val: string): boolean => {
     if (!val) {
@@ -126,7 +149,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ initialProfi
           <label><User size={16} /> Public Name</label>
           <input 
             type="text" 
-            placeholder="e.g. Alex" 
+            placeholder={getNamePlaceholder()} 
             value={setupName}
             onChange={e => setSetupName(e.target.value)}
           />
@@ -186,7 +209,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ initialProfi
                 <button 
                   key={g}
                   className={`selector-btn ${setupGender === g ? 'active' : ''}`}
-                  onClick={() => setSetupGender(g)}
+                  onClick={() => handleGenderChange(g)}
                 >
                   {g}
                 </button>

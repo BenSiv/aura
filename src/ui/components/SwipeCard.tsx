@@ -46,7 +46,7 @@ export default function SwipeCard({ profile, onSwipe, onClick }: Props) {
     images = JSON.parse(profile.images);
     if (!Array.isArray(images) || images.length === 0) throw new Error();
   } catch (e) {
-    images = ["https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=800&q=80"];
+    images = ["https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=800&q=80&sat=-100"];
   }
 
   let tags = [];

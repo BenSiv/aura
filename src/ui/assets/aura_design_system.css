@@ -1,0 +1,637 @@
+/* aura_design_system.css - Premium Core Design System for AuraRadar */
+/* Embodying proximity, local privacy, decentralized energy, and physical serendipity */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  /* Typography */
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* --- COLOR PALETTE (COZY & PROTECTIVE VELVET DARK MODE) --- */
+  /* The Void (Comforting, Protective Canvas Backgrounds) */
+  --color-void-deep: hsl(220, 0%, 15%);
+  /* Cozy, sophisticated neutral charcoal backdrop */
+  --color-void-mid: hsl(220, 0%, 20%);
+  /* Comforting neutral dark gray panel backdrop */
+  --color-void-light: hsl(220, 0%, 28%);
+  /* Soft, tactile neutral gray panel borders */
+
+  /* The Aura (Volumetric Glowing Gradients) */
+  /* Local Presence (Cozy Hearth - Warm, Human, Welcoming) */
+  --aura-local-primary: hsl(22, 95%, 62%);
+  /* Warm Candlelight Peach-Orange */
+  --aura-local-secondary: hsl(42, 95%, 58%);
+  /* Soothing Honey-Amber */
+  --aura-local-glow: rgba(253, 137, 65, 0.4);
+
+  /* Peer Proximity (Safe Meadow - Refreshing, Calm, Trustworthy) */
+  --aura-peer-primary: hsl(145, 45%, 55%);
+  /* Comforting Sage Green */
+  --aura-peer-secondary: hsl(165, 40%, 48%);
+  /* Relaxing Soft Mint */
+  --aura-peer-glow: rgba(100, 210, 160, 0.4);
+
+  /* Secure Handshake (The Sanctuary - Validated, Protected, Absolute Privacy) */
+  --aura-secure-primary: hsl(150, 75%, 42%);
+  /* Deep Validating Forest Green */
+  --aura-secure-secondary: hsl(38, 90%, 52%);
+  /* Cozy Protective Sanctuary Gold */
+  --aura-secure-glow: rgba(30, 190, 110, 0.45);
+
+  /* Precise Telemetry (Radar, Topographic Vectors) */
+  --radar-line: rgba(255, 255, 255, 0.05);
+  /* Subtle topographic layout rings */
+  --radar-line-active: rgba(100, 210, 160, 0.25);
+  /* Gentle scanning sweep line */
+  --radar-coordinate: hsl(220, 6%, 60%);
+  /* Muted text coordinates */
+
+  /* The Mesh (Connection Network) */
+  --mesh-node-inactive: hsl(220, 6%, 35%);
+  --mesh-node-active: hsl(145, 45%, 55%);
+  --mesh-node-secure: hsl(150, 75%, 42%);
+  --mesh-link-inactive: rgba(255, 255, 255, 0.03);
+  --mesh-link-active: linear-gradient(90deg, var(--aura-peer-primary), var(--aura-secure-primary));
+
+  /* UI Text & Details */
+  --text-high-contrast: hsl(0, 0%, 100%);
+  --text-primary: hsl(0, 0%, 100%);
+  /* Pure white text for absolute legibility */
+  --text-secondary: hsl(220, 6%, 82%);
+  /* Brighter, cozy secondary details text */
+  --text-muted: hsl(220, 5%, 62%);
+  /* Reassuringly clear muted metadata */
+
+  /* UI Glass Components */
+  --glass-bg: rgba(30, 30, 30, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-highlight: rgba(255, 255, 255, 0.015);
+  --glass-shadow: 0 16px 48px -12px rgba(5, 5, 5, 0.6);
+}
+
+.light-theme {
+  /* --- COLOR PALETTE (AMBIENT LIGHT MODE) --- */
+  --color-void-deep: hsl(228, 20%, 96%);
+  --color-void-mid: hsl(228, 30%, 100%);
+  --color-void-light: hsl(228, 20%, 90%);
+
+  --aura-local-glow: rgba(255, 78, 107, 0.15);
+  --aura-peer-glow: rgba(0, 245, 212, 0.15);
+  --aura-secure-glow: rgba(162, 32, 242, 0.15);
+
+  --radar-line: rgba(10, 15, 29, 0.05);
+  --radar-line-active: rgba(0, 245, 212, 0.45);
+  --radar-coordinate: hsl(228, 20%, 40%);
+
+  --mesh-link-inactive: rgba(10, 15, 29, 0.03);
+
+  --text-high-contrast: hsl(228, 45%, 5%);
+  --text-primary: hsl(228, 30%, 12%);
+  --text-secondary: hsl(228, 20%, 35%);
+  --text-muted: hsl(228, 15%, 55%);
+
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(10, 15, 29, 0.06);
+  --glass-shadow: 0 16px 40px -12px rgba(10, 15, 29, 0.08);
+}
+
+/* ==========================================================================
+   1. THE AURA: VOLUMETRIC ENERGY FIELDS
+   ========================================================================== */
+
+/* Ambient volumetric aura container that simulates physical proximity glow */
+.aura-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+  background-color: var(--color-void-deep);
+  transition: background-color 0.5s ease;
+}
+
+/* Local presence volumetric gradient */
+.aura-glow-local {
+  position: absolute;
+  width: 140vw;
+  height: 140vw;
+  border-radius: 50%;
+  top: -40vw;
+  left: -20vw;
+  background: radial-gradient(circle, var(--aura-local-primary) 0%, var(--aura-local-secondary) 25%, transparent 70%);
+  opacity: 0.18;
+  filter: blur(80px);
+  animation: float-slow 22s infinite alternate ease-in-out;
+  will-change: transform, opacity;
+}
+
+/* Peer discovering proximity energy wave */
+.aura-glow-peer {
+  position: absolute;
+  width: 120vw;
+  height: 120vw;
+  border-radius: 50%;
+  bottom: -30vw;
+  right: -20vw;
+  background: radial-gradient(circle, var(--aura-peer-primary) 0%, var(--aura-peer-secondary) 30%, transparent 70%);
+  opacity: 0.12;
+  filter: blur(90px);
+  animation: float-slow 28s infinite alternate-reverse ease-in-out;
+  will-change: transform, opacity;
+}
+
+/* Interactive secure cryptographically proven peer handshake aura */
+.aura-glow-secure {
+  position: absolute;
+  width: 90vw;
+  height: 90vw;
+  border-radius: 50%;
+  top: 25%;
+  left: 5%;
+  background: radial-gradient(circle, var(--aura-secure-primary) 0%, var(--aura-secure-secondary) 35%, transparent 70%);
+  opacity: 0.15;
+  filter: blur(70px);
+  animation: float-medium 15s infinite alternate ease-in-out;
+  will-change: transform, opacity;
+}
+
+/* Dynamic Volumetric Pulse Class for interactive feedback */
+.aura-pulse-active {
+  animation: pulse-volumetric 4s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+@keyframes float-slow {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 0.15;
+  }
+
+  50% {
+    transform: translate(5%, 8%) scale(1.15) rotate(90deg);
+    opacity: 0.22;
+  }
+
+  100% {
+    transform: translate(-3%, -5%) scale(0.9) rotate(180deg);
+    opacity: 0.12;
+  }
+}
+
+@keyframes float-medium {
+  0% {
+    transform: translate(0, 0) scale(0.95);
+    opacity: 0.12;
+  }
+
+  50% {
+    transform: translate(-6%, 5%) scale(1.08);
+    opacity: 0.20;
+  }
+
+  100% {
+    transform: translate(4%, -4%) scale(0.95);
+    opacity: 0.12;
+  }
+}
+
+@keyframes pulse-volumetric {
+
+  0%,
+  100% {
+    opacity: 0.12;
+    transform: scale(1);
+    filter: blur(70px);
+  }
+
+  50% {
+    opacity: 0.25;
+    transform: scale(1.08);
+    filter: blur(55px);
+  }
+}
+
+
+/* ==========================================================================
+   2. THE RADAR: LINEAR & PRECISE DISCOVERY WAVES
+   ========================================================================== */
+
+/* Precise structural coordinate overlay (Minimized - no grid lines) */
+.radar-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Sonar pulse container */
+.radar-sonar-scanner {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(20, 24, 40, 0.4) 0%, transparent 90%);
+  z-index: 2;
+}
+
+/* Concentric rings mapping (Only one extremely subtle outer circle) */
+.radar-sonar-ring {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 50%;
+  background: transparent;
+  pointer-events: none;
+}
+
+.radar-sonar-ring.ring-3 {
+  width: 100%;
+  height: 100%;
+}
+
+/* Sonar sweep active scanning beam (Subtle, soft glow) */
+.radar-sonar-sweep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(100, 210, 160, 0.08) 0deg, transparent 60deg, transparent 360deg);
+  opacity: 0.8;
+  animation: radar-sweep-rotate 5s linear infinite;
+  pointer-events: none;
+}
+
+/* Pulsing radar waves escaping into the local field */
+.radar-ripple-wave {
+  position: absolute;
+  border: 1px solid var(--aura-peer-primary);
+  border-radius: 50%;
+  animation: radar-ripple-expand 3.5s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.radar-ripple-wave.delay-1 {
+  animation-delay: 0s;
+}
+
+.radar-ripple-wave.delay-2 {
+  animation-delay: 1.5s;
+}
+
+@keyframes radar-sweep-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes radar-ripple-expand {
+  0% {
+    width: 10%;
+    height: 10%;
+    opacity: 0.8;
+    border-color: var(--aura-peer-primary);
+  }
+
+  50% {
+    border-color: var(--aura-peer-secondary);
+  }
+
+  100% {
+    width: 180%;
+    height: 180%;
+    opacity: 0;
+    border-color: var(--aura-secure-primary);
+  }
+}
+
+
+/* ==========================================================================
+   3. THE MESH: NODE-TO-NODE DECENTRALIZED CONNECTORS
+   ========================================================================== */
+
+/* The Canvas for rendering the node and link structure */
+.mesh-network-wrapper {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  overflow: hidden;
+}
+
+/* Individual node element */
+.mesh-node {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: var(--color-void-light);
+  border: 2px solid var(--text-muted);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.02);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 4;
+}
+
+/* Active Peer Node */
+.mesh-node.is-active {
+  background-color: var(--aura-peer-primary);
+  border-color: var(--text-high-contrast);
+  box-shadow:
+    0 0 0 4px rgba(0, 245, 212, 0.15),
+    0 0 15px var(--aura-peer-primary);
+  transform: scale(1.2);
+}
+
+/* Fully Encrypted Homomorphic Secured Node */
+.mesh-node.is-secure {
+  background-color: var(--aura-secure-primary);
+  border-color: var(--text-high-contrast);
+  box-shadow:
+    0 0 0 5px rgba(162, 32, 242, 0.2),
+    0 0 20px var(--aura-secure-primary);
+  transform: scale(1.3);
+}
+
+/* Standard node connection lines (SVG implementation) */
+.mesh-link {
+  stroke: var(--mesh-link-inactive);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  transition: all 0.5s ease;
+}
+
+/* Active P2P Mesh Connection link */
+.mesh-link.is-active {
+  stroke: var(--aura-peer-primary);
+  stroke-width: 2.5;
+  stroke-dasharray: none;
+  filter: drop-shadow(0 0 4px var(--aura-peer-primary));
+}
+
+/* Fully verified cryptographically secure connection link */
+.mesh-link.is-secure {
+  stroke: url(#secure-gradient);
+  stroke-width: 3;
+  stroke-dasharray: none;
+  filter: drop-shadow(0 0 6px var(--aura-secure-primary));
+  animation: line-pulse 2s infinite ease-in-out;
+}
+
+/* Telemetry packet flow traveling down active connection links */
+.mesh-data-packet {
+  fill: var(--text-high-contrast);
+  filter: drop-shadow(0 0 4px var(--text-high-contrast));
+  animation: data-packet-flow 4s infinite linear;
+}
+
+@keyframes line-pulse {
+
+  0%,
+  100% {
+    stroke-width: 3px;
+    filter: drop-shadow(0 0 4px var(--aura-secure-primary));
+  }
+
+  50% {
+    stroke-width: 4px;
+    filter: drop-shadow(0 0 10px var(--aura-secure-secondary));
+  }
+}
+
+
+/* ==========================================================================
+   4. PREMIUM GLASSMORPHIC UI COMPONENTS
+   ========================================================================== */
+
+/* Elite Glassmorphic Panel with high dimensional tactile depth */
+.aura-glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: var(--glass-shadow);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.aura-glass-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-border) 20%, var(--glass-border) 80%, transparent);
+}
+
+.aura-glass-panel:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 20px 60px -12px rgba(0, 0, 0, 0.85);
+}
+
+/* Interactive swipe discovery encounter card */
+.aura-encounter-card {
+  composes: aura-glass-panel;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.9);
+}
+
+/* Topographic distance verification banner */
+.aura-telemetry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+  border: 1px solid;
+  transition: all 0.3s ease;
+}
+
+.aura-telemetry-badge.scanning {
+  background: rgba(0, 245, 212, 0.08);
+  border-color: rgba(0, 245, 212, 0.25);
+  color: var(--aura-peer-primary);
+  animation: pulse-scanning-badge 1.8s infinite ease-in-out;
+}
+
+.aura-telemetry-badge.verified {
+  background: rgba(162, 32, 242, 0.1);
+  border-color: rgba(162, 32, 242, 0.3);
+  color: var(--text-high-contrast);
+  box-shadow: 0 0 12px rgba(162, 32, 242, 0.2);
+}
+
+@keyframes pulse-scanning-badge {
+
+  0%,
+  100% {
+    border-color: rgba(0, 245, 212, 0.25);
+    box-shadow: 0 0 0 0 rgba(0, 245, 212, 0.1);
+  }
+
+  50% {
+    border-color: rgba(0, 245, 212, 0.6);
+    box-shadow: 0 0 8px 0 rgba(0, 245, 212, 0.3);
+  }
+}
+
+
+/* ==========================================================================
+   5. PREMIUM INTERACTIVE BUTTONS & CONTROLS
+   ========================================================================== */
+
+/* Primary Action Button (Glowing Volumetric Pill) */
+.btn-aura-primary {
+  background: linear-gradient(135deg, var(--aura-local-primary) 0%, var(--aura-local-secondary) 100%);
+  color: var(--text-high-contrast);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px -5px var(--aura-local-glow);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-aura-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px -3px var(--aura-local-glow), 0 0 15px rgba(255, 78, 107, 0.3);
+}
+
+.btn-aura-primary:active {
+  transform: translateY(0);
+}
+
+/* Secondary Cryptographic Verification Button */
+.btn-aura-secure {
+  background: linear-gradient(135deg, var(--aura-secure-primary) 0%, var(--aura-secure-secondary) 100%);
+  color: var(--text-high-contrast);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px -5px var(--aura-secure-glow);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-aura-secure:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px -3px var(--aura-secure-glow), 0 0 20px rgba(162, 32, 242, 0.4);
+}
+
+/* Minimalist radar action triggers */
+.btn-radar-control {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.25s ease;
+}
+
+.btn-radar-control:hover {
+  border-color: var(--aura-peer-primary);
+  color: var(--text-high-contrast);
+  box-shadow: 0 0 15px rgba(0, 245, 212, 0.2);
+  transform: scale(1.08);
+}
+
+
+/* ==========================================================================
+   6. MICRO-ANIMATIONS & VOLUMETRIC TEXTURE
+   ========================================================================== */
+
+/* Scanning Telemetry Data flow */
+.scanning-data-strip {
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  opacity: 0.4;
+  mask-image: linear-gradient(to right, transparent, white 20%, white 80%, transparent);
+}
+
+.scanning-data-flow {
+  display: inline-block;
+  animation: data-marquee 30s linear infinite;
+}
+
+@keyframes data-marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* Soft Volumetric Background (Minimized - no noise texture overlay) */
+.volumetric-grain-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  pointer-events: none;
+  z-index: 10;
+}

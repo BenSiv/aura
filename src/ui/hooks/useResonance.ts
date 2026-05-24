@@ -189,9 +189,9 @@ export function useResonance() {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("aura-theme");
       if (saved === "light" || saved === "dark") return saved;
-      return "dark";
+      return "light";
     }
-    return "dark";
+    return "light";
   });
 
   const toggleTheme = useCallback(() => {

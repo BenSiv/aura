@@ -1,34 +1,36 @@
 /* App.css - Premium Vanilla CSS for Aura */
 
+@import './assets/aura_design_system.css';
+
 :root {
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --bg-primary: #0F172A;
-  --bg-secondary: #1E293B;
-  --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --accent-primary: #6366F1;
-  --accent-hover: #4F46E5;
-  --accent-success: #10B981;
-  --accent-danger: #F43F5E;
-  --glass-bg: rgba(30, 41, 59, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  --item-bg: rgba(255, 255, 255, 0.04);
+  --font-sans: var(--font-sans);
+  --bg-primary: var(--color-void-deep);
+  --bg-secondary: var(--color-void-mid);
+  --text-primary: var(--text-primary);
+  --text-secondary: var(--text-secondary);
+  --accent-primary: var(--aura-local-primary);
+  --accent-hover: var(--aura-local-secondary);
+  --accent-success: var(--aura-secure-primary);
+  --accent-danger: var(--aura-local-primary);
+  --glass-bg: var(--glass-bg);
+  --glass-border: var(--glass-border);
+  --glass-shadow: var(--glass-shadow);
+  --item-bg: var(--color-void-light);
 }
 
 .light-theme {
-  --bg-primary: #F8FAFC;
-  --bg-secondary: #FFFFFF;
-  --text-primary: #0F172A;
-  --text-secondary: #475569;
-  --accent-primary: #4F46E5;
-  --accent-hover: #4338CA;
-  --accent-success: #059669;
-  --accent-danger: #EF4444;
-  --glass-bg: rgba(255, 255, 255, 0.75);
-  --glass-border: rgba(15, 23, 42, 0.08);
-  --glass-shadow: 0 8px 32px 0 rgba(148, 163, 184, 0.12);
-  --item-bg: rgba(15, 23, 42, 0.04);
+  --bg-primary: var(--color-void-deep);
+  --bg-secondary: var(--color-void-mid);
+  --text-primary: var(--text-primary);
+  --text-secondary: var(--text-secondary);
+  --accent-primary: var(--aura-local-primary);
+  --accent-hover: var(--aura-local-secondary);
+  --accent-success: var(--aura-secure-primary);
+  --accent-danger: var(--aura-local-primary);
+  --glass-bg: var(--glass-bg);
+  --glass-border: var(--glass-border);
+  --glass-shadow: var(--glass-shadow);
+  --item-bg: var(--color-void-light);
 }
 
 * {

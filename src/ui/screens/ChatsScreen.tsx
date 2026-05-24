@@ -58,7 +58,7 @@ export const ChatsScreen: React.FC<ChatsScreenProps> = ({ onBack, onSelectChat }
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
             {partners.map((profile) => {
-              let image = "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=800&q=80";
+              let image = "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=800&q=80&sat=-100";
               try {
                 const arr = JSON.parse(profile.images);
                 if (arr.length > 0) image = arr[0];

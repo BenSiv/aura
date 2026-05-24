@@ -15,7 +15,7 @@ export const MatchScreen: React.FC<MatchScreenProps> = ({
   onSendMessage, 
   onContinue 
 }) => {
-  const localImage = localProfile.images ? JSON.parse(localProfile.images)[0] : "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=800&q=80";
+  const localImage = localProfile.images ? JSON.parse(localProfile.images)[0] : "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=800&q=80&sat=-100";
   const matchedImage = JSON.parse(matchedProfile.images)[0];
 
   return (
