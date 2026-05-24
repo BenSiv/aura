@@ -1049,3 +1049,42 @@ input:checked + .slider:before { transform: translateX(22px); }
 }
 .infotip-root:focus { outline: none; }
 .infotip-root:focus-visible > svg { opacity: 1 !important; outline: 2px solid var(--accent-primary); border-radius: 50%; }
+
+/* ── Dual Range Slider (Bilateral Age Filters) ─────────────────────────── */
+.dual-range-input::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2px solid var(--accent-primary);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.15s ease;
+}
+
+.dual-range-input::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background-color: var(--text-primary);
+  border-color: var(--accent-hover);
+}
+
+.dual-range-input::-moz-range-thumb {
+  pointer-events: auto;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2px solid var(--accent-primary);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.15s ease;
+}
+
+.dual-range-input::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  background-color: var(--text-primary);
+  border-color: var(--accent-hover);
+}

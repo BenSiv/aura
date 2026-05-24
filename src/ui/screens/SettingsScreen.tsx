@@ -172,43 +172,94 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({
               </div>
             </div>
 
-            <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
-                <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Min Age</span>
-                <input
-                  type="number"
-                  min="18"
-                  max="99"
-                  value={minAge}
-                  onChange={(e) => onUpdateMinAge(Math.max(18, parseInt(e.target.value) || 18))}
-                  style={{
-                    padding: "8px 12px",
-                    borderRadius: "8px",
-                    background: "rgba(255, 255, 255, 0.05)",
-                    border: "1px solid rgba(255, 255, 255, 0.1)",
-                    color: "var(--text-primary)",
-                    fontSize: "0.9rem",
-                  }}
-                />
-              </div>
-              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "4px" }}>
-                <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>Max Age</span>
-                <input
-                  type="number"
-                  min="18"
-                  max="99"
-                  value={maxAge}
-                  onChange={(e) => onUpdateMaxAge(Math.min(99, parseInt(e.target.value) || 99))}
-                  style={{
-                    padding: "8px 12px",
-                    borderRadius: "8px",
-                    background: "rgba(255, 255, 255, 0.05)",
-                    border: "1px solid rgba(255, 255, 255, 0.1)",
-                    color: "var(--text-primary)",
-                    fontSize: "0.9rem",
-                  }}
-                />
-              </div>
+            {/* Dual Age range readout */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.9rem", fontWeight: 600 }}>
+              <span style={{ color: "var(--text-secondary)" }}>Target Age Range:</span>
+              <span style={{ color: "var(--accent-primary)", fontSize: "1rem" }}>{minAge} – {maxAge} years</span>
+            </div>
+
+            {/* Premium Dual Slider Track and Handles */}
+            <div style={{ position: "relative", width: "100%", height: "24px", marginTop: "4px" }}>
+              {/* Underlying visual track */}
+              <div style={{
+                position: "absolute",
+                top: "9px",
+                left: 0,
+                right: 0,
+                height: "6px",
+                borderRadius: "3px",
+                background: "rgba(255, 255, 255, 0.1)"
+              }} />
+              
+              {/* Active illuminated range bar */}
+              <div style={{
+                position: "absolute",
+                top: "9px",
+                left: `${((minAge - 18) / (99 - 18)) * 100}%`,
+                width: `${((maxAge - minAge) / (99 - 18)) * 100}%`,
+                height: "6px",
+                borderRadius: "3px",
+                background: "var(--accent-primary)",
+                boxShadow: "0 0 10px rgba(99, 102, 241, 0.4)"
+              }} />
+              
+              {/* Min Age Handle */}
+              <input
+                type="range"
+                min="18"
+                max="99"
+                value={minAge}
+                onChange={(e) => {
+                  const val = Math.min(parseInt(e.target.value, 10), maxAge - 1);
+                  onUpdateMinAge(val);
+                }}
+                style={{
+                  position: "absolute",
+                  top: "2px",
+                  left: 0,
+                  width: "100%",
+                  height: "20px",
+                  margin: 0,
+                  background: "none",
+                  pointerEvents: "none",
+                  WebkitAppearance: "none",
+                  appearance: "none",
+                  zIndex: minAge > 58 ? 5 : 3
+                }}
+                className="dual-range-input"
+              />
+
+              {/* Max Age Handle */}
+              <input
+                type="range"
+                min="18"
+                max="99"
+                value={maxAge}
+                onChange={(e) => {
+                  const val = Math.max(parseInt(e.target.value, 10), minAge + 1);
+                  onUpdateMaxAge(val);
+                }}
+                style={{
+                  position: "absolute",
+                  top: "2px",
+                  left: 0,
+                  width: "100%",
+                  height: "20px",
+                  margin: 0,
+                  background: "none",
+                  pointerEvents: "none",
+                  WebkitAppearance: "none",
+                  appearance: "none",
+                  zIndex: minAge > 58 ? 3 : 5
+                }}
+                className="dual-range-input"
+              />
+            </div>
+            
+            {/* Scale boundaries */}
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+              <span>18</span>
+              <span>99</span>
             </div>
           </div>
         </div>
