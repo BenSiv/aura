@@ -31,14 +31,14 @@ function App() {
     toggleTheme,
     zkThreshold,
     updateZkThreshold,
-    stealthScan,
-    toggleStealthScan,
     minAge,
     updateMinAge,
     maxAge,
     updateMaxAge,
     emailAddress,
     updateEmailAddress,
+    useCustomEmail,
+    toggleUseCustomEmail,
     emailPassword,
     updateEmailPassword,
     imapServer,
@@ -139,14 +139,14 @@ function App() {
         onBack={() => setShowSettings(false)} 
         zkThreshold={zkThreshold}
         onUpdateZkThreshold={updateZkThreshold}
-        stealthScan={stealthScan}
-        onToggleStealthScan={toggleStealthScan}
         minAge={minAge}
         onUpdateMinAge={updateMinAge}
         maxAge={maxAge}
         onUpdateMaxAge={updateMaxAge}
         emailAddress={emailAddress}
         onUpdateEmailAddress={updateEmailAddress}
+        useCustomEmail={useCustomEmail}
+        onToggleUseCustomEmail={toggleUseCustomEmail}
         emailPassword={emailPassword}
         onUpdateEmailPassword={updateEmailPassword}
         imapServer={imapServer}

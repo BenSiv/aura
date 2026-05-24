@@ -51,21 +51,7 @@ export function useResonance() {
   }, []);
 
   // --- Safety & Comfort states ---
-  const [stealthScan, setStealthScan] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("stealth-scan");
-      return saved === "true";
-    }
-    return false;
-  });
-
-  const toggleStealthScan = useCallback(() => {
-    setStealthScan(prev => {
-      const next = !prev;
-      localStorage.setItem("stealth-scan", String(next));
-      return next;
-    });
-  }, []);
+  const stealthScan = visibilityMode === "cloaked";
 
   const [minAge, setMinAge] = useState<number>(() => {
     if (typeof window !== "undefined") {
@@ -106,6 +92,21 @@ export function useResonance() {
     localStorage.setItem("email-address", val);
   }, []);
 
+  const [useCustomEmail, setUseCustomEmail] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("use-custom-email") === "true";
+    }
+    return false;
+  });
+
+  const toggleUseCustomEmail = useCallback(() => {
+    setUseCustomEmail(prev => {
+      const next = !prev;
+      localStorage.setItem("use-custom-email", String(next));
+      return next;
+    });
+  }, []);
+
   const [emailPassword, setEmailPassword] = useState<string>(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("email-password") || "";
@@ -141,6 +142,28 @@ export function useResonance() {
     setSmtpServer(val);
     localStorage.setItem("smtp-server", val);
   }, []);
+
+  // --- Auto-generate Zero-Config AuraMail Bridge (If not using Custom SMTP/IMAP) ---
+  useEffect(() => {
+    if (!localProfile) return;
+    if (!useCustomEmail) {
+      const shortId = localProfile.id.split("-")[0] || localProfile.id.substring(0, 8);
+      const generatedEmail = `${shortId}@auramail.net`;
+      const generatedPassword = `aurapass_${shortId}`;
+      const generatedImap = "imap.auramail.net";
+      const generatedSmtp = "smtp.auramail.net";
+
+      setEmailAddress(generatedEmail);
+      setEmailPassword(generatedPassword);
+      setImapServer(generatedImap);
+      setSmtpServer(generatedSmtp);
+
+      localStorage.setItem("email-address", generatedEmail);
+      localStorage.setItem("email-password", generatedPassword);
+      localStorage.setItem("imap-server", generatedImap);
+      localStorage.setItem("smtp-server", generatedSmtp);
+    }
+  }, [localProfile, useCustomEmail]);
 
   // Retrieve flat offset meter coordinates on mount
   useEffect(() => {
@@ -207,7 +230,7 @@ export function useResonance() {
 
   // Reactive background broadcasting effect reacting to activeAura, localProfile, stealthScan, and visibilityMode
   useEffect(() => {
-    if (!localProfile || !activeAura || stealthScan || visibilityMode === "cloaked") {
+    if (!localProfile || !activeAura || stealthScan) {
       console.log("[Broadcasting] Passive Stealth Mode Active or Cloaked. No broadcasting.");
       if ((window as any).broadcastInterval) {
         clearInterval((window as any).broadcastInterval);
@@ -646,12 +669,8 @@ export function useResonance() {
     // Apply safety comfort defaults based on gender for fresh installations
     if (isNewProfile) {
       if (gender === "Woman") {
-        setStealthScan(true);
-        localStorage.setItem("stealth-scan", "true");
         setVisibilityMode("cloaked");
       } else {
-        setStealthScan(false);
-        localStorage.setItem("stealth-scan", "false");
         setVisibilityMode("resonant");
       }
     }
@@ -759,13 +778,14 @@ export function useResonance() {
     zkThreshold,
     updateZkThreshold,
     stealthScan,
-    toggleStealthScan,
     minAge,
     updateMinAge,
     maxAge,
     updateMaxAge,
     emailAddress,
     updateEmailAddress,
+    useCustomEmail,
+    toggleUseCustomEmail,
     emailPassword,
     updateEmailPassword,
     imapServer,
