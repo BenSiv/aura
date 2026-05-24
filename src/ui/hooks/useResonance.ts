@@ -205,9 +205,9 @@ export function useResonance() {
     }).catch(err => console.error("Failed to load interactions:", err));
   }, []);
 
-  // Reactive background broadcasting effect reacting to activeAura, localProfile, and stealthScan
+  // Reactive background broadcasting effect reacting to activeAura, localProfile, stealthScan, and visibilityMode
   useEffect(() => {
-    if (!localProfile || !activeAura || stealthScan) {
+    if (!localProfile || !activeAura || stealthScan || visibilityMode === "cloaked") {
       console.log("[Broadcasting] Passive Stealth Mode Active or Cloaked. No broadcasting.");
       if ((window as any).broadcastInterval) {
         clearInterval((window as any).broadcastInterval);
@@ -232,14 +232,17 @@ export function useResonance() {
       clearInterval((window as any).broadcastInterval);
     }
 
-    (window as any).broadcastInterval = setInterval(broadcast, 10000);
+    // Automate frequency: Public Mode uses 3s polling, Resonant uses 10s polling
+    const intervalMs = visibilityMode === "public" ? 3000 : 10000;
+    console.log(`[Broadcasting] Starting advertising loop at ${intervalMs}ms interval.`);
+    (window as any).broadcastInterval = setInterval(broadcast, intervalMs);
 
     return () => {
       if ((window as any).broadcastInterval) {
         clearInterval((window as any).broadcastInterval);
       }
     };
-  }, [localProfile, activeAura, stealthScan]);
+  }, [localProfile, activeAura, stealthScan, visibilityMode]);
 
   // ZKP Challenge initiation (Peer B/Verifier)
   const initiateZkChallenge = useCallback(async (peerId: string) => {
