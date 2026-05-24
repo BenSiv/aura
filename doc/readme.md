@@ -44,6 +44,10 @@ We live in a paradox: we are more digitally connected than ever, yet we are in t
 
 *For a deep dive into our philosophy, read the full [AuraRadar Manifesto](./manifesto.md).*
 
+*For an intuitive, non-technical explanation of how we keep you safe in crowded public spaces, read the [Ghost Mode & Safe Proximity Matching Explainer](./asymmetric_proximity_matching_explainer.md).*
+
+*Or, read the concept presented as a visual story in our [Ghost Mode Comic Storyboard](./asymmetric_proximity_matching_comic.md).*
+
 ---
 
 ## 📱 Live Core Flow Preview
