@@ -4,13 +4,13 @@ This document contains the visual layout, illustration prompts, dialogue, and na
 
 ---
 
-## 🎨 Characters
+## Characters
 * **Sarah (The Cloaked Scanner)**: Safety-conscious, commuting home, uses AuraRadar in **Ghost Mode**.
 * **Alex (The Broadcaster)**: A friendly fellow commuter, broadcasting his "vibe tags" to make local connections.
 
 ---
 
-## 📖 Comic Strip Layout & Panels
+## Comic Strip Layout & Panels
 
 ```
 +------------------------------------+------------------------------------+
@@ -28,7 +28,7 @@ This document contains the visual layout, illustration prompts, dialogue, and na
 
 ---
 
-### 🚌 PANEL 1: The Crowded Commute (The Problem)
+### PANEL 1: The Crowded Commute (The Problem)
 
 * **Visual**: Inside a packed city bus at rush hour. **Sarah** is sitting near the back, looking exhausted, clutching her phone. Across the aisle, **Alex** is looking at his phone, which glows with a friendly green hue. Other passengers are squeezed together. A standard location/dating app map is projected in the background, showing a big red target symbol right over Sarah, symbolizing standard app tracking.
 * **Caption**: Centralized proximity apps make you visible immediately. In tight spaces like a bus, this can feel incredibly unsafe.
@@ -38,17 +38,17 @@ This document contains the visual layout, illustration prompts, dialogue, and na
 
 ---
 
-### 🛡️ PANEL 2: The Silent Shield (Ghost Mode Active)
+### PANEL 2: The Silent Shield (Ghost Mode Active)
 
 * **Visual**: Close-up of Sarah's hands holding her phone. On the screen, a sleek, glowing blue slider is tapped: **"GHOST MODE: ACTIVE"**. A subtle, futuristic dome or shield ripple (semi-transparent blue) animates around Sarah, symbolizing her complete radio silence.
-* **Caption**: AuraRadar's **Ghost Mode** keeps her 100% silent. Her phone transmits *zero* radio signals—but it silently listens to nearby broadcasts.
-* **Sarah's Screen**: Alex’s profile card silently slides into her local discoveries list: *"Alex (Nearby) - Sci-Fi fan, Rust Dev"*
+* **Caption**: AuraRadar's **Ghost Mode** keeps her 100% silent. Her phone transmits *zero* radio signals--but it silently listens to nearby broadcasts.
+* **Sarah's Screen**: Alex's profile card silently slides into her local discoveries list: *"Alex (Nearby) - Sci-Fi fan, Rust Dev"*
 * **Sarah's Thought Bubble**: *(Smiling slightly)* "Oh, a fellow sci-fi fan! But I'll wait until I'm safe at home before deciding."
 * **Narrator Voiceover**: Sarah's phone privately saves Alex's silhouette. Alex's phone has absolutely no idea she is there.
 
 ---
 
-### 🏠 PANEL 3: Safe & Sound (The Delayed Swipe)
+### PANEL 3: Safe & Sound (The Delayed Swipe)
 
 * **Visual**: Split screen. 
   * *Left side (Sarah's Cozy Home)*: Sarah is relaxing on her living room sofa under a warm lamp, holding a mug of tea and smiling as she swipes "Like" on Alex's profile.
@@ -59,15 +59,15 @@ This document contains the visual layout, illustration prompts, dialogue, and na
 
 ---
 
-### ✨ PANEL 4: The Spontaneous Match (The Magic)
+### PANEL 4: The Spontaneous Match (The Magic)
 
-* **Visual**: Close-up of Alex looking down at his phone in surprise and delight. A vibrant, clean pop-up notification glows on his screen: **"Spontaneous Match Resolved! ✨ Sarah (Sci-Fi / Rust)"**. In the background, Sarah is shown on her phone, smiling as the match screen resolves.
+* **Visual**: Close-up of Alex looking down at his phone in surprise and delight. A vibrant, clean pop-up notification glows on his screen: **"Spontaneous Match Resolved! * Sarah (Sci-Fi / Rust)"**. In the background, Sarah is shown on her phone, smiling as the match screen resolves.
 * **Caption**: Real safety. Spontaneous connection. Zero centralized tracking servers.
 * **Alex**: "No way! We crossed paths earlier today? This is amazing!"
 * **Narrator Voiceover**: You control your presence. You control your safety. That's the power of AuraRadar.
 
 ---
 
-## 💡 How to Use This Storyboard
+## How to Use This Storyboard
 This storyboard serves as the direct creative brief for the project's visual illustrators and designers. The resulting comic strip asset is saved under:
 `res/images/asymmetric_transit_matching_comic.png`
