@@ -17,9 +17,9 @@ platform :android do
       json_key: "cfg/google-play-key.json",
       track: "internal", # Options: production, beta, alpha, internal
       aab: "pub/aura-release.aab",
-      skip_upload_metadata: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true,
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: false,
       skip_upload_changelogs: true
     )
   end
@@ -30,9 +30,9 @@ platform :android do
     supply(
       track: "internal",
       aab: "pub/aura-release.aab",
-      skip_upload_metadata: true,
-      skip_upload_images: true,
-      skip_upload_screenshots: true
+      skip_upload_metadata: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: false
     )
   end
 end
