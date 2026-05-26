@@ -60,12 +60,12 @@ Explore the standard **9:16 portrait views** of AuraRadar, showing the high-fide
 
 | **1. Secure Onboarding** | **2. Proximity Radar** | **3. Swipe Discovery** | **4. Profile Details** |
 | :---: | :---: | :---: | :---: |
-| ![Onboard securely](./fst/metadata/android/en-US/images/phoneScreenshots/1.png) | ![Scan proximity](./fst/metadata/android/en-US/images/phoneScreenshots/2.png) | ![Encounter cards](./fst/metadata/android/en-US/images/phoneScreenshots/3.png) | ![Profile details](./fst/metadata/android/en-US/images/phoneScreenshots/4.png) |
+| ![Onboard securely](./fst/metadata/android/en-US/images/phoneScreenshots/1.png?v=1.9) | ![Scan proximity](./fst/metadata/android/en-US/images/phoneScreenshots/2.png?v=1.9) | ![Encounter cards](./fst/metadata/android/en-US/images/phoneScreenshots/3.png?v=1.9) | ![Profile details](./fst/metadata/android/en-US/images/phoneScreenshots/4.png?v=1.9) |
 | *Onboard securely with name and bio* | *Scan proximity space for local resonances* | *Encounter and swipe on nearby active profile cards* | *Inspect profile bio, interests, and distance* |
 
 | **5. Mutual Match** | **6. Encrypted P2P Chat** | **7. Interaction History** | **8. Zero-Knowledge Settings** |
 | :---: | :---: | :---: | :---: |
-| ![Celebrate match](./fst/metadata/android/en-US/images/phoneScreenshots/5.png) | ![Direct mesh chat](./fst/metadata/android/en-US/images/phoneScreenshots/6.png) | ![Swipes history](./fst/metadata/android/en-US/images/phoneScreenshots/7.png) | ![Settings coordinates](./fst/metadata/android/en-US/images/phoneScreenshots/8.png) |
+| ![Celebrate match](./fst/metadata/android/en-US/images/phoneScreenshots/5.png?v=1.9) | ![Direct mesh chat](./fst/metadata/android/en-US/images/phoneScreenshots/6.png?v=1.9) | ![Swipes history](./fst/metadata/android/en-US/images/phoneScreenshots/7.png?v=1.9) | ![Settings coordinates](./fst/metadata/android/en-US/images/phoneScreenshots/8.png?v=1.9) |
 | *Instant match celebration screen* | *Secure mesh chat thread with live resonance scoring* | *Review history of past matches and encounters* | *Configure privacy and coordinate blinding tooltips* |
 
 ---

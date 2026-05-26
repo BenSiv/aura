@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { mkdirSync } from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const OUT = path.resolve(__dirname, '../fst/metadata/android/en-US/images/phoneScreenshots');
+let OUT = path.resolve(__dirname, '../fst/metadata/android/en-US/images/phoneScreenshots');
 mkdirSync(OUT, { recursive: true });
 
 const PHONE = {
@@ -21,7 +21,10 @@ const browser = await puppeteer.launch({
 });
 
 async function runThemeCapture(themeMode) {
-  const suffix = themeMode === 'dark' ? '_dark' : '';
+  const folderName = themeMode === 'dark' ? 'sevenInchScreenshots' : 'phoneScreenshots';
+  OUT = path.resolve(__dirname, `../fst/metadata/android/en-US/images/${folderName}`);
+  mkdirSync(OUT, { recursive: true });
+  const suffix = '';
   console.log(`\n===========================================================`);
   console.log(`Starting automated screenshot capture for theme: ${themeMode.toUpperCase()}`);
   console.log(`===========================================================`);
