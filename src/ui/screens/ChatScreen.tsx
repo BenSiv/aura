@@ -24,7 +24,7 @@ export const ChatScreen: React.FC<ChatScreenProps> = ({ profile, localProfileId,
   const [transport, setTransport] = useState<"mesh" | "email">("mesh");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  let profileImage = "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=800&q=80&sat=-100";
+  let profileImage = "/default_adam.png";
   try {
     const images = JSON.parse(profile.images);
     if (images.length > 0) profileImage = images[0];

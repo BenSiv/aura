@@ -33,9 +33,9 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ initialProfi
     }
     const gender = initialProfile?.gender || "Man";
     if (gender === "Woman") {
-      return "https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=800&q=80&sat=-100";
+      return "/default_eve.png";
     }
-    return "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=800&q=80&sat=-100";
+    return "/default_adam.png";
   };
 
   const [setupImage, setSetupImage] = useState(getInitialImage);
@@ -46,13 +46,15 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ initialProfi
 
   const handleGenderChange = (gender: string) => {
     setSetupGender(gender);
-    const isCurrentlyDefault = setupImage === "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=800&q=80&sat=-100" || 
+    const isCurrentlyDefault = setupImage === "/default_adam.png" || 
+                               setupImage === "/default_eve.png" ||
+                               setupImage === "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=800&q=80&sat=-100" || 
                                setupImage === "https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=800&q=80&sat=-100";
     if (isCurrentlyDefault) {
-      if (gender === "Man") {
-        setSetupImage("https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=800&q=80&sat=-100");
+      if (gender === "Man" || gender === "Other") {
+        setSetupImage("/default_adam.png");
       } else if (gender === "Woman") {
-        setSetupImage("https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=800&q=80&sat=-100");
+        setSetupImage("/default_eve.png");
       }
     }
   };
